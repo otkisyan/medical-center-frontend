@@ -1,8 +1,9 @@
 import { axiosInstance } from "@/api.config";
+import { noInterceptorsAxiosInstance } from "@/api.config";
 
 export const AuthService = {
   async loginUser(username: string, password: string) {
-    const data = await axiosInstance.post<any>("/auth/login", {
+    const data = await noInterceptorsAxiosInstance.post<any>("/auth/login", {
       username: username,
       password: password,
     });
@@ -10,10 +11,13 @@ export const AuthService = {
   },
 
   async registerUser(username: string, password: string) {
-    const data = await axiosInstance.post<String>("/auth/register", {
-      username: username,
-      password: password,
-    });
+    const data = await noInterceptorsAxiosInstance.post<String>(
+      "/auth/register",
+      {
+        username: username,
+        password: password,
+      }
+    );
     return data;
   },
 
@@ -22,6 +26,18 @@ export const AuthService = {
     if (data.status === 401) {
       throw Error;
     }
+    return data;
+  },
+
+  async getRoles() {
+    const { data } = await axiosInstance.get<any>("/auth/roles");
+    return data;
+  },
+
+  async validate() {
+    const { data } = await noInterceptorsAxiosInstance.get<any>(
+      "/auth/validate"
+    );
     return data;
   },
 };

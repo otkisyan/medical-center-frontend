@@ -12,9 +12,11 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Stack from "react-bootstrap/Stack";
 import Pagination from "react-bootstrap/Pagination";
+import { useCallback } from "react";
+import { useMemo } from "react";
 
 export default function PatientsPage() {
-  const initialPageState: IPage<IPatient> = {
+  const initialPatientsPageState: IPage<IPatient> = {
     content: [],
     totalPages: 0,
     totalElements: 0,
@@ -24,16 +26,22 @@ export default function PatientsPage() {
     last: false,
   };
 
-  const initialParamsState = {
-    surname: "",
-    name: "",
-    middleName: "",
-    birthDate: null,
-    page: 0,
-  };
+  const initialParamsState = useMemo(
+    () => ({
+      surname: "",
+      name: "",
+      middleName: "",
+      birthDate: null,
+      page: 0,
+    }),
+    []
+  );
 
-  const [patientPage, setPatientPage] =
-    useState<IPage<IPatient>>(initialPageState);
+  const [patientPage, setPatientPage] = useState<IPage<IPatient>>(
+    initialPatientsPageState
+  );
+
+  const [patientsCount, setPatientsCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [params, setParams] = useState(initialParamsState);
 
@@ -55,7 +63,7 @@ export default function PatientsPage() {
     await fetchPatients(params);
   };
 
-  const fetchPatients = async (params: any) => {
+  const fetchPatients = useCallback(async (params: any) => {
     try {
       setLoading(true);
       const data = await PatientService.findAllPatients(params);
@@ -63,14 +71,28 @@ export default function PatientsPage() {
     } catch (error) {
       console.error("Error fetching patient data:", error);
     } finally {
-      console.log(patientPage);
       setLoading(false);
     }
-  };
+  }, []);
+
+  const fetchPatientsCount = useCallback(async () => {
+    try {
+      setLoading(true);
+      const count = await PatientService.countPatients();
+      setPatientsCount(count);
+    } catch (error) {
+      console.error("Error fetching patient data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    fetchPatients(initialParamsState);
-  }, []);
+    fetchPatientsCount();
+    if (patientsCount > 0) {
+      fetchPatients(initialParamsState);
+    }
+  }, [fetchPatientsCount, fetchPatients, initialParamsState, patientsCount]);
 
   return (
     <div className="wrapper">

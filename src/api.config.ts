@@ -6,7 +6,7 @@ export const axiosInstance = axios.create({
   baseURL: "http://localhost:8080",
 });
 
-const noInterceptorsAxiosInstance = axios.create({
+export const noInterceptorsAxiosInstance = axios.create({
   withCredentials: true,
   baseURL: "http://localhost:8080",
 });
@@ -35,7 +35,6 @@ axiosInstance.interceptors.response.use(
       try {
         const resp = await noInterceptorsAxiosInstance.post("/auth/refresh");
         localStorage.setItem("access_token", resp?.data.accessToken);
-        console.log(originalRequest);
         return axiosInstance.request(originalRequest);
       } catch (error) {
         window.location.href = "/login";

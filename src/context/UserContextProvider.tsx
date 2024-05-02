@@ -6,6 +6,7 @@ import { IUserProfile } from "@/interface/user/userProfile.interface";
 import { jwtDecode } from "jwt-decode";
 import { AuthService } from "@/service/auth.service";
 import { useRouter } from "next/navigation";
+import { cookies } from "next/headers";
 
 const UserContext = createContext<IUserContext | null>(null);
 
@@ -20,9 +21,7 @@ export const UserContextProvider = ({ children }) => {
       let decodedToken = undefined;
       try {
         decodedToken = jwtDecode(accessToken);
-      } catch (error) {
-        logout();
-      }
+      } catch (error) {}
       if (decodedToken) {
         const userProfileFromToken: IUserProfile = {
           id: decodedToken.userId,
