@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useAuth } from "@/context/UserContextProvider";
+import { useAuth } from "@/shared/context/UserContextProvider";
 
 export default function LoginPage() {
   const { login } = useAuth();

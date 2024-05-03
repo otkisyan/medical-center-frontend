@@ -1,5 +1,6 @@
 import { axiosInstance } from "@/api.config";
 import { noInterceptorsAxiosInstance } from "@/api.config";
+import { IUserDetails } from "@/shared/interface/user/userDetails.interface";
 
 export const AuthService = {
   async loginUser(username: string, password: string) {
@@ -22,15 +23,17 @@ export const AuthService = {
   },
 
   async refresh() {
-    const data = await axiosInstance.post<any>("/auth/refresh");
+    const data = await noInterceptorsAxiosInstance.post<any>("/auth/refresh");
     if (data.status === 401) {
       throw Error;
     }
     return data;
   },
 
-  async getRoles() {
-    const { data } = await axiosInstance.get<any>("/auth/roles");
+  async getUserDetails() {
+    const { data } = await noInterceptorsAxiosInstance.get<IUserDetails>(
+      "/auth/details"
+    );
     return data;
   },
 

@@ -1,25 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { AuthService } from "./service/auth.service";
-import { jwtDecode } from "jwt-decode";
-
-const protectedRoutes = {
-  "/patients": ["DOCTOR", "RECEPTIONIST"],
-};
-
-const isProtectedRoute = (pathname: string) => {
-  return Object.keys(protectedRoutes).some((route) =>
-    pathname.startsWith(route)
-  );
-};
-
-const hasSufficientRole = (pathname: string, userRoles: string[]) => {
-  const requiredRoles =
-    protectedRoutes[pathname as keyof typeof protectedRoutes];
-  return (
-    requiredRoles && userRoles.some((role) => requiredRoles.includes(role))
-  );
-};
+import {isProtectedRoute} from "@/shared/utils/auth";
+import {hasSufficientRole} from "@/shared/utils/auth";
 
 const isAuthenticated = async (request: NextRequest) => {
   const refreshToken = request.cookies.get("refreshToken");
