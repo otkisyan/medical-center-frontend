@@ -14,4 +14,23 @@ export const PatientService = {
     const { data } = await axiosInstance.get<number>("/patients/count");
     return data;
   },
+
+  async findPatientById(id: number) {
+    const {data} = await axiosInstance.get<IPatient>(`/patients/${id}`)
+    return data;
+  },
+
+  async updatePatient(id: number, updatedPatient: IPatient){
+    const {data} = await axiosInstance.put<IPatient>(`/patients/${id}`, {
+      surname: updatedPatient.surname,
+      name: updatedPatient.name,
+      middleName: updatedPatient.middleName,
+      address: updatedPatient.address,
+      phone: updatedPatient.phone,
+      messengerContact: updatedPatient.messengerContact,
+      preferentialCategory: updatedPatient.preferentialCategory,
+      birthDate: updatedPatient.birthDate,
+    })
+    return data;
+  }
 };

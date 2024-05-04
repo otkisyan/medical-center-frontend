@@ -10,3 +10,14 @@ export interface IPatient {
   preferentialCategory: string
 }
 
+export const initialPatientState: IPatient = {
+  id: 0,
+  name: '',
+  surname: '',
+  middleName: '',
+  address: '',
+  phone: '',
+  messengerContact: '',
+  birthDate: new Date(),
+  preferentialCategory: '',
+};

@@ -8,19 +8,16 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import {useAuth} from "@/shared/context/UserContextProvider";
 
 export default function NavBar() {
-    const {userDetails} = useAuth();
+    const {userDetails, logout} = useAuth();
     return (
-        <Navbar expand="lg" className="bg-body-tertiary">
-            <Container fluid style={{maxWidth: "960px"}}>
-                <Navbar.Toggle aria-controls="navbarScroll"/>
-                <Navbar.Collapse id="navbarScroll">
+        <Navbar expand="sm" className="bg-body-tertiary">
+            <Container style={{maxWidth: "960px"}}>
+                <Navbar.Brand href="/"><i className="bi bi-house-door-fill"></i></Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+                <Navbar.Collapse id="basic-navbar-nav">
                     <Nav
-                        className="me-auto my-2 my-lg-0"
-                        style={{maxHeight: '100px'}}
-                        navbarScroll
+                        className="me-auto"
                     >
-                        <Navbar.Brand href="/"><i className="bi bi-house-door-fill"></i></Navbar.Brand>
-
                         <Nav.Link href="/patients">Пацієнти</Nav.Link>
                         <NavDropdown title="Link" id="navbarScrollingDropdown">
                             <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
@@ -32,7 +29,6 @@ export default function NavBar() {
                                 Something else here
                             </NavDropdown.Item>
                         </NavDropdown>
-
                     </Nav>
                     <Form className="d-flex">
                         <Form.Control

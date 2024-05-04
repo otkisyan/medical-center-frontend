@@ -99,8 +99,8 @@ export default function PatientsPage() {
         <>
             <br></br>
             <Form onSubmit={handleFormSubmit}>
-                <Row className="g-2">
-                    <Col md>
+                <Row>
+                    <Col>
                         <FloatingLabel
                             controlId="surname"
                             label="Прізвище"
@@ -114,7 +114,7 @@ export default function PatientsPage() {
                             />
                         </FloatingLabel>
                     </Col>
-                    <Col md>
+                    <Col>
                         <FloatingLabel controlId="name" label="Ім'я">
                             <Form.Control
                                 type="text"
@@ -124,8 +124,7 @@ export default function PatientsPage() {
                             />
                         </FloatingLabel>
                     </Col>
-
-                    <Col md>
+                    <Col>
                         <FloatingLabel
                             controlId="middleName"
                             label="По батькові"
@@ -163,7 +162,6 @@ export default function PatientsPage() {
                             <span className="visually-hidden">Loading...</span>
                         </Spinner>
                     </div>
-
                 </>
             ) : patientPage && patientPage.content ? (
                 <>

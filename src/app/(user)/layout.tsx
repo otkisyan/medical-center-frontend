@@ -1,12 +1,11 @@
 import type {Metadata} from "next";
-import {Inter} from "next/font/google";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import "@/css/styles.css";
 import {UserContextProvider} from "@/shared/context/UserContextProvider";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Wrapper from "@/components/layout/Wrapper";
 
-const inter = Inter({subsets: ["latin"]});
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -22,7 +21,7 @@ export default function UserLayout({
     return (
         <>
             <html lang="en">
-            <body className={inter.className}>
+            <body>
             <UserContextProvider>
                 <Wrapper>
                     {children}

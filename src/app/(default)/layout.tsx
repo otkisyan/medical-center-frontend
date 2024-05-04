@@ -1,5 +1,6 @@
 import type {Metadata} from "next";
 import "@/css/styles.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import {UserContextProvider} from "@/shared/context/UserContextProvider";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Wrapper from "@/components/layout/Wrapper";
