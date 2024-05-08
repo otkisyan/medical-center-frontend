@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import {isProtectedRoute} from "@/shared/utils/auth";
-import {hasSufficientRole} from "@/shared/utils/auth";
+import { isProtectedRoute } from "@/shared/utils/auth";
+import { hasSufficientRole } from "@/shared/utils/auth";
 
 const isAuthenticated = async (request: NextRequest) => {
   const refreshToken = request.cookies.get("refreshToken");
@@ -49,9 +49,15 @@ const getUserRoles = async (request: NextRequest) => {
 export async function middleware(request: NextRequest) {
   const isAuth = await isAuthenticated(request);
   const userRoles = await getUserRoles(request);
+
+  if (isAuth && request.nextUrl.pathname.startsWith("/login")) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   if (!isAuth && isProtectedRoute(request.nextUrl.pathname)) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
+
   if (
     isProtectedRoute(request.nextUrl.pathname) &&
     !hasSufficientRole(request.nextUrl.pathname, userRoles)

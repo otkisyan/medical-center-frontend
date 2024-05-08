@@ -43,4 +43,9 @@ export const AuthService = {
     );
     return data;
   },
+
+  async logout() {
+    const data = await noInterceptorsAxiosInstance.get<any>("/auth/logout");
+    return data;
+  },
 };

@@ -19,10 +19,11 @@ export const UserContextProvider = ({
   const [isReady, setIsReady] = useState(true);
   const router = useRouter();
 
-  const logout = () => {
-    localStorage.removeItem("access_token");
+  const logout = async () => {
     setUserDetails(null);
-    router.push("/login");
+    localStorage.removeItem("access_token");
+    router.push("/login?logout=true");
+    await AuthService.logout();
   };
 
   const fetchUserDetails = useCallback(async () => {
@@ -52,19 +53,24 @@ export const UserContextProvider = ({
   }, [fetchUserDetails]);
 
   const login = async (username: string, password: string) => {
-    const res = await AuthService.loginUser(username, password);
-    if (res) {
-      const accessToken = res?.data.accessToken;
-      let decodedToken = undefined;
-      try {
-        decodedToken = jwtDecode(accessToken);
-      } catch (error) {
-        logout();
+    localStorage.removeItem("access_token");
+    try {
+      const res = await AuthService.loginUser(username, password);
+      if (res) {
+        const accessToken = res?.data.accessToken;
+        let decodedToken = undefined;
+        try {
+          decodedToken = jwtDecode(accessToken);
+        } catch (error) {
+          router.push("/login?error=true");
+        }
+        if (decodedToken) {
+          localStorage.setItem("access_token", accessToken);
+          router.push("/");
+        }
       }
-      if (decodedToken) {
-        localStorage.setItem("access_token", accessToken);
-        router.push("/patients");
-      }
+    } catch (error) {
+      router.push("/login?error=true");
     }
   };
 
