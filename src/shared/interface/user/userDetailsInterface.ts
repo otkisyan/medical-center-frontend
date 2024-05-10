@@ -1,4 +1,4 @@
-export interface IUserDetails {
+export interface UserDetails {
   id: number;
   username: string | undefined;
   roles: string[];

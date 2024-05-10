@@ -23,6 +23,9 @@ export default function NavBar() {
             <Nav.Link href="/patients" active={pathname == "/patients"}>
               Пацієнти
             </Nav.Link>
+            <Nav.Link href="/doctors" active={pathname == "/doctors"}>
+              Лікарі
+            </Nav.Link>
             <NavDropdown title="Link" id="navbarScrollingDropdown">
               <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
               <NavDropdown.Item href="#action4">

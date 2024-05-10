@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isProtectedRoute } from "@/shared/utils/auth";
-import { hasSufficientRole } from "@/shared/utils/auth";
+import { isProtectedRoute } from "@/shared/utils/authUtils";
+import { hasSufficientRole } from "@/shared/utils/authUtils";
 
 const isAuthenticated = async (request: NextRequest) => {
   const refreshToken = request.cookies.get("refreshToken");

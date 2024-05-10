@@ -1,21 +1,21 @@
 "use client";
 import { createContext, useContext, useEffect } from "react";
-import { IUserContext } from "@/shared/interface/user/userContext.interface";
+import { UserContext } from "@/shared/interface/user/userContextInterface";
 import { useState } from "react";
-import { IUserDetails } from "@/shared/interface/user/userDetails.interface";
+import { UserDetails } from "@/shared/interface/user/userDetailsInterface";
 import { jwtDecode } from "jwt-decode";
-import { AuthService } from "@/shared/service/auth.service";
+import { AuthService } from "@/shared/service/userService";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
-const UserContext = createContext<IUserContext>({} as IUserContext);
+const UserContextInstance = createContext<UserContext>({} as UserContext);
 
 export const UserContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const [userDetails, setUserDetails] = useState<IUserDetails | null>(null);
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [isReady, setIsReady] = useState(true);
   const router = useRouter();
 
@@ -23,14 +23,16 @@ export const UserContextProvider = ({
     setUserDetails(null);
     localStorage.removeItem("access_token");
     router.push("/login?logout=true");
-    await AuthService.logout();
+    try {
+      await AuthService.logout();
+    } catch (error) {}
   };
 
   const fetchUserDetails = useCallback(async () => {
     try {
       const res = await AuthService.getUserDetails();
       if (res) {
-        const userDetailsObject: IUserDetails = {
+        const userDetailsObject: UserDetails = {
           id: res.id,
           username: res.username,
           roles: res.roles,
@@ -79,7 +81,7 @@ export const UserContextProvider = ({
   };
 
   return (
-    <UserContext.Provider
+    <UserContextInstance.Provider
       value={{
         userDetails: userDetails,
         login: login,
@@ -88,8 +90,8 @@ export const UserContextProvider = ({
       }}
     >
       {isReady ? children : null}
-    </UserContext.Provider>
+    </UserContextInstance.Provider>
   );
 };
 
-export const useAuth = () => useContext(UserContext);
+export const useAuth = () => useContext(UserContextInstance);

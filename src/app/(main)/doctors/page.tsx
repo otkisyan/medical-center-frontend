@@ -1,8 +1,8 @@
 "use client";
 import "@/css/styles.css";
+import { DoctorResponse } from "@/shared/interface/doctor/doctorInterface";
 import { Page } from "@/shared/interface/page/pageInterface";
-import { PatientResponse } from "@/shared/interface/patient/patientInterface";
-import { PatientService } from "@/shared/service/patientService";
+import { DoctorService } from "@/shared/service/doctorService";
 import { formatDateToString } from "@/shared/utils/dateUtils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "react-bootstrap/Button";
@@ -17,7 +17,7 @@ import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
 
 export default function PatientsPage() {
-  const initialPatientsPageState: Page<PatientResponse> = {
+  const initialDoctorPageState: Page<DoctorResponse> = {
     content: [],
     totalPages: 0,
     totalElements: 0,
@@ -38,15 +38,15 @@ export default function PatientsPage() {
     []
   );
 
-  const [patientPage, setPatientPage] = useState<Page<PatientResponse>>(
-    initialPatientsPageState
+  const [doctorPage, setDoctorPage] = useState<Page<DoctorResponse>>(
+    initialDoctorPageState
   );
-  const [patientsCount, setPatientsCount] = useState<number>(0);
+  const [doctorsCount, setDoctorsCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [params, setParams] = useState(initialParamsState);
 
   const clearSearchParams = async () => {
-    await fetchPatients(initialParamsState);
+    await fetchDoctors(initialParamsState);
     setParams(initialParamsState);
   };
 
@@ -60,37 +60,37 @@ export default function PatientsPage() {
 
   const handleFormSubmit = async (event: any) => {
     event.preventDefault();
-    await fetchPatients(params);
+    await fetchDoctors(params);
   };
 
-  const fetchPatients = useCallback(async (params: any) => {
+  const fetchDoctors = useCallback(async (params: any) => {
     try {
       setLoading(true);
-      const data = await PatientService.findAllPatients(params);
-      setPatientPage(data);
+      const data = await DoctorService.findAllDoctors(params);
+      setDoctorPage(data);
     } catch (error) {
-      console.error("Error fetching patient data:", error);
+      console.error("Error fetching doctor data:", error);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const fetchPatientsCount = useCallback(async () => {
+  const fetchDoctorsCount = useCallback(async () => {
     try {
-      const count = await PatientService.countPatients();
-      setPatientsCount(count);
+      const count = await DoctorService.countDoctors();
+      setDoctorsCount(count);
     } catch (error) {
-      console.error("Error fetching patient data:", error);
+      console.error("Error fetching doctors data:", error);
     } finally {
     }
   }, []);
 
   useEffect(() => {
-    fetchPatientsCount();
-    if (patientsCount > 0) {
-      fetchPatients(initialParamsState);
+    fetchDoctorsCount();
+    if (doctorsCount > 0) {
+      fetchDoctors(initialParamsState);
     }
-  }, [fetchPatientsCount, fetchPatients, initialParamsState, patientsCount]);
+  }, [fetchDoctorsCount, fetchDoctors, initialParamsState, doctorsCount]);
 
   return (
     <>
@@ -143,8 +143,8 @@ export default function PatientsPage() {
           </Col>
         </Row>
         <Stack direction="horizontal" gap={3}>
-          <a href="/patients/new" className="link">
-            Новий пацієнт →
+          <a href="/doctors/new" className="link">
+            Новий лікар →
           </a>
           <Button
             variant="link"
@@ -169,7 +169,7 @@ export default function PatientsPage() {
             </Spinner>
           </div>
         </>
-      ) : patientPage && patientPage.content.length > 0 ? (
+      ) : doctorPage && doctorPage.content.length > 0 ? (
         <>
           <Table striped responsive>
             <thead>
@@ -179,25 +179,27 @@ export default function PatientsPage() {
                 <th>{`Ім'я`}</th>
                 <th>По батькові</th>
                 <th>Дата народження</th>
+                <th>Медична спеціальність</th>
                 <th>Дія</th>
               </tr>
             </thead>
             <tbody>
-              {patientPage.content.map((patient, i) => (
+              {doctorPage.content.map((doctor, i) => (
                 <tr key={i}>
-                  <td>{patient.id}</td>
-                  <td>{patient.surname}</td>
-                  <td>{patient.name}</td>
-                  <td>{patient.middleName}</td>
+                  <td>{doctor.id}</td>
+                  <td>{doctor.surname}</td>
+                  <td>{doctor.name}</td>
+                  <td>{doctor.middleName}</td>
                   <td>
-                    {patient.birthDate
-                      ? formatDateToString(patient.birthDate)
+                    {doctor.birthDate
+                      ? formatDateToString(doctor.birthDate)
                       : ""}
                   </td>
+                  <td>{doctor.medicalSpecialty}</td>
                   <td>
                     <a
                       className="btn btn-primary"
-                      href={`/patients/${encodeURIComponent(patient.id ?? "")}`}
+                      href={`/doctors/${encodeURIComponent(doctor.id ?? "")}`}
                       role="button"
                     >
                       <i className="bi bi-eye"></i>
@@ -209,33 +211,33 @@ export default function PatientsPage() {
           </Table>
           <Pagination className="d-flex justify-content-center">
             <Pagination.First
-              onClick={() => fetchPatients({ ...params, page: 0 })}
-              disabled={patientPage.first === true}
+              onClick={() => fetchDoctors({ ...params, page: 0 })}
+              disabled={doctorPage.first === true}
             />
             <Pagination.Prev
               onClick={() =>
-                fetchPatients({ ...params, page: patientPage.number - 1 })
+                fetchDoctors({ ...params, page: doctorPage.number - 1 })
               }
-              disabled={patientPage.first === true}
+              disabled={doctorPage.first === true}
             />
-            {[...Array(patientPage.totalPages)].map((_, i) => {
+            {[...Array(doctorPage.totalPages)].map((_, i) => {
               if (
                 i === 0 ||
-                i === patientPage.totalPages - 1 ||
-                (i >= patientPage.number - 2 && i <= patientPage.number + 2)
+                i === doctorPage.totalPages - 1 ||
+                (i >= doctorPage.number - 2 && i <= doctorPage.number + 2)
               ) {
                 return (
                   <Pagination.Item
                     key={i}
-                    active={i === patientPage.number}
-                    onClick={() => fetchPatients({ ...params, page: i })}
+                    active={i === doctorPage.number}
+                    onClick={() => fetchDoctors({ ...params, page: i })}
                   >
                     {i + 1}
                   </Pagination.Item>
                 );
               } else if (
-                i === patientPage.number - 3 ||
-                i === patientPage.number + 3
+                i === doctorPage.number - 3 ||
+                i === doctorPage.number + 3
               ) {
                 return <Pagination.Ellipsis key={i} disabled />;
               }
@@ -243,15 +245,15 @@ export default function PatientsPage() {
             })}
             <Pagination.Next
               onClick={() =>
-                fetchPatients({ ...params, page: patientPage.number + 1 })
+                fetchDoctors({ ...params, page: doctorPage.number + 1 })
               }
-              disabled={patientPage.last === true}
+              disabled={doctorPage.last === true}
             />
             <Pagination.Last
               onClick={() =>
-                fetchPatients({ ...params, page: patientPage.totalPages - 1 })
+                fetchDoctors({ ...params, page: doctorPage.totalPages - 1 })
               }
-              disabled={patientPage.last === true}
+              disabled={doctorPage.last === true}
             />
           </Pagination>
         </>
@@ -261,7 +263,7 @@ export default function PatientsPage() {
           className="text-center mx-auto"
           style={{ maxWidth: "400px" }}
         >
-          Пацієнтів за заданими критеріями не знайдено
+          Лікарів за заданими критеріями не знайдено
         </Alert>
       )}
     </>

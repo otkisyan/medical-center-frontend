@@ -2,10 +2,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { PatientService } from "@/shared/service/patientService";
 import {
-  convertPatientResponseToPatientRequest,
-  initialPatientRequestState,
   initialPatientResponseState,
-  PatientRequest,
   PatientResponse,
 } from "@/shared/interface/patient/patientInterface";
 import Form from "react-bootstrap/Form";
@@ -16,12 +13,20 @@ import { notifyError, notifySuccess } from "@/shared/toast/toastsNotifiers";
 import Modal from "react-bootstrap/Modal";
 import { useRouter } from "next/navigation";
 import { Breadcrumb } from "react-bootstrap";
+import {
+  DoctorRequest,
+  DoctorResponse,
+  convertDoctorResponseToDoctorRequest,
+  initialDoctorRequestState,
+  initialDoctorResponseState,
+} from "@/shared/interface/doctor/doctorInterface";
+import { DoctorService } from "@/shared/service/doctorService";
 
 export default function PatientPage({ params }: { params: { id: number } }) {
   const router = useRouter();
-  const [patient, setPatient] = useState<PatientResponse | null>(null);
-  const [editedPatient, setEditedPatient] = useState<PatientRequest>(
-    initialPatientRequestState
+  const [doctor, setDoctor] = useState<DoctorResponse | null>(null);
+  const [editedDoctor, setEditedDoctor] = useState<DoctorRequest>(
+    initialDoctorRequestState
   );
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -32,13 +37,13 @@ export default function PatientPage({ params }: { params: { id: number } }) {
 
   const handleEditFormSubmit = async () => {
     try {
-      const data = await PatientService.updatePatient(params.id, editedPatient);
-      setPatient(data);
-      setEditedPatient(convertPatientResponseToPatientRequest(data));
-      notifySuccess("Редагування інформації про пацієнта успішне!");
+      const data = await DoctorService.updateDoctor(params.id, editedDoctor);
+      setDoctor(data);
+      setEditedDoctor(convertDoctorResponseToDoctorRequest(data));
+      notifySuccess("Редагування інформації про лікаря успішне!");
     } catch (error) {
-      if (patient) {
-        setEditedPatient(convertPatientResponseToPatientRequest(patient));
+      if (doctor) {
+        setEditedDoctor(convertDoctorResponseToDoctorRequest(doctor));
       }
       notifyError("При редагуванні сталася непередбачена помилка!");
     } finally {
@@ -46,22 +51,22 @@ export default function PatientPage({ params }: { params: { id: number } }) {
     }
   };
 
-  const deletePatient = async () => {
+  const deleteDoctor = async () => {
     try {
-      const data = await PatientService.deletePatient(params.id);
-      router.push("/patients");
-      notifySuccess("Пацієнт був успішно видалений!");
+      const data = await DoctorService.deleteDoctor(params.id);
+      router.push("/doctors");
+      notifySuccess("Лікар був успішно видалений!");
     } catch (error) {
-      notifyError("При видаленні пацієнта сталася непередбачена помилка!");
+      notifyError("При видаленні лікаря сталася непередбачена помилка!");
     } finally {
       setShowDeleteModal(false);
     }
   };
 
-  const handleChangePatient = (event: any) => {
+  const handleChangeDoctor = (event: any) => {
     const { name, value } = event.target;
-    setEditedPatient((prevPatient) => ({
-      ...prevPatient,
+    setEditedDoctor((prevDoctor) => ({
+      ...prevDoctor,
       [name]: value,
     }));
   };
@@ -71,18 +76,18 @@ export default function PatientPage({ params }: { params: { id: number } }) {
   };
 
   const handleCancelEdit = () => {
-    if (patient) {
-      setEditedPatient(patient);
+    if (doctor) {
+      setEditedDoctor(convertDoctorResponseToDoctorRequest(doctor));
     }
     setEditing(false);
   };
 
-  const fetchPatient = useCallback(async (patientId: number) => {
+  const fetchDoctor = useCallback(async (patientId: number) => {
     try {
       setLoading(true);
-      const data = await PatientService.findPatientById(patientId);
-      setPatient(data);
-      setEditedPatient(convertPatientResponseToPatientRequest(data));
+      const data = await DoctorService.findDoctorById(patientId);
+      setDoctor(data);
+      setEditedDoctor(convertDoctorResponseToDoctorRequest(data));
     } catch (error) {
     } finally {
       setLoading(false);
@@ -90,9 +95,9 @@ export default function PatientPage({ params }: { params: { id: number } }) {
   }, []);
 
   useEffect(() => {
-    const patientId = params.id;
-    fetchPatient(patientId);
-  }, [fetchPatient, params.id]);
+    const doctorId = params.id;
+    fetchDoctor(doctorId);
+  }, [fetchDoctor, params.id]);
 
   return (
     <>
@@ -105,28 +110,28 @@ export default function PatientPage({ params }: { params: { id: number } }) {
             </Spinner>
           </div>
         </>
-      ) : patient ? (
+      ) : doctor ? (
         <>
           <Breadcrumb>
             <Breadcrumb.Item href="/" className="link">
               Домашня сторінка
             </Breadcrumb.Item>
             <Breadcrumb.Item href="/patients" className="link">
-              Пацієнти
+              Лікарі
             </Breadcrumb.Item>
             <Breadcrumb.Item active>
-              Інформація про пацієнта #{params.id}
+              Інформація про лікаря #{params.id}
             </Breadcrumb.Item>
           </Breadcrumb>
           <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
             <Modal.Header closeButton>
-              <Modal.Title>Видалення пацієнта</Modal.Title>
+              <Modal.Title>Видалення лікаря</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>Ви впевнені що хочете видалити пацієнта?</p>
+              <p>Ви впевнені що хочете видалити лікаря?</p>
               <p>
                 <i>
-                  Ви не сможете відновити інформацію про пацієнта після
+                  Ви не сможете відновити інформацію про лікаря після
                   підтвердження видалення!
                 </i>
               </p>
@@ -135,8 +140,8 @@ export default function PatientPage({ params }: { params: { id: number } }) {
               <Button variant="secondary" onClick={handleCloseDeleteModal}>
                 Скасувати
               </Button>
-              <Button variant="danger" onClick={deletePatient}>
-                Видалити пацієнта
+              <Button variant="danger" onClick={deleteDoctor}>
+                Видалити лікаря
               </Button>
             </Modal.Footer>
           </Modal>
@@ -147,27 +152,27 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   <Form.Label>Прізвище</Form.Label>
                   <Form.Control
                     type="text"
-                    value={editedPatient.surname ?? ""}
+                    value={editedDoctor.surname ?? ""}
                     name="surname"
-                    onChange={handleChangePatient}
+                    onChange={handleChangeDoctor}
                   />
                 </Form.Group>
                 <Form.Group as={Col} controlId="formGridName">
                   <Form.Label>{`Ім'я`}</Form.Label>
                   <Form.Control
                     type="text"
-                    value={editedPatient.name ?? ""}
+                    value={editedDoctor.name ?? ""}
                     name="name"
-                    onChange={handleChangePatient}
+                    onChange={handleChangeDoctor}
                   />
                 </Form.Group>
                 <Form.Group as={Col} controlId="formGridMiddleName">
                   <Form.Label>По батькові</Form.Label>
                   <Form.Control
                     type="text"
-                    value={editedPatient.middleName ?? ""}
+                    value={editedDoctor.middleName ?? ""}
                     name="middleName"
-                    onChange={handleChangePatient}
+                    onChange={handleChangeDoctor}
                   />
                 </Form.Group>
               </Row>
@@ -176,13 +181,13 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                 <Form.Control
                   type="date"
                   value={
-                    editedPatient.birthDate
-                      ? editedPatient.birthDate.toString()
+                    editedDoctor.birthDate
+                      ? editedDoctor.birthDate.toString()
                       : ""
                   }
                   name="birthDate"
                   max="9999-12-31"
-                  onChange={handleChangePatient}
+                  onChange={handleChangeDoctor}
                 />
               </Form.Group>
               <Row className="mb-3">
@@ -190,8 +195,8 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   <Form.Label>Номер телефону</Form.Label>
                   <Form.Control
                     type="text"
-                    value={editedPatient.phone ?? ""}
-                    onChange={handleChangePatient}
+                    value={editedDoctor.phone ?? ""}
+                    onChange={handleChangeDoctor}
                     name="phone"
                   />
                 </Form.Group>
@@ -199,9 +204,9 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   <Form.Label>Контактний номер Viber/Telegram</Form.Label>
                   <Form.Control
                     type="text"
-                    value={editedPatient.messengerContact ?? ""}
+                    value={editedDoctor.messengerContact ?? ""}
                     name="messengerContact"
-                    onChange={handleChangePatient}
+                    onChange={handleChangeDoctor}
                   />
                 </Form.Group>
               </Row>
@@ -209,23 +214,37 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                 <Form.Label>Домашня адреса</Form.Label>
                 <Form.Control
                   type="text"
-                  value={editedPatient.address ?? ""}
+                  value={editedDoctor.address ?? ""}
                   name="address"
-                  onChange={handleChangePatient}
+                  onChange={handleChangeDoctor}
                 />
               </Form.Group>
-              <Form.Group
-                controlId="formGridPreferentialCategory"
-                className="mb-3"
-              >
-                <Form.Label>Пільгова категорія</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={editedPatient.preferentialCategory ?? ""}
-                  name="preferentialCategory"
-                  onChange={handleChangePatient}
-                />
-              </Form.Group>
+              <Row className="mb-3">
+                <Form.Group as={Col} controlId="formGridMedicalSpecialty">
+                  <Form.Label>Медична спеціальність</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={editedDoctor.medicalSpecialty ?? ""}
+                    name="medicalSpecialty"
+                    onChange={handleChangeDoctor}
+                  />
+                </Form.Group>
+                <Form.Group as={Col} controlId="formGridQualificationCategory">
+                  <Form.Label>Кваліфікаційна категорія</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={editedDoctor.qualificationCategory ?? ""}
+                    name="qualificationCategory"
+                    onChange={handleChangeDoctor}
+                  />
+                </Form.Group>
+              </Row>
+              <Form.Select aria-label="Default select example" className="mb-3">
+                <option>Open this select menu</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </Form.Select>
             </fieldset>
             <Button
               variant="primary"
@@ -270,7 +289,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
         <Alert variant="danger">
           <Alert.Heading>Ууупсс...</Alert.Heading>
           <p>
-            При виконанні запиту виникла помилка або запитуваного пацієнта не
+            При виконанні запиту виникла помилка або запитуваного лікаря не
             існує
           </p>
         </Alert>

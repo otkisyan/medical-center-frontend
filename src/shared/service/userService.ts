@@ -1,6 +1,6 @@
-import { axiosInstance } from "@/api.config";
-import { noInterceptorsAxiosInstance } from "@/api.config";
-import { IUserDetails } from "@/shared/interface/user/userDetails.interface";
+import { axiosInstance } from "@/axios.config";
+import { noInterceptorsAxiosInstance } from "@/axios.config";
+import { UserDetails } from "@/shared/interface/user/userDetailsInterface";
 
 export const AuthService = {
   async loginUser(username: string, password: string) {
@@ -31,7 +31,7 @@ export const AuthService = {
   },
 
   async getUserDetails() {
-    const { data } = await noInterceptorsAxiosInstance.get<IUserDetails>(
+    const { data } = await noInterceptorsAxiosInstance.get<UserDetails>(
       "/auth/details"
     );
     return data;

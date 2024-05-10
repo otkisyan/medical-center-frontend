@@ -31,7 +31,8 @@ export default function LoginPage() {
     }
   }, [searchParams]);
 
-  const handleLogin = async () => {
+  const handleLogin = async (event: any) => {
+    event.preventDefault();
     setIsLoggedOut(false);
     setLoading(true);
     await login(username, password);
@@ -75,7 +76,7 @@ export default function LoginPage() {
         </>
       )}
       <div className="login-page mx-auto" style={{ maxWidth: "300px" }}>
-        <Form>
+        <Form onSubmit={handleLogin}>
           <fieldset disabled={loading}>
             <InputGroup className="mb-3">
               <InputGroup.Text id="basic-addon1">
@@ -115,12 +116,7 @@ export default function LoginPage() {
               </Button>
             </InputGroup>
             <div className="text-center">
-              <Button
-                variant="primary"
-                type="button"
-                onClick={handleLogin}
-                className="text-center"
-              >
+              <Button variant="primary" type="submit" className="text-center">
                 Увійти
               </Button>
             </div>
