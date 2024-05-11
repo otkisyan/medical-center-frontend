@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { use, useCallback, useEffect, useState } from "react";
 import { PatientService } from "@/shared/service/patientService";
 import {
   initialPatientResponseState,
@@ -21,14 +21,22 @@ import {
   initialDoctorResponseState,
 } from "@/shared/interface/doctor/doctorInterface";
 import { DoctorService } from "@/shared/service/doctorService";
+import Select from "react-select";
+import { customReactSelectStyles } from "@/css/select";
+import { OfficeService } from "@/shared/service/officeService";
+import { OfficeResponse } from "@/shared/interface/office/officeInterface";
+import { Page } from "@/shared/interface/page/pageInterface";
 
 export default function PatientPage({ params }: { params: { id: number } }) {
   const router = useRouter();
   const [doctor, setDoctor] = useState<DoctorResponse | null>(null);
+  const [offices, setOffices] = useState<Page<OfficeResponse> | null>(null);
+  const [officesOptions, setOfficesOptions] = useState<any[]>([]);
   const [editedDoctor, setEditedDoctor] = useState<DoctorRequest>(
     initialDoctorRequestState
   );
-  const [loading, setLoading] = useState(true);
+  const [loadingDoctor, setLoadingDoctor] = useState(true);
+  const [loadingOffices, setLoadingOffices] = useState(true);
   const [editing, setEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -84,25 +92,50 @@ export default function PatientPage({ params }: { params: { id: number } }) {
 
   const fetchDoctor = useCallback(async (patientId: number) => {
     try {
-      setLoading(true);
+      setLoadingDoctor(true);
       const data = await DoctorService.findDoctorById(patientId);
       setDoctor(data);
       setEditedDoctor(convertDoctorResponseToDoctorRequest(data));
     } catch (error) {
     } finally {
-      setLoading(false);
+      setLoadingDoctor(false);
+    }
+  }, []);
+
+  const fetchOffices = useCallback(async () => {
+    try {
+      setLoadingOffices(true);
+      const data: Page<OfficeResponse> = await OfficeService.findAllOffices(
+        null
+      );
+      const newOfficesOptions = data.content.map((office) => ({
+        value: office.id,
+        label: office.name,
+      }));
+      setOfficesOptions(newOfficesOptions);
+      setOffices(data);
+    } catch (error) {
+    } finally {
+      setLoadingOffices(false);
     }
   }, []);
 
   useEffect(() => {
     const doctorId = params.id;
     fetchDoctor(doctorId);
-  }, [fetchDoctor, params.id]);
+    fetchOffices();
+  }, [fetchDoctor, fetchOffices, params.id]);
+
+  const options = [
+    { value: "chocolate", label: "Chocolate" },
+    { value: "strawberry", label: "Strawberry" },
+    { value: "vanilla", label: "Vanilla" },
+  ];
 
   return (
     <>
       <br></br>
-      {loading ? (
+      {loadingDoctor ? (
         <>
           <div className="d-flex justify-content-center">
             <Spinner animation="grow" role="status" variant="secondary">
@@ -239,12 +272,19 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   />
                 </Form.Group>
               </Row>
-              <Form.Select aria-label="Default select example" className="mb-3">
-                <option>Open this select menu</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </Form.Select>
+              <Form.Group as={Col} controlId="formGridOffice">
+                <Form.Label>Кабінет</Form.Label>
+                <Select
+                  className="basic-single mb-3"
+                  classNamePrefix="select"
+                  isSearchable={true}
+                  isDisabled={!editing}
+                  placeholder="Оберіть кабінет"
+                  name="officeId"
+                  options={options}
+                  styles={customReactSelectStyles}
+                />
+              </Form.Group>
             </fieldset>
             <Button
               variant="primary"

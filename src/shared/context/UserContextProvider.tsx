@@ -5,7 +5,7 @@ import { useState } from "react";
 import { UserDetails } from "@/shared/interface/user/userDetailsInterface";
 import { jwtDecode } from "jwt-decode";
 import { AuthService } from "@/shared/service/userService";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 const UserContextInstance = createContext<UserContext>({} as UserContext);
@@ -18,14 +18,17 @@ export const UserContextProvider = ({
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [isReady, setIsReady] = useState(true);
   const router = useRouter();
+  const path = usePathname();
 
   const logout = async () => {
-    setUserDetails(null);
-    localStorage.removeItem("access_token");
-    router.push("/login?logout=true");
     try {
       await AuthService.logout();
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      router.push("/login?logout=true");
+      setUserDetails(null);
+      localStorage.removeItem("access_token");
+    }
   };
 
   const fetchUserDetails = useCallback(async () => {
@@ -51,8 +54,10 @@ export const UserContextProvider = ({
   }, []);
 
   useEffect(() => {
-    fetchUserDetails();
-  }, [fetchUserDetails]);
+    if (path !== "/login") {
+      fetchUserDetails();
+    }
+  }, [fetchUserDetails, path]);
 
   const login = async (username: string, password: string) => {
     localStorage.removeItem("access_token");

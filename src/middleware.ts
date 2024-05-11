@@ -47,21 +47,20 @@ const getUserRoles = async (request: NextRequest) => {
 };
 
 export async function middleware(request: NextRequest) {
-  const isAuth = await isAuthenticated(request);
-  const userRoles = await getUserRoles(request);
-
-  if (isAuth && request.nextUrl.pathname.startsWith("/login")) {
-    return NextResponse.redirect(new URL("/", request.url));
+  if (isProtectedRoute(request.nextUrl.pathname)) {
+    const isAuth = await isAuthenticated(request);
+    const userRoles = await getUserRoles(request);
+    if (!isAuth) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    } else if (!hasSufficientRole(request.nextUrl.pathname, userRoles)) {
+      return new Response("Access Denied", { status: 403 });
+    }
   }
 
-  if (!isAuth && isProtectedRoute(request.nextUrl.pathname)) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  if (
-    isProtectedRoute(request.nextUrl.pathname) &&
-    !hasSufficientRole(request.nextUrl.pathname, userRoles)
-  ) {
-    return new Response("Access Denied", { status: 403 });
+  if (request.nextUrl.pathname.startsWith("/login")) {
+    const isAuth = await isAuthenticated(request);
+    if (isAuth) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
   }
 }
