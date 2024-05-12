@@ -4,12 +4,23 @@ import {
   DoctorRequest,
   DoctorResponse,
 } from "../interface/doctor/doctorInterface";
+import { WorkScheduleResponse } from "../interface/workSchedule/workScheduleInterface";
 
 export const DoctorService = {
   async findAllDoctors(params: any) {
     const { data } = await axiosInstance.get<Page<DoctorResponse>>("/doctors", {
       params,
     });
+    return data;
+  },
+
+  async findDoctorsWorkSchedules(params: any, doctorId: number) {
+    const { data } = await axiosInstance.get<Page<WorkScheduleResponse>>(
+      `/doctors/${doctorId}/work-schedules`,
+      {
+        params,
+      }
+    );
     return data;
   },
 

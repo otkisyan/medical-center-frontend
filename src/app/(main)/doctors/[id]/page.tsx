@@ -7,7 +7,7 @@ import {
 } from "@/shared/interface/patient/patientInterface";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
-import { Alert, Button, Row } from "react-bootstrap";
+import { Alert, Button, Row, Table } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
 import { notifyError, notifySuccess } from "@/shared/toast/toastsNotifiers";
 import Modal from "react-bootstrap/Modal";
@@ -25,9 +25,10 @@ import Select from "react-select";
 import { customReactSelectStyles } from "@/css/select";
 import { OfficeService } from "@/shared/service/officeService";
 import { OfficeResponse } from "@/shared/interface/office/officeInterface";
-import { Page } from "@/shared/interface/page/pageInterface";
 import { useMemo } from "react";
-import { delay } from "@/shared/utils/delay";
+import { WorkScheduleResponse } from "@/shared/interface/workSchedule/workScheduleInterface";
+import moment from "moment";
+import { formatTimeSecondsToTime } from "@/shared/utils/dateUtils";
 
 export default function PatientPage({ params }: { params: { id: number } }) {
   const initialOfficesOptions = useMemo(
@@ -37,12 +38,17 @@ export default function PatientPage({ params }: { params: { id: number } }) {
 
   const router = useRouter();
   const [doctor, setDoctor] = useState<DoctorResponse | null>(null);
+  const [doctorWorkSchedules, setDoctorWorkSchedules] = useState<
+    WorkScheduleResponse[] | null
+  >(null);
   const [officesOptions, setOfficesOptions] = useState<any[]>([]);
   const [editedDoctor, setEditedDoctor] = useState<DoctorRequest>(
     initialDoctorRequestState
   );
   const [loadingDoctor, setLoadingDoctor] = useState(true);
   const [loadingOffices, setLoadingOffices] = useState(true);
+  const [loadingDoctorWorkSchedules, setLoadingDoctorWorkSchedules] =
+    useState(true);
   const [editing, setEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -155,6 +161,42 @@ export default function PatientPage({ params }: { params: { id: number } }) {
     }
   }, [initialOfficesOptions]);
 
+  const fetchAllDoctorWorkSchedules = useCallback(async () => {
+    let allWorkSchedules: WorkScheduleResponse[] = [];
+    let requestParams = {
+      page: 0,
+    };
+    let totalPages = 1;
+    try {
+      while (requestParams.page < totalPages) {
+        const data = await DoctorService.findDoctorsWorkSchedules(
+          requestParams,
+          params.id
+        );
+        allWorkSchedules = [...allWorkSchedules, ...data.content];
+        totalPages = data.totalPages;
+        requestParams.page++;
+      }
+      return allWorkSchedules;
+    } catch (error) {
+      console.error("Error fetching work schedules:", error);
+    }
+  }, [params.id]);
+
+  const fetchDoctorWorkSchedules = useCallback(async () => {
+    try {
+      setLoadingDoctorWorkSchedules(true);
+      const workSchedules = await fetchAllDoctorWorkSchedules();
+      console.log(workSchedules);
+      if (workSchedules) {
+        setDoctorWorkSchedules(workSchedules);
+      }
+    } catch (error) {
+    } finally {
+      setLoadingDoctorWorkSchedules(false);
+    }
+  }, [fetchAllDoctorWorkSchedules]);
+
   useEffect(() => {
     const doctorId = params.id;
     fetchDoctor(doctorId);
@@ -163,6 +205,10 @@ export default function PatientPage({ params }: { params: { id: number } }) {
   useEffect(() => {
     fetchOffices();
   }, [fetchOffices]);
+
+  useEffect(() => {
+    fetchDoctorWorkSchedules();
+  }, [fetchDoctorWorkSchedules]);
 
   return (
     <>
@@ -217,6 +263,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   <Form.Label>Прізвище</Form.Label>
                   <Form.Control
                     type="text"
+                    required
                     value={editedDoctor.surname ?? ""}
                     name="surname"
                     onChange={handleChangeDoctor}
@@ -226,6 +273,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   <Form.Label>{`Ім'я`}</Form.Label>
                   <Form.Control
                     type="text"
+                    required
                     value={editedDoctor.name ?? ""}
                     name="name"
                     onChange={handleChangeDoctor}
@@ -235,6 +283,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   <Form.Label>По батькові</Form.Label>
                   <Form.Control
                     type="text"
+                    required
                     value={editedDoctor.middleName ?? ""}
                     name="middleName"
                     onChange={handleChangeDoctor}
@@ -245,6 +294,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                 <Form.Label>Дата народження</Form.Label>
                 <Form.Control
                   type="date"
+                  required
                   value={
                     editedDoctor.birthDate
                       ? editedDoctor.birthDate.toString()
@@ -259,6 +309,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                 <Form.Group as={Col} controlId="formGridPhone">
                   <Form.Label>Номер телефону</Form.Label>
                   <Form.Control
+                    required
                     type="text"
                     value={editedDoctor.phone ?? ""}
                     onChange={handleChangeDoctor}
@@ -288,6 +339,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                 <Form.Group as={Col} controlId="formGridMedicalSpecialty">
                   <Form.Label>Медична спеціальність</Form.Label>
                   <Form.Control
+                    required
                     type="text"
                     value={editedDoctor.medicalSpecialty ?? ""}
                     name="medicalSpecialty"
@@ -379,6 +431,62 @@ export default function PatientPage({ params }: { params: { id: number } }) {
               <i className="bi bi-trash"></i>
             </Button>
           </Form>
+          <br></br>
+          {loadingDoctorWorkSchedules ? (
+            <div className="d-flex justify-content-center">
+              <Spinner animation="grow" role="status" variant="secondary">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
+          ) : (
+            <Table striped responsive>
+              <thead>
+                <tr>
+                  <th>День тижня</th>
+                  <th>Час початку роботи</th>
+                  <th>Час закінчення роботи</th>
+                </tr>
+              </thead>
+              <tbody>
+                {doctorWorkSchedules !== null &&
+                  doctorWorkSchedules.map((workSchedule, i) => (
+                    <>
+                      <tr key={i}>
+                        <td>{workSchedule.dayOfWeekResponseDto.name}</td>
+                        <td>
+                          <Form.Group controlId="formGridQualificationCategory">
+                            <Form.Control
+                              type="time"
+                              value={
+                                workSchedule.workTimeEnd
+                                  ? formatTimeSecondsToTime(
+                                      workSchedule.workTimeStart
+                                    )
+                                  : ""
+                              }
+                            />
+                          </Form.Group>
+                        </td>
+                        <td>
+                          <Form.Group controlId="formGridQualificationCategory">
+                            <Form.Control
+                              type="time"
+                              value={
+                                workSchedule.workTimeEnd
+                                  ? formatTimeSecondsToTime(
+                                      workSchedule.workTimeEnd
+                                    )
+                                  : ""
+                              }
+                            />
+                          </Form.Group>
+                        </td>
+                      </tr>
+                    </>
+                  ))}
+              </tbody>
+            </Table>
+          )}
         </>
       ) : (
         <Alert variant="danger">
