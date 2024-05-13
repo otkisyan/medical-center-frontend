@@ -52,6 +52,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
   const [editedDoctorWorkSchedules, setEditedDoctorWorkSchedules] = useState<
     WorkScheduleRequest[]
   >([]);
+  const [workSchedulesValidated, setWorkSchedulesValidated] = useState(true);
+  const [showWorkScheduleValidationError, setShowWorkScheduleValidationError] =
+    useState(false);
   const [officesOptions, setOfficesOptions] = useState<any[]>([]);
 
   const [loadingDoctor, setLoadingDoctor] = useState(true);
@@ -97,6 +100,16 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
       updatedSchedules[index] = updatedSchedule;
       return updatedSchedules;
     });
+    const endTime = editedDoctorWorkSchedules[index].workTimeEnd;
+    const startTime = editedDoctorWorkSchedules[index].workTimeStart;
+
+    if (field === "workTimeStart" && newValue >= endTime) {
+      setWorkSchedulesValidated(false);
+    } else if (field === "workTimeEnd" && startTime >= newValue) {
+      setWorkSchedulesValidated(false);
+    } else {
+      setWorkSchedulesValidated(true);
+    }
   };
 
   const handleEditDoctor = () => {
@@ -117,6 +130,8 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
   const handleCancelEditWorkSchedules = () => {
     setEditedDoctorWorkSchedules(doctorWorkSchedules);
     setEditingWorkSchedules(false);
+    setShowWorkScheduleValidationError(false);
+    setWorkSchedulesValidated(true);
   };
 
   const handleEditDoctorFormSubmit = async (event: any) => {
@@ -257,18 +272,24 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
 
   const handleEditWorkSchedulesFormSubmit = async (event: any) => {
     event.preventDefault();
-    try {
-      const updatedWorkSchedules = await updateAllWorkSchedules(
-        editedDoctorWorkSchedules
-      );
-      setDoctorWorkSchedules(updatedWorkSchedules);
-      notifySuccess("Графік роботи лікаря успішно оновлений");
-    } catch (error) {
-      notifyError(
-        "При редагуванні графіку роботи лікаря сталася непердбачена помилка"
-      );
-    } finally {
-      setEditingWorkSchedules(false);
+    if (!workSchedulesValidated) {
+      setShowWorkScheduleValidationError(true);
+      event.stopPropagation();
+    } else {
+      try {
+        const updatedWorkSchedules = await updateAllWorkSchedules(
+          editedDoctorWorkSchedules
+        );
+        setDoctorWorkSchedules(updatedWorkSchedules);
+        notifySuccess("Графік роботи лікаря успішно оновлений");
+      } catch (error) {
+        notifyError(
+          "При редагуванні графіку роботи лікаря сталася непердбачена помилка"
+        );
+      } finally {
+        setShowWorkScheduleValidationError(false);
+        setEditingWorkSchedules(false);
+      }
     }
   };
 
@@ -284,6 +305,17 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
   useEffect(() => {
     fetchDoctorWorkSchedules();
   }, [fetchDoctorWorkSchedules]);
+
+  const validateTime = (start: any, end: any) => {
+    if (start && end) {
+      const startTime = new Date(`1970-01-01T${start}`);
+      const endTime = new Date(`1970-01-01T${end}`);
+      if (startTime >= endTime) {
+        return "Час початку роботи не може бути більше часу закінечення роботи";
+      }
+    }
+    return "";
+  };
 
   return (
     <>
@@ -535,6 +567,17 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                     <SpinnerCenter></SpinnerCenter>
                   ) : (
                     <Form onSubmit={handleEditWorkSchedulesFormSubmit}>
+                      {showWorkScheduleValidationError && (
+                        <Alert variant="danger">
+                          <Alert.Heading>Помилка!</Alert.Heading>
+                          <p>
+                            Час початку роботи, не може бути пізніше часу
+                            закінчення роботи.
+                            <br></br>
+                            Будь ласка, перегляньте уважно графік роботи.
+                          </p>
+                        </Alert>
+                      )}
                       <Table responsive>
                         <thead>
                           <tr>
@@ -554,7 +597,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                                   }
                                 </td>
                                 <td>
-                                  <Form.Group controlId="workTimeStart">
+                                  <Form.Group controlId={`workTimeStart${i}`}>
                                     <Form.Control
                                       disabled={!editingWorkSchedules}
                                       type="time"
@@ -565,18 +608,19 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                                             )
                                           : ""
                                       }
-                                      onChange={(e) =>
+                                      onChange={(e) => {
                                         handleWorkScheduleChange(
                                           i,
                                           "workTimeStart",
                                           e.target.value
-                                        )
-                                      }
+                                        );
+                                      }}
                                     />
                                   </Form.Group>
+                                  <br></br>
                                 </td>
                                 <td>
-                                  <Form.Group controlId="workTimeEnd">
+                                  <Form.Group controlId={`workTimeEnd${i}`}>
                                     <Form.Control
                                       disabled={!editingWorkSchedules}
                                       type="time"
@@ -587,13 +631,13 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                                             )
                                           : ""
                                       }
-                                      onChange={(e) =>
+                                      onChange={(e) => {
                                         handleWorkScheduleChange(
                                           i,
                                           "workTimeEnd",
                                           e.target.value
-                                        )
-                                      }
+                                        );
+                                      }}
                                     />
                                   </Form.Group>
                                 </td>
