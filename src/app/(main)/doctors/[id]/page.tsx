@@ -20,30 +20,46 @@ import { customReactSelectStyles } from "@/css/react-select";
 import { OfficeService } from "@/shared/service/office-service";
 import { OfficeResponse } from "@/shared/interface/office/office-interface";
 import { useMemo } from "react";
-import { WorkScheduleResponse } from "@/shared/interface/work-schedule/work-schedule-interface";
+import {
+  WorkScheduleRequest,
+  WorkScheduleResponse,
+  convertWorkScheduleResponseToWorkScheduleRequest,
+} from "@/shared/interface/work-schedule/work-schedule-interface";
 import { formatTimeSecondsToTime } from "@/shared/utils/date-utils";
 import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import { WorkScheduleService } from "@/shared/service/work-schedule-service";
 
-export default function PatientPage({ params }: { params: { id: number } }) {
+export default function DoctorPage({ params }: { params: { id: number } }) {
   const initialOfficesOptions = useMemo(
     () => [{ value: "", label: "Без кабінету" }],
     []
   );
 
+  enum Tab {
+    Doctor,
+    Work_Schedules,
+  }
+
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<Tab>(Tab.Doctor);
   const [doctor, setDoctor] = useState<DoctorResponse | null>(null);
-  const [doctorWorkSchedules, setDoctorWorkSchedules] = useState<
-    WorkScheduleResponse[]
-  >([]);
-  const [officesOptions, setOfficesOptions] = useState<any[]>([]);
   const [editedDoctor, setEditedDoctor] = useState<DoctorRequest>(
     initialDoctorRequestState
   );
+  const [doctorWorkSchedules, setDoctorWorkSchedules] = useState<
+    WorkScheduleResponse[]
+  >([]);
+  const [editedDoctorWorkSchedules, setEditedDoctorWorkSchedules] = useState<
+    WorkScheduleRequest[]
+  >([]);
+  const [officesOptions, setOfficesOptions] = useState<any[]>([]);
+
   const [loadingDoctor, setLoadingDoctor] = useState(true);
   const [loadingOffices, setLoadingOffices] = useState(true);
   const [loadingDoctorWorkSchedules, setLoadingDoctorWorkSchedules] =
     useState(true);
-  const [editing, setEditing] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState(false);
+  const [editingWorkSchedules, setEditingWorkSchedules] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const defaultOfficeOption = officesOptions.find(
@@ -55,6 +71,10 @@ export default function PatientPage({ params }: { params: { id: number } }) {
 
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
   const handleShowDeleteModal = () => setShowDeleteModal(true);
+
+  const handleTabClick = (tab: Tab) => {
+    setActiveTab(tab);
+  };
 
   const handleChangeDoctor = (event: any) => {
     const { name, value } = event.target;
@@ -70,8 +90,8 @@ export default function PatientPage({ params }: { params: { id: number } }) {
     field: WorkScheduleField,
     newValue: any
   ) => {
-    setDoctorWorkSchedules((prevSchedules) => {
-      const updatedSchedules = [...prevSchedules];
+    setEditedDoctorWorkSchedules((prevEditedSchedules) => {
+      const updatedSchedules = [...prevEditedSchedules];
       const updatedSchedule = { ...updatedSchedules[index] };
       updatedSchedule[field] = newValue;
       updatedSchedules[index] = updatedSchedule;
@@ -79,18 +99,27 @@ export default function PatientPage({ params }: { params: { id: number } }) {
     });
   };
 
-  const handleEdit = () => {
-    setEditing(true);
+  const handleEditDoctor = () => {
+    setEditingDoctor(true);
   };
 
-  const handleCancelEdit = () => {
+  const handleCancelEditDoctor = () => {
     if (doctor) {
       setEditedDoctor(convertDoctorResponseToDoctorRequest(doctor));
     }
-    setEditing(false);
+    setEditingDoctor(false);
   };
 
-  const handleEditFormSubmit = async (event: any) => {
+  const handleEditWorkSchedules = () => {
+    setEditingWorkSchedules(true);
+  };
+
+  const handleCancelEditWorkSchedules = () => {
+    setEditedDoctorWorkSchedules(doctorWorkSchedules);
+    setEditingWorkSchedules(false);
+  };
+
+  const handleEditDoctorFormSubmit = async (event: any) => {
     event.preventDefault();
     try {
       const data = await DoctorService.updateDoctor(params.id, editedDoctor);
@@ -103,7 +132,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
       }
       notifyError("При редагуванні сталася непередбачена помилка!");
     } finally {
-      setEditing(false);
+      setEditingDoctor(false);
     }
   };
 
@@ -198,12 +227,50 @@ export default function PatientPage({ params }: { params: { id: number } }) {
       const workSchedules = await fetchAllDoctorWorkSchedules();
       if (workSchedules) {
         setDoctorWorkSchedules(workSchedules);
+        const editedSchedules = workSchedules.map(
+          (schedule: WorkScheduleResponse) =>
+            convertWorkScheduleResponseToWorkScheduleRequest(schedule)
+        );
+        setEditedDoctorWorkSchedules(editedSchedules);
       }
     } catch (error) {
     } finally {
       setLoadingDoctorWorkSchedules(false);
     }
   }, [fetchAllDoctorWorkSchedules]);
+
+  const updateAllWorkSchedules = async (
+    editedWorkSchedules: WorkScheduleRequest[]
+  ) => {
+    const updatedWorkSchedules: WorkScheduleResponse[] = [];
+    for (const editedWorkSchedule of editedWorkSchedules) {
+      try {
+        const id = editedWorkSchedule.id;
+        const updatedWorkSchedule =
+          await WorkScheduleService.updateWorkSchedule(id, editedWorkSchedule);
+        updatedWorkSchedules.push(updatedWorkSchedule);
+      } catch (error) {}
+    }
+
+    return updatedWorkSchedules;
+  };
+
+  const handleEditWorkSchedulesFormSubmit = async (event: any) => {
+    event.preventDefault();
+    try {
+      const updatedWorkSchedules = await updateAllWorkSchedules(
+        editedDoctorWorkSchedules
+      );
+      setDoctorWorkSchedules(updatedWorkSchedules);
+      notifySuccess("Графік роботи лікаря успішно оновлений");
+    } catch (error) {
+      notifyError(
+        "При редагуванні графіку роботи лікаря сталася непердбачена помилка"
+      );
+    } finally {
+      setEditingWorkSchedules(false);
+    }
+  };
 
   useEffect(() => {
     const doctorId = params.id;
@@ -262,274 +329,311 @@ export default function PatientPage({ params }: { params: { id: number } }) {
           </Modal>
           <Card>
             <Card.Header>
-              <Nav variant="tabs" defaultActiveKey="#first">
+              <Nav variant="tabs" defaultActiveKey="#doctor">
                 <Nav.Item>
-                  <Nav.Link href="#first">Active</Nav.Link>
+                  <Nav.Link
+                    href="#doctor"
+                    onClick={() => handleTabClick(Tab.Doctor)}
+                  >
+                    Лікар
+                  </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link href="#link">Link</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link href="#disabled" disabled>
-                    Disabled
+                  <Nav.Link
+                    href="#work-schedules"
+                    onClick={() => handleTabClick(Tab.Work_Schedules)}
+                  >
+                    Графік роботи лікаря
                   </Nav.Link>
                 </Nav.Item>
               </Nav>
             </Card.Header>
             <Card.Body>
-              <Card.Title>Special title treatment</Card.Title>
-              <Card.Text>
-                With supporting text below as a natural lead-in to additional
-                content.
-              </Card.Text>
-              <Button variant="primary">Go somewhere</Button>
+              {activeTab === Tab.Doctor && (
+                <Form onSubmit={handleEditDoctorFormSubmit}>
+                  <fieldset disabled={!editingDoctor}>
+                    <Row className="mb-3">
+                      <Form.Group as={Col} controlId="formGridSurname">
+                        <Form.Label>Прізвище</Form.Label>
+                        <Form.Control
+                          type="text"
+                          required
+                          value={editedDoctor.surname ?? ""}
+                          name="surname"
+                          onChange={handleChangeDoctor}
+                        />
+                      </Form.Group>
+                      <Form.Group as={Col} controlId="formGridName">
+                        <Form.Label>{`Ім'я`}</Form.Label>
+                        <Form.Control
+                          type="text"
+                          required
+                          value={editedDoctor.name ?? ""}
+                          name="name"
+                          onChange={handleChangeDoctor}
+                        />
+                      </Form.Group>
+                      <Form.Group as={Col} controlId="formGridMiddleName">
+                        <Form.Label>По батькові</Form.Label>
+                        <Form.Control
+                          type="text"
+                          required
+                          value={editedDoctor.middleName ?? ""}
+                          name="middleName"
+                          onChange={handleChangeDoctor}
+                        />
+                      </Form.Group>
+                    </Row>
+                    <Form.Group controlId="formGridBirthDate" className="mb-3">
+                      <Form.Label>Дата народження</Form.Label>
+                      <Form.Control
+                        type="date"
+                        required
+                        value={
+                          editedDoctor.birthDate
+                            ? editedDoctor.birthDate.toString()
+                            : ""
+                        }
+                        name="birthDate"
+                        max="9999-12-31"
+                        onChange={handleChangeDoctor}
+                      />
+                    </Form.Group>
+                    <Row className="mb-3">
+                      <Form.Group as={Col} controlId="formGridPhone">
+                        <Form.Label>Номер телефону</Form.Label>
+                        <Form.Control
+                          required
+                          type="text"
+                          value={editedDoctor.phone ?? ""}
+                          onChange={handleChangeDoctor}
+                          name="phone"
+                        />
+                      </Form.Group>
+                      <Form.Group as={Col} controlId="formGridMessengerContact">
+                        <Form.Label>Контактний номер Viber/Telegram</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={editedDoctor.messengerContact ?? ""}
+                          name="messengerContact"
+                          onChange={handleChangeDoctor}
+                        />
+                      </Form.Group>
+                    </Row>
+                    <Form.Group controlId="formGridAddress" className="mb-3">
+                      <Form.Label>Домашня адреса</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editedDoctor.address ?? ""}
+                        name="address"
+                        onChange={handleChangeDoctor}
+                      />
+                    </Form.Group>
+                    <Row className="mb-3">
+                      <Form.Group as={Col} controlId="formGridMedicalSpecialty">
+                        <Form.Label>Медична спеціальність</Form.Label>
+                        <Form.Control
+                          required
+                          type="text"
+                          value={editedDoctor.medicalSpecialty ?? ""}
+                          name="medicalSpecialty"
+                          onChange={handleChangeDoctor}
+                        />
+                      </Form.Group>
+                      <Form.Group
+                        as={Col}
+                        controlId="formGridQualificationCategory"
+                      >
+                        <Form.Label>Кваліфікаційна категорія</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={editedDoctor.qualificationCategory ?? ""}
+                          name="qualificationCategory"
+                          onChange={handleChangeDoctor}
+                        />
+                      </Form.Group>
+                    </Row>
+                    <Form.Group as={Col} controlId="formGridOffice">
+                      <Form.Label>Кабінет</Form.Label>
+                      <Select
+                        className="basic-single mb-3"
+                        classNamePrefix="select"
+                        isLoading={loadingOffices}
+                        isSearchable={true}
+                        value={
+                          editedDoctor.officeId
+                            ? findOfficeOptionByValue(editedDoctor.officeId)
+                            : findOfficeOptionByValue("")
+                        }
+                        isDisabled={!editingDoctor}
+                        placeholder={
+                          loadingOffices ? "Завантаження..." : "Оберіть кабінет"
+                        }
+                        name="officeId"
+                        onChange={(e) => {
+                          setEditedDoctor((prevEditedDoctor) => ({
+                            ...prevEditedDoctor,
+                            officeId: e.value,
+                          }));
+                        }}
+                        loadingMessage={() => "Завантаження..."}
+                        noOptionsMessage={() => "Кабінетів не знайдено"}
+                        options={officesOptions}
+                        styles={customReactSelectStyles}
+                        defaultValue={
+                          editedDoctor.officeId === null
+                            ? defaultOfficeOption
+                            : officesOptions.find(
+                                (option) =>
+                                  option.value === editedDoctor.officeId
+                              )
+                        }
+                      />
+                    </Form.Group>
+                  </fieldset>
+                  <Button
+                    variant="primary"
+                    type="button"
+                    className="me-2"
+                    hidden={editingDoctor}
+                    onClick={handleEditDoctor}
+                  >
+                    <i className="bi bi-pencil-square" id="editButton"></i>
+                  </Button>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    className="me-2"
+                    hidden={!editingDoctor}
+                    id="confirmEdit"
+                  >
+                    Зберегти
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    id="cancelButton"
+                    hidden={!editingDoctor}
+                    onClick={handleCancelEditDoctor}
+                  >
+                    Скасувати
+                  </Button>
+                  <Button
+                    variant="danger"
+                    type="button"
+                    hidden={editingDoctor}
+                    id="deleteButton"
+                    onClick={handleShowDeleteModal}
+                  >
+                    <i className="bi bi-trash"></i>
+                  </Button>
+                </Form>
+              )}
+              {activeTab === Tab.Work_Schedules && (
+                <>
+                  {loadingDoctorWorkSchedules ? (
+                    <SpinnerCenter></SpinnerCenter>
+                  ) : (
+                    <Form onSubmit={handleEditWorkSchedulesFormSubmit}>
+                      <Table responsive>
+                        <thead>
+                          <tr>
+                            <th>День тижня</th>
+                            <th>Час початку роботи</th>
+                            <th>Час закінчення роботи</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {editedDoctorWorkSchedules !== null &&
+                            editedDoctorWorkSchedules.map((workSchedule, i) => (
+                              <tr key={i}>
+                                <td>
+                                  {
+                                    doctorWorkSchedules[i].dayOfWeekResponseDto
+                                      .name
+                                  }
+                                </td>
+                                <td>
+                                  <Form.Group controlId="workTimeStart">
+                                    <Form.Control
+                                      disabled={!editingWorkSchedules}
+                                      type="time"
+                                      value={
+                                        workSchedule.workTimeStart
+                                          ? formatTimeSecondsToTime(
+                                              workSchedule.workTimeStart
+                                            )
+                                          : ""
+                                      }
+                                      onChange={(e) =>
+                                        handleWorkScheduleChange(
+                                          i,
+                                          "workTimeStart",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </Form.Group>
+                                </td>
+                                <td>
+                                  <Form.Group controlId="workTimeEnd">
+                                    <Form.Control
+                                      disabled={!editingWorkSchedules}
+                                      type="time"
+                                      value={
+                                        workSchedule.workTimeEnd
+                                          ? formatTimeSecondsToTime(
+                                              workSchedule.workTimeEnd
+                                            )
+                                          : ""
+                                      }
+                                      onChange={(e) =>
+                                        handleWorkScheduleChange(
+                                          i,
+                                          "workTimeEnd",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </Form.Group>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </Table>
+                      <Button
+                        variant="primary"
+                        type="button"
+                        className="me-2"
+                        hidden={editingWorkSchedules}
+                        onClick={handleEditWorkSchedules}
+                      >
+                        <i className="bi bi-pencil-square" id="editButton"></i>
+                      </Button>
+                      <Button
+                        variant="primary"
+                        type="submit"
+                        className="me-2"
+                        hidden={!editingWorkSchedules}
+                        id="confirmEdit"
+                      >
+                        Зберегти
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        type="button"
+                        id="cancelButton"
+                        hidden={!editingWorkSchedules}
+                        onClick={handleCancelEditWorkSchedules}
+                      >
+                        Скасувати
+                      </Button>
+                    </Form>
+                  )}
+                </>
+              )}
             </Card.Body>
           </Card>
-          <Form onSubmit={handleEditFormSubmit}>
-            <fieldset disabled={!editing}>
-              <Row className="mb-3">
-                <Form.Group as={Col} controlId="formGridSurname">
-                  <Form.Label>Прізвище</Form.Label>
-                  <Form.Control
-                    type="text"
-                    required
-                    value={editedDoctor.surname ?? ""}
-                    name="surname"
-                    onChange={handleChangeDoctor}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} controlId="formGridName">
-                  <Form.Label>{`Ім'я`}</Form.Label>
-                  <Form.Control
-                    type="text"
-                    required
-                    value={editedDoctor.name ?? ""}
-                    name="name"
-                    onChange={handleChangeDoctor}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} controlId="formGridMiddleName">
-                  <Form.Label>По батькові</Form.Label>
-                  <Form.Control
-                    type="text"
-                    required
-                    value={editedDoctor.middleName ?? ""}
-                    name="middleName"
-                    onChange={handleChangeDoctor}
-                  />
-                </Form.Group>
-              </Row>
-              <Form.Group controlId="formGridBirthDate" className="mb-3">
-                <Form.Label>Дата народження</Form.Label>
-                <Form.Control
-                  type="date"
-                  required
-                  value={
-                    editedDoctor.birthDate
-                      ? editedDoctor.birthDate.toString()
-                      : ""
-                  }
-                  name="birthDate"
-                  max="9999-12-31"
-                  onChange={handleChangeDoctor}
-                />
-              </Form.Group>
-              <Row className="mb-3">
-                <Form.Group as={Col} controlId="formGridPhone">
-                  <Form.Label>Номер телефону</Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    value={editedDoctor.phone ?? ""}
-                    onChange={handleChangeDoctor}
-                    name="phone"
-                  />
-                </Form.Group>
-                <Form.Group as={Col} controlId="formGridMessengerContact">
-                  <Form.Label>Контактний номер Viber/Telegram</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={editedDoctor.messengerContact ?? ""}
-                    name="messengerContact"
-                    onChange={handleChangeDoctor}
-                  />
-                </Form.Group>
-              </Row>
-              <Form.Group controlId="formGridAddress" className="mb-3">
-                <Form.Label>Домашня адреса</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={editedDoctor.address ?? ""}
-                  name="address"
-                  onChange={handleChangeDoctor}
-                />
-              </Form.Group>
-              <Row className="mb-3">
-                <Form.Group as={Col} controlId="formGridMedicalSpecialty">
-                  <Form.Label>Медична спеціальність</Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    value={editedDoctor.medicalSpecialty ?? ""}
-                    name="medicalSpecialty"
-                    onChange={handleChangeDoctor}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} controlId="formGridQualificationCategory">
-                  <Form.Label>Кваліфікаційна категорія</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={editedDoctor.qualificationCategory ?? ""}
-                    name="qualificationCategory"
-                    onChange={handleChangeDoctor}
-                  />
-                </Form.Group>
-              </Row>
-              <Form.Group as={Col} controlId="formGridOffice">
-                <Form.Label>Кабінет</Form.Label>
-                <Select
-                  className="basic-single mb-3"
-                  classNamePrefix="select"
-                  isLoading={loadingOffices}
-                  isSearchable={true}
-                  value={
-                    editedDoctor.officeId
-                      ? findOfficeOptionByValue(editedDoctor.officeId)
-                      : findOfficeOptionByValue("")
-                  }
-                  isDisabled={!editing}
-                  placeholder={
-                    loadingOffices ? "Завантаження..." : "Оберіть кабінет"
-                  }
-                  name="officeId"
-                  onChange={(e) => {
-                    setEditedDoctor((prevEditedDoctor) => ({
-                      ...prevEditedDoctor,
-                      officeId: e.value,
-                    }));
-                  }}
-                  loadingMessage={() => "Завантаження..."}
-                  noOptionsMessage={() => "Кабінетів не знайдено"}
-                  options={officesOptions}
-                  styles={customReactSelectStyles}
-                  defaultValue={
-                    editedDoctor.officeId === null
-                      ? defaultOfficeOption
-                      : officesOptions.find(
-                          (option) => option.value === editedDoctor.officeId
-                        )
-                  }
-                />
-              </Form.Group>
-            </fieldset>
-            <Button
-              variant="primary"
-              type="button"
-              className="me-2"
-              hidden={editing}
-              onClick={handleEdit}
-            >
-              <i className="bi bi-pencil-square" id="editButton"></i>
-            </Button>
-            <Button
-              variant="primary"
-              type="submit"
-              className="me-2"
-              hidden={!editing}
-              id="confirmEdit"
-              onClick={handleEditFormSubmit}
-            >
-              Зберегти
-            </Button>
-            <Button
-              variant="secondary"
-              type="button"
-              id="cancelButton"
-              hidden={!editing}
-              onClick={handleCancelEdit}
-            >
-              Скасувати
-            </Button>
-            <Button
-              variant="danger"
-              type="button"
-              hidden={editing}
-              id="deleteButton"
-              onClick={handleShowDeleteModal}
-            >
-              <i className="bi bi-trash"></i>
-            </Button>
-          </Form>
-          <br></br>
-          {loadingDoctorWorkSchedules ? (
-            <div className="d-flex justify-content-center">
-              <Spinner animation="grow" role="status" variant="secondary">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-            </div>
-          ) : (
-            <Table striped responsive>
-              <thead>
-                <tr>
-                  <th>День тижня</th>
-                  <th>Час початку роботи</th>
-                  <th>Час закінчення роботи</th>
-                </tr>
-              </thead>
-              <tbody>
-                {doctorWorkSchedules !== null &&
-                  doctorWorkSchedules.map((workSchedule, i) => (
-                    <>
-                      <tr key={i}>
-                        <td>{workSchedule.dayOfWeekResponseDto.name}</td>
-                        <td>
-                          <Form.Group controlId="workTimeStart">
-                            <Form.Control
-                              type="time"
-                              value={
-                                workSchedule.workTimeStart
-                                  ? formatTimeSecondsToTime(
-                                      workSchedule.workTimeStart
-                                    )
-                                  : ""
-                              }
-                              onChange={(e) =>
-                                handleWorkScheduleChange(
-                                  i,
-                                  "workTimeStart",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          </Form.Group>
-                        </td>
-                        <td>
-                          <Form.Group controlId="workTimeEnd">
-                            <Form.Control
-                              type="time"
-                              value={
-                                workSchedule.workTimeEnd
-                                  ? formatTimeSecondsToTime(
-                                      workSchedule.workTimeEnd
-                                    )
-                                  : ""
-                              }
-                              onChange={(e) =>
-                                handleWorkScheduleChange(
-                                  i,
-                                  "workTimeEnd",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          </Form.Group>
-                        </td>
-                      </tr>
-                    </>
-                  ))}
-              </tbody>
-            </Table>
-          )}
         </>
       ) : (
         <Alert variant="danger">
