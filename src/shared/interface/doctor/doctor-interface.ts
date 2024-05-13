@@ -1,4 +1,4 @@
-import { OfficeResponse } from "../office/officeInterface";
+import { OfficeResponse } from "../office/office-interface";
 
 export interface DoctorResponse {
   id: number;

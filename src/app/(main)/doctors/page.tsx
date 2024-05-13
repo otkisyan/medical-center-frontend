@@ -1,9 +1,9 @@
 "use client";
 import "@/css/styles.css";
-import { DoctorResponse } from "@/shared/interface/doctor/doctorInterface";
-import { Page } from "@/shared/interface/page/pageInterface";
-import { DoctorService } from "@/shared/service/doctorService";
-import { formatDateToString } from "@/shared/utils/dateUtils";
+import { DoctorResponse } from "@/shared/interface/doctor/doctor-interface";
+import { Page } from "@/shared/interface/page/page-interface";
+import { DoctorService } from "@/shared/service/doctor-service";
+import { formatDateToString } from "@/shared/utils/date-utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";

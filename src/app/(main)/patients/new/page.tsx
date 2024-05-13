@@ -3,9 +3,9 @@ import "@/css/styles.css";
 import {
   PatientResponse,
   initialPatientResponseState,
-} from "@/shared/interface/patient/patientInterface";
-import { PatientService } from "@/shared/service/patientService";
-import { notifyError, notifySuccess } from "@/shared/toast/toastsNotifiers";
+} from "@/shared/interface/patient/patient-interface";
+import { PatientService } from "@/shared/service/patient-service";
+import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Breadcrumb } from "react-bootstrap";

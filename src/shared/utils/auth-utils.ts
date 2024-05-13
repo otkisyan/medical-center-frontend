@@ -1,4 +1,4 @@
-import protectedRoutes from "@/shared/constants/protectedRoutes";
+import protectedRoutes from "@/shared/constants/protected-routes";
 
 export const isProtectedRoute = (pathname: string): boolean => {
   return Object.keys(protectedRoutes).some((route) =>

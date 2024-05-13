@@ -1,6 +1,6 @@
 import { axiosInstance } from "@/axios.config";
 import { noInterceptorsAxiosInstance } from "@/axios.config";
-import { UserDetails } from "@/shared/interface/user/userDetailsInterface";
+import { UserDetails } from "@/shared/interface/user/user-details-interface";
 
 export const AuthService = {
   async loginUser(username: string, password: string) {

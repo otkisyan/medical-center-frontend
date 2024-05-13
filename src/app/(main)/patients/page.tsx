@@ -1,9 +1,9 @@
 "use client";
 import "@/css/styles.css";
-import { Page } from "@/shared/interface/page/pageInterface";
-import { PatientResponse } from "@/shared/interface/patient/patientInterface";
-import { PatientService } from "@/shared/service/patientService";
-import { formatDateToString } from "@/shared/utils/dateUtils";
+import { Page } from "@/shared/interface/page/page-interface";
+import { PatientResponse } from "@/shared/interface/patient/patient-interface";
+import { PatientService } from "@/shared/service/patient-service";
+import { formatDateToString } from "@/shared/utils/date-utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";

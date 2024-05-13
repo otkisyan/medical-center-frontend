@@ -1,18 +1,18 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
-import { PatientService } from "@/shared/service/patientService";
+import { PatientService } from "@/shared/service/patient-service";
 import {
   convertPatientResponseToPatientRequest,
   initialPatientRequestState,
   initialPatientResponseState,
   PatientRequest,
   PatientResponse,
-} from "@/shared/interface/patient/patientInterface";
+} from "@/shared/interface/patient/patient-interface";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import { Alert, Button, Row } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
-import { notifyError, notifySuccess } from "@/shared/toast/toastsNotifiers";
+import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 import Modal from "react-bootstrap/Modal";
 import { useRouter } from "next/navigation";
 import { Breadcrumb } from "react-bootstrap";

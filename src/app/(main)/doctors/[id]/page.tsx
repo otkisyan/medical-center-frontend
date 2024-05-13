@@ -1,15 +1,10 @@
 "use client";
-import React, { use, useCallback, useEffect, useState } from "react";
-import { PatientService } from "@/shared/service/patientService";
-import {
-  initialPatientResponseState,
-  PatientResponse,
-} from "@/shared/interface/patient/patientInterface";
+import React, { useCallback, useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
-import { Alert, Button, Row, Table } from "react-bootstrap";
+import { Alert, Button, Card, Nav, Row, Table } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
-import { notifyError, notifySuccess } from "@/shared/toast/toastsNotifiers";
+import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 import Modal from "react-bootstrap/Modal";
 import { useRouter } from "next/navigation";
 import { Breadcrumb } from "react-bootstrap";
@@ -18,17 +13,16 @@ import {
   DoctorResponse,
   convertDoctorResponseToDoctorRequest,
   initialDoctorRequestState,
-  initialDoctorResponseState,
-} from "@/shared/interface/doctor/doctorInterface";
-import { DoctorService } from "@/shared/service/doctorService";
+} from "@/shared/interface/doctor/doctor-interface";
+import { DoctorService } from "@/shared/service/doctor-service";
 import Select from "react-select";
-import { customReactSelectStyles } from "@/css/select";
-import { OfficeService } from "@/shared/service/officeService";
-import { OfficeResponse } from "@/shared/interface/office/officeInterface";
+import { customReactSelectStyles } from "@/css/react-select";
+import { OfficeService } from "@/shared/service/office-service";
+import { OfficeResponse } from "@/shared/interface/office/office-interface";
 import { useMemo } from "react";
-import { WorkScheduleResponse } from "@/shared/interface/workSchedule/workScheduleInterface";
-import moment from "moment";
-import { formatTimeSecondsToTime } from "@/shared/utils/dateUtils";
+import { WorkScheduleResponse } from "@/shared/interface/work-schedule/work-schedule-interface";
+import { formatTimeSecondsToTime } from "@/shared/utils/date-utils";
+import SpinnerCenter from "@/components/spinner/SpinnerCenter";
 
 export default function PatientPage({ params }: { params: { id: number } }) {
   const initialOfficesOptions = useMemo(
@@ -39,8 +33,8 @@ export default function PatientPage({ params }: { params: { id: number } }) {
   const router = useRouter();
   const [doctor, setDoctor] = useState<DoctorResponse | null>(null);
   const [doctorWorkSchedules, setDoctorWorkSchedules] = useState<
-    WorkScheduleResponse[] | null
-  >(null);
+    WorkScheduleResponse[]
+  >([]);
   const [officesOptions, setOfficesOptions] = useState<any[]>([]);
   const [editedDoctor, setEditedDoctor] = useState<DoctorRequest>(
     initialDoctorRequestState
@@ -68,6 +62,21 @@ export default function PatientPage({ params }: { params: { id: number } }) {
       ...prevEditedDoctor,
       [name]: value,
     }));
+  };
+
+  type WorkScheduleField = "workTimeStart" | "workTimeEnd";
+  const handleWorkScheduleChange = (
+    index: number,
+    field: WorkScheduleField,
+    newValue: any
+  ) => {
+    setDoctorWorkSchedules((prevSchedules) => {
+      const updatedSchedules = [...prevSchedules];
+      const updatedSchedule = { ...updatedSchedules[index] };
+      updatedSchedule[field] = newValue;
+      updatedSchedules[index] = updatedSchedule;
+      return updatedSchedules;
+    });
   };
 
   const handleEdit = () => {
@@ -187,7 +196,6 @@ export default function PatientPage({ params }: { params: { id: number } }) {
     try {
       setLoadingDoctorWorkSchedules(true);
       const workSchedules = await fetchAllDoctorWorkSchedules();
-      console.log(workSchedules);
       if (workSchedules) {
         setDoctorWorkSchedules(workSchedules);
       }
@@ -215,11 +223,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
       <br></br>
       {loadingDoctor ? (
         <>
-          <div className="d-flex justify-content-center">
-            <Spinner animation="grow" role="status" variant="secondary">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
+          <SpinnerCenter></SpinnerCenter>
         </>
       ) : doctor ? (
         <>
@@ -256,6 +260,31 @@ export default function PatientPage({ params }: { params: { id: number } }) {
               </Button>
             </Modal.Footer>
           </Modal>
+          <Card>
+            <Card.Header>
+              <Nav variant="tabs" defaultActiveKey="#first">
+                <Nav.Item>
+                  <Nav.Link href="#first">Active</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link href="#link">Link</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link href="#disabled" disabled>
+                    Disabled
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
+            </Card.Header>
+            <Card.Body>
+              <Card.Title>Special title treatment</Card.Title>
+              <Card.Text>
+                With supporting text below as a natural lead-in to additional
+                content.
+              </Card.Text>
+              <Button variant="primary">Go somewhere</Button>
+            </Card.Body>
+          </Card>
           <Form onSubmit={handleEditFormSubmit}>
             <fieldset disabled={!editing}>
               <Row className="mb-3">
@@ -454,21 +483,28 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                       <tr key={i}>
                         <td>{workSchedule.dayOfWeekResponseDto.name}</td>
                         <td>
-                          <Form.Group controlId="formGridQualificationCategory">
+                          <Form.Group controlId="workTimeStart">
                             <Form.Control
                               type="time"
                               value={
-                                workSchedule.workTimeEnd
+                                workSchedule.workTimeStart
                                   ? formatTimeSecondsToTime(
                                       workSchedule.workTimeStart
                                     )
                                   : ""
                               }
+                              onChange={(e) =>
+                                handleWorkScheduleChange(
+                                  i,
+                                  "workTimeStart",
+                                  e.target.value
+                                )
+                              }
                             />
                           </Form.Group>
                         </td>
                         <td>
-                          <Form.Group controlId="formGridQualificationCategory">
+                          <Form.Group controlId="workTimeEnd">
                             <Form.Control
                               type="time"
                               value={
@@ -477,6 +513,13 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                                       workSchedule.workTimeEnd
                                     )
                                   : ""
+                              }
+                              onChange={(e) =>
+                                handleWorkScheduleChange(
+                                  i,
+                                  "workTimeEnd",
+                                  e.target.value
+                                )
                               }
                             />
                           </Form.Group>

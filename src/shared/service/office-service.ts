@@ -1,9 +1,9 @@
 import { axiosInstance } from "@/axios.config";
-import { Page } from "@/shared/interface/page/pageInterface";
+import { Page } from "@/shared/interface/page/page-interface";
 import {
   OfficeRequest,
   OfficeResponse,
-} from "../interface/office/officeInterface";
+} from "../interface/office/office-interface";
 
 export const OfficeService = {
   async findAllOffices(params: any) {

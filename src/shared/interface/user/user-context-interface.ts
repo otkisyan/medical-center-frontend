@@ -1,4 +1,4 @@
-import { UserDetails } from "./userDetailsInterface";
+import { UserDetails } from "./user-details-interface";
 
 export interface UserContext {
   userDetails: UserDetails | null;

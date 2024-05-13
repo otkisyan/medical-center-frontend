@@ -2,8 +2,8 @@ import { axiosInstance } from "@/axios.config";
 import {
   PatientRequest,
   PatientResponse,
-} from "@/shared/interface/patient/patientInterface";
-import { Page } from "@/shared/interface/page/pageInterface";
+} from "@/shared/interface/patient/patient-interface";
+import { Page } from "@/shared/interface/page/page-interface";
 
 export const PatientService = {
   async findAllPatients(params: any) {

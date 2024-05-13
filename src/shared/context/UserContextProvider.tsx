@@ -1,10 +1,10 @@
 "use client";
 import { createContext, useContext, useEffect } from "react";
-import { UserContext } from "@/shared/interface/user/userContextInterface";
+import { UserContext } from "@/shared/interface/user/user-context-interface";
 import { useState } from "react";
-import { UserDetails } from "@/shared/interface/user/userDetailsInterface";
+import { UserDetails } from "@/shared/interface/user/user-details-interface";
 import { jwtDecode } from "jwt-decode";
-import { AuthService } from "@/shared/service/userService";
+import { AuthService } from "@/shared/service/user-service";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 

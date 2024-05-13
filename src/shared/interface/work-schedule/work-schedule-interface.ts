@@ -1,4 +1,4 @@
-import { DayOfWeekResponse } from "../dayOfWeek/dayOfWeekInterface";
+import { DayOfWeekResponse } from "../day-of-week/day-of-week-interface";
 
 export interface WorkScheduleResponse {
   id: number;

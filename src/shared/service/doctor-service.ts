@@ -1,10 +1,10 @@
 import { axiosInstance } from "@/axios.config";
-import { Page } from "@/shared/interface/page/pageInterface";
+import { Page } from "@/shared/interface/page/page-interface";
 import {
   DoctorRequest,
   DoctorResponse,
-} from "../interface/doctor/doctorInterface";
-import { WorkScheduleResponse } from "../interface/workSchedule/workScheduleInterface";
+} from "../interface/doctor/doctor-interface";
+import { WorkScheduleResponse } from "../interface/work-schedule/work-schedule-interface";
 
 export const DoctorService = {
   async findAllDoctors(params: any) {
