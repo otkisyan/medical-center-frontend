@@ -1,8 +1,9 @@
 "use client";
 import "@/css/styles.css";
 import {
+  PatientRequest,
   PatientResponse,
-  initialPatientResponseState,
+  initialPatientResponseState as initialPatientRequestState,
 } from "@/shared/interface/patient/patient-interface";
 import { PatientService } from "@/shared/service/patient-service";
 import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
@@ -15,11 +16,11 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 
-export default function PatientsPage() {
+export default function NewPatientPage() {
   const router = useRouter();
 
-  const [patient, setPatient] = useState<PatientResponse>(
-    initialPatientResponseState
+  const [patient, setPatient] = useState<PatientRequest>(
+    initialPatientRequestState
   );
 
   const handleInputPatient = (event: any) => {

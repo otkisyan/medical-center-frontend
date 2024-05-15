@@ -47,11 +47,7 @@ const getUserRoles = async (request: NextRequest) => {
 };
 
 export async function middleware(request: NextRequest) {
-  const { pathname, searchParams } = request.nextUrl;
-
-  if (pathname === "/login" && searchParams.get("logout") === "true") {
-    return;
-  }
+  const { pathname } = request.nextUrl;
 
   if (isProtectedRoute(pathname)) {
     const isAuth = await isAuthenticated(request);

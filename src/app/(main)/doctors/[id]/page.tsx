@@ -1,56 +1,66 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
-import Form from "react-bootstrap/Form";
-import Col from "react-bootstrap/Col";
-import { Alert, Button, Card, Nav, Row, Table } from "react-bootstrap";
-import Spinner from "react-bootstrap/Spinner";
-import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
-import Modal from "react-bootstrap/Modal";
-import { useRouter } from "next/navigation";
-import { Breadcrumb } from "react-bootstrap";
+import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import { customReactSelectStyles } from "@/css/react-select";
+import useFetchAllDoctorWorkSchedules from "@/shared/hooks/useFetchAllDoctorWorkSchedules";
+import useFetchDoctor from "@/shared/hooks/useFetchDoctor";
+import useFetchOfficesOptions from "@/shared/hooks/useFetchOfficesOptions";
 import {
   DoctorRequest,
-  DoctorResponse,
   convertDoctorResponseToDoctorRequest,
   initialDoctorRequestState,
 } from "@/shared/interface/doctor/doctor-interface";
-import { DoctorService } from "@/shared/service/doctor-service";
-import Select from "react-select";
-import { customReactSelectStyles } from "@/css/react-select";
-import { OfficeService } from "@/shared/service/office-service";
-import { OfficeResponse } from "@/shared/interface/office/office-interface";
-import { useMemo } from "react";
 import {
   WorkScheduleRequest,
   WorkScheduleResponse,
   convertWorkScheduleResponseToWorkScheduleRequest,
 } from "@/shared/interface/work-schedule/work-schedule-interface";
-import { formatTimeSecondsToTime } from "@/shared/utils/date-utils";
-import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import { DoctorService } from "@/shared/service/doctor-service";
 import { WorkScheduleService } from "@/shared/service/work-schedule-service";
-import useFetchOfficesOptions from "@/shared/hooks/useFetchOfficesOptions";
+import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
+import {
+  formatTimeSecondsToTime,
+  timeStartBiggerThanEnd,
+} from "@/shared/utils/date-utils";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import {
+  Alert,
+  Breadcrumb,
+  Button,
+  Card,
+  Nav,
+  Row,
+  Table,
+} from "react-bootstrap";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
+import Select from "react-select";
 
 export default function DoctorPage({ params }: { params: { id: number } }) {
+  const router = useRouter();
   enum Tab {
     Doctor,
     Work_Schedules,
   }
-
-  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<Tab>(Tab.Doctor);
+  const { doctor, loadingDoctor, setDoctor } = useFetchDoctor(params.id);
   const {
     loadingOfficesOptions,
     officesOptions,
     defaultOfficeOption,
     findOfficeOptionByValue,
   } = useFetchOfficesOptions();
-  const [activeTab, setActiveTab] = useState<Tab>(Tab.Doctor);
-  const [doctor, setDoctor] = useState<DoctorResponse | null>(null);
+
+  const {
+    doctorWorkSchedules,
+    loadingDoctorWorkSchedules,
+    setDoctorWorkSchedules,
+  } = useFetchAllDoctorWorkSchedules(params.id);
+
   const [editedDoctor, setEditedDoctor] = useState<DoctorRequest>(
     initialDoctorRequestState
   );
-  const [doctorWorkSchedules, setDoctorWorkSchedules] = useState<
-    WorkScheduleResponse[]
-  >([]);
   const [editedDoctorWorkSchedules, setEditedDoctorWorkSchedules] = useState<
     WorkScheduleRequest[]
   >([]);
@@ -58,9 +68,6 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
   const [showWorkScheduleValidationError, setShowWorkScheduleValidationError] =
     useState(false);
 
-  const [loadingDoctor, setLoadingDoctor] = useState(true);
-  const [loadingDoctorWorkSchedules, setLoadingDoctorWorkSchedules] =
-    useState(true);
   const [editingDoctor, setEditingDoctor] = useState(false);
   const [editingWorkSchedules, setEditingWorkSchedules] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -96,9 +103,15 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
     const endTime = editedDoctorWorkSchedules[index].workTimeEnd;
     const startTime = editedDoctorWorkSchedules[index].workTimeStart;
 
-    if (field === "workTimeStart" && !validateTime(newValue, endTime)) {
+    if (
+      field === "workTimeStart" &&
+      !timeStartBiggerThanEnd(newValue, endTime)
+    ) {
       setWorkSchedulesValidated(false);
-    } else if (field === "workTimeEnd" && !validateTime(startTime, newValue)) {
+    } else if (
+      field === "workTimeEnd" &&
+      !timeStartBiggerThanEnd(startTime, newValue)
+    ) {
       setWorkSchedulesValidated(false);
     } else {
       setWorkSchedulesValidated(true);
@@ -156,58 +169,6 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
     }
   };
 
-  const fetchDoctor = useCallback(async (patientId: number) => {
-    try {
-      setLoadingDoctor(true);
-      const data = await DoctorService.findDoctorById(patientId);
-      setDoctor(data);
-      setEditedDoctor(convertDoctorResponseToDoctorRequest(data));
-    } catch (error) {
-    } finally {
-      setLoadingDoctor(false);
-    }
-  }, []);
-
-  const fetchAllDoctorWorkSchedules = useCallback(async () => {
-    let allWorkSchedules: WorkScheduleResponse[] = [];
-    let requestParams = {
-      page: 0,
-    };
-    let totalPages = 1;
-    try {
-      while (requestParams.page < totalPages) {
-        const data = await DoctorService.findDoctorsWorkSchedules(
-          requestParams,
-          params.id
-        );
-        allWorkSchedules = [...allWorkSchedules, ...data.content];
-        totalPages = data.totalPages;
-        requestParams.page++;
-      }
-      return allWorkSchedules;
-    } catch (error) {
-      console.error("Error fetching work schedules:", error);
-    }
-  }, [params.id]);
-
-  const fetchDoctorWorkSchedules = useCallback(async () => {
-    try {
-      setLoadingDoctorWorkSchedules(true);
-      const workSchedules = await fetchAllDoctorWorkSchedules();
-      if (workSchedules) {
-        setDoctorWorkSchedules(workSchedules);
-        const editedSchedules = workSchedules.map(
-          (schedule: WorkScheduleResponse) =>
-            convertWorkScheduleResponseToWorkScheduleRequest(schedule)
-        );
-        setEditedDoctorWorkSchedules(editedSchedules);
-      }
-    } catch (error) {
-    } finally {
-      setLoadingDoctorWorkSchedules(false);
-    }
-  }, [fetchAllDoctorWorkSchedules]);
-
   const updateAllWorkSchedules = async (
     editedWorkSchedules: WorkScheduleRequest[]
   ) => {
@@ -248,24 +209,20 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
   };
 
   useEffect(() => {
-    const doctorId = params.id;
-    fetchDoctor(doctorId);
-  }, [fetchDoctor, params.id]);
+    if (doctor != null) {
+      setEditedDoctor(convertDoctorResponseToDoctorRequest(doctor));
+    }
+  }, [doctor]);
 
   useEffect(() => {
-    fetchDoctorWorkSchedules();
-  }, [fetchDoctorWorkSchedules]);
-
-  const validateTime = (start: any, end: any) => {
-    if (start && end) {
-      const startTime = new Date(`1970-01-01T${start}`);
-      const endTime = new Date(`1970-01-01T${end}`);
-      if (startTime >= endTime) {
-        return false;
-      }
+    if (doctorWorkSchedules != null) {
+      const editedSchedules = doctorWorkSchedules.map(
+        (schedule: WorkScheduleResponse) =>
+          convertWorkScheduleResponseToWorkScheduleRequest(schedule)
+      );
+      setEditedDoctorWorkSchedules(editedSchedules);
     }
-    return true;
-  };
+  }, [doctorWorkSchedules]);
 
   return (
     <>

@@ -15,18 +15,10 @@ import Spinner from "react-bootstrap/Spinner";
 import Stack from "react-bootstrap/Stack";
 import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
+import useFetchPatients from "@/shared/hooks/useFetchPatients";
+import useFetchPatientsCount from "@/shared/hooks/useFetchPatientsCount";
 
 export default function PatientsPage() {
-  const initialPatientsPageState: Page<PatientResponse> = {
-    content: [],
-    totalPages: 0,
-    totalElements: 0,
-    size: 0,
-    number: 0,
-    first: false,
-    last: false,
-  };
-
   const initialParamsState = useMemo(
     () => ({
       surname: "",
@@ -38,19 +30,17 @@ export default function PatientsPage() {
     []
   );
 
-  const [patientPage, setPatientPage] = useState<Page<PatientResponse>>(
-    initialPatientsPageState
-  );
-  const [patientsCount, setPatientsCount] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
   const [params, setParams] = useState(initialParamsState);
+  const { patientsCount, loadingPatientsCount } = useFetchPatientsCount();
+  const { patientPage, loadingPatients, fetchPatients } =
+    useFetchPatients(params);
 
   const clearSearchParams = async () => {
     await fetchPatients(initialParamsState);
     setParams(initialParamsState);
   };
 
-  const handleInputChange = (event: any) => {
+  const handleSearchFormInput = (event: any) => {
     const { name, value } = event.target;
     setParams((prevParams) => ({
       ...prevParams,
@@ -58,44 +48,21 @@ export default function PatientsPage() {
     }));
   };
 
-  const handleFormSubmit = async (event: any) => {
+  const handlePatientSearchFormSubmit = async (event: any) => {
     event.preventDefault();
     await fetchPatients(params);
   };
 
-  const fetchPatients = useCallback(async (params: any) => {
-    try {
-      setLoading(true);
-      const data = await PatientService.findAllPatients(params);
-      setPatientPage(data);
-    } catch (error) {
-      console.error("Error fetching patient data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchPatientsCount = useCallback(async () => {
-    try {
-      const count = await PatientService.countPatients();
-      setPatientsCount(count);
-    } catch (error) {
-      console.error("Error fetching patient data:", error);
-    } finally {
-    }
-  }, []);
-
   useEffect(() => {
-    fetchPatientsCount();
     if (patientsCount > 0) {
       fetchPatients(initialParamsState);
     }
-  }, [fetchPatientsCount, fetchPatients, initialParamsState, patientsCount]);
+  }, [fetchPatients, patientsCount, initialParamsState]);
 
   return (
     <>
       <br></br>
-      <Form onSubmit={handleFormSubmit}>
+      <Form onSubmit={handlePatientSearchFormSubmit}>
         <Row className="g-3">
           <Col sm>
             <FloatingLabel controlId="surname" label="Прізвище">
@@ -103,7 +70,7 @@ export default function PatientsPage() {
                 type="text"
                 name="surname"
                 value={params.surname}
-                onChange={handleInputChange}
+                onChange={handleSearchFormInput}
               />
             </FloatingLabel>
           </Col>
@@ -113,7 +80,7 @@ export default function PatientsPage() {
                 type="text"
                 name="name"
                 value={params.name}
-                onChange={handleInputChange}
+                onChange={handleSearchFormInput}
               />
             </FloatingLabel>
           </Col>
@@ -123,7 +90,7 @@ export default function PatientsPage() {
                 type="text"
                 name="middleName"
                 value={params.middleName}
-                onChange={handleInputChange}
+                onChange={handleSearchFormInput}
               />
             </FloatingLabel>
           </Col>
@@ -137,7 +104,7 @@ export default function PatientsPage() {
                 type="date"
                 name="birthDate"
                 value={params.birthDate}
-                onChange={handleInputChange}
+                onChange={handleSearchFormInput}
               />
             </FloatingLabel>
           </Col>
@@ -161,7 +128,7 @@ export default function PatientsPage() {
       </Form>
 
       <br></br>
-      {loading ? (
+      {loadingPatientsCount || loadingPatients ? (
         <>
           <div className="d-flex justify-content-center">
             <Spinner animation="grow" role="status" variant="secondary">
@@ -256,13 +223,25 @@ export default function PatientsPage() {
           </Pagination>
         </>
       ) : (
-        <Alert
-          variant={"danger"}
-          className="text-center mx-auto"
-          style={{ maxWidth: "400px" }}
-        >
-          Пацієнтів за заданими критеріями не знайдено
-        </Alert>
+        <>
+          {patientsCount > 0 ? (
+            <Alert
+              variant={"danger"}
+              className="text-center mx-auto"
+              style={{ maxWidth: "400px" }}
+            >
+              Пацієнтів за заданими критеріями не знайдено
+            </Alert>
+          ) : (
+            <Alert
+              variant="secondary"
+              className="text-center mx-auto"
+              style={{ maxWidth: "400px" }}
+            >
+              Ще не додано жодного пацієнта
+            </Alert>
+          )}
+        </>
       )}
     </>
   );

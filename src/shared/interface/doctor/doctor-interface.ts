@@ -33,6 +33,12 @@ export interface DoctorResponseWithUserCredentials {
   userCredentialsDto: UserCredentials;
 }
 
+export interface DoctorUserCredentials {
+  doctorId: number;
+  fullName: string;
+  userCredentials: UserCredentials;
+}
+
 export const initialDoctorResponseState: DoctorResponse = {
   id: 0,
   name: "",

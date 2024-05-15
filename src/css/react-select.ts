@@ -1,5 +1,5 @@
 export const customReactSelectStyles = {
-  control: (provided, state) => ({
+  control: (provided: any, state: any) => ({
     ...provided,
     backgroundColor: state.isDisabled ? "#EAECEF" : provided.backgroundColor,
     border: state.isFocused ? "1px solid #80bdff" : "1px solid #DFE2E6",
@@ -9,7 +9,7 @@ export const customReactSelectStyles = {
       borderColor: "#ced4da",
     },
   }),
-  option: (provided, state) => ({
+  option: (provided: any, state: any) => ({
     ...provided,
     backgroundColor: state.isSelected ? "#007bff" : "transparent",
     color: state.isSelected ? "#ffffff" : "#000000",
@@ -18,7 +18,7 @@ export const customReactSelectStyles = {
       color: state.isSelected ? "#ffffff" : "#000000", // Keep the color unchanged if selected
     },
   }),
-  singleValue: (provided, state) => ({
+  singleValue: (provided: any, state: any) => ({
     ...provided,
     color: "#212529",
   }),

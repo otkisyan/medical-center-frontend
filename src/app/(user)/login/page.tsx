@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useAuth } from "@/shared/context/UserContextProvider";
@@ -11,31 +11,21 @@ import Spinner from "react-bootstrap/Spinner";
 import { access } from "fs";
 
 export default function LoginPage() {
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoggedOut, setIsLoggedOut] = useState(false);
   const [error, setError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const logout = searchParams.get("logout");
-    const error = searchParams.get("error");
-    if (logout) {
-      setIsLoggedOut(true);
-    } else if (error) {
-      setIsLoggedOut(false);
-      setError(true);
-    }
-  }, [searchParams]);
 
   const handleLogin = async (event: any) => {
     event.preventDefault();
-    setIsLoggedOut(false);
     setLoading(true);
-    await login(username, password);
+    try {
+      await login(username, password);
+    } catch (error) {
+      setError(true);
+    }
     if (!localStorage.getItem("access_token")) {
       setLoading(false);
     }
@@ -57,14 +47,6 @@ export default function LoginPage() {
         </>
       ) : (
         <>
-          <Alert
-            variant={"success"}
-            hidden={!isLoggedOut}
-            className="text-center mx-auto"
-            style={{ maxWidth: "400px" }}
-          >
-            Ви успішно вийшли з облікового запису!
-          </Alert>
           <Alert
             variant={"danger"}
             hidden={!error}

@@ -8,3 +8,14 @@ export function formatDateToString(date: Date) {
 export function formatTimeSecondsToTime(date: Date) {
   return moment(date, "HH:mm:ss").format("HH:mm");
 }
+
+export const timeStartBiggerThanEnd = (start: any, end: any) => {
+  if (start && end) {
+    const startTime = new Date(`1970-01-01T${start}`);
+    const endTime = new Date(`1970-01-01T${end}`);
+    if (startTime >= endTime) {
+      return false;
+    }
+  }
+  return true;
+};

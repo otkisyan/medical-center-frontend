@@ -1,28 +1,27 @@
 "use client";
+import { customReactSelectStyles } from "@/css/react-select";
 import "@/css/styles.css";
+import useFetchOfficesOptions from "@/shared/hooks/useFetchOfficesOptions";
 import {
-  PatientResponse,
-  initialPatientResponseState,
-} from "@/shared/interface/patient/patient-interface";
-import { PatientService } from "@/shared/service/patient-service";
-import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
-import Select from "react-select";
+  DoctorRequest,
+  DoctorResponseWithUserCredentials,
+  DoctorUserCredentials,
+  initialDoctorRequestState,
+} from "@/shared/interface/doctor/doctor-interface";
+import { DoctorService } from "@/shared/service/doctor-service";
+import { notifyError } from "@/shared/toast/toast-notifiers";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Alert, Breadcrumb, Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
-import Card from "react-bootstrap/Card";
-import {
-  DoctorRequest,
-  DoctorResponseWithUserCredentials,
-  initialDoctorRequestState,
-} from "@/shared/interface/doctor/doctor-interface";
-import { DoctorService } from "@/shared/service/doctor-service";
-import useFetchOfficesOptions from "@/shared/hooks/useFetchOfficesOptions";
-import { customReactSelectStyles } from "@/css/react-select";
+import Select from "react-select";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
+import { saveAs } from "file-saver";
 
 export default function NewDoctorPage() {
   const router = useRouter();
@@ -30,11 +29,9 @@ export default function NewDoctorPage() {
   const [doctor, setDoctor] = useState<DoctorRequest>(
     initialDoctorRequestState
   );
-  const [
-    doctorResponseWithUserCredentials,
-    setDoctorResponseWithUserCredentials,
-  ] = useState<DoctorResponseWithUserCredentials | null>(null);
 
+  const [doctorCredentials, setDoctorCredentials] =
+    useState<DoctorUserCredentials>(null);
   const [showDoctorModal, setShowDoctorModal] = useState(false);
 
   const handleCloseDoctorModal = () => setShowDoctorModal(false);
@@ -64,15 +61,45 @@ export default function NewDoctorPage() {
     try {
       const data: DoctorResponseWithUserCredentials =
         await DoctorService.addDoctor(doctor);
-      setDoctorResponseWithUserCredentials({
-        userCredentialsDto: data.userCredentialsDto,
-        doctorResponseDto: data.doctorResponseDto,
+      setDoctorCredentials({
+        doctorId: data.doctorResponseDto.id,
+        fullName:
+          data?.doctorResponseDto.surname +
+          " " +
+          data?.doctorResponseDto.name +
+          " " +
+          data?.doctorResponseDto.middleName,
+        userCredentials: {
+          username: data.userCredentialsDto.username,
+          password: data.userCredentialsDto.password,
+        },
       });
       handleShowDoctorModal();
     } catch (error) {
       notifyError(
         "При додаванні нового лікаря сталася непередбачувана помилка!"
       );
+    }
+  };
+
+  const renderDownloadTooltip = (props: any) => (
+    <Tooltip id="button-tooltip" {...props}>
+      Завантажити облікові дані
+    </Tooltip>
+  );
+
+  const downloadDoctorUserCredentials = () => {
+    if (doctorCredentials) {
+      let data = {
+        Лікар: doctorCredentials.fullName,
+        Логін: doctorCredentials.userCredentials.username,
+        Пароль: doctorCredentials.userCredentials.password,
+      };
+      const jsonDoctorCredentials = JSON.stringify(data, null, 4);
+      let blob = new Blob([jsonDoctorCredentials], {
+        type: "text/plain;charset=utf-8",
+      });
+      saveAs(blob, `Лікар - ${doctorCredentials.fullName}`);
     }
   };
 
@@ -89,72 +116,70 @@ export default function NewDoctorPage() {
         <Breadcrumb.Item active>Новий лікар</Breadcrumb.Item>
       </Breadcrumb>
       <Card>
-        <Modal
-          show={showDoctorModal}
-          onHide={handleCloseDoctorModal}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Лікаря успішно зареєстровано!</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form.Group className="mb-3" controlId="doctorResponse">
-              <Form.Label>Лікар</Form.Label>
-              <Form.Control
-                type="text"
-                value={
-                  doctorResponseWithUserCredentials?.doctorResponseDto.surname +
-                  " " +
-                  doctorResponseWithUserCredentials?.doctorResponseDto.name +
-                  " " +
-                  doctorResponseWithUserCredentials?.doctorResponseDto
-                    .middleName
-                }
-                disabled
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="doctorResponseLogin">
-              <Form.Label>Логін</Form.Label>
-              <Form.Control
-                type="text"
-                value={
-                  doctorResponseWithUserCredentials?.userCredentialsDto.username
-                }
-                disabled
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="doctorResponseLogin">
-              <Form.Label>Пароль</Form.Label>
-              <Form.Control
-                type="text"
-                value={
-                  doctorResponseWithUserCredentials?.userCredentialsDto.password
-                }
-                disabled
-              />
-            </Form.Group>
-            <Alert variant="danger">
-              Тримайте у секреті! Нікому не повідомляйте ці облікові дані окрім
-              самого лікаря!
-            </Alert>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseDoctorModal}>
-              Close
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => {
-                router.push(
-                  `/doctors/${doctorResponseWithUserCredentials?.doctorResponseDto.id}`
-                );
-              }}
-            >
-              Зрозуміло
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        {doctorCredentials && (
+          <Modal
+            show={showDoctorModal}
+            onHide={handleCloseDoctorModal}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Лікаря успішно зареєстровано!</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form.Group className="mb-3" controlId="doctorResponse">
+                <Form.Label>Лікар</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={doctorCredentials.fullName}
+                  disabled
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="doctorResponseLogin">
+                <Form.Label>Логін</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={doctorCredentials.userCredentials.username}
+                  disabled
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="doctorResponseLogin">
+                <Form.Label>Пароль</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={doctorCredentials.userCredentials.password}
+                  disabled
+                />
+              </Form.Group>
+              <Alert variant="danger">
+                Тримайте у секреті! Нікому не повідомляйте ці облікові дані
+                окрім самого лікаря!
+              </Alert>
+            </Modal.Body>
+            <Modal.Footer>
+              <OverlayTrigger
+                placement="left"
+                delay={{ show: 250, hide: 400 }}
+                overlay={renderDownloadTooltip}
+              >
+                <Button
+                  variant="secondary"
+                  onClick={downloadDoctorUserCredentials}
+                >
+                  <i className="bi bi-cloud-arrow-down-fill"></i>
+                </Button>
+              </OverlayTrigger>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  router.push(`/doctors/${doctorCredentials?.doctorId}`);
+                }}
+              >
+                Зрозуміло
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        )}
         <Card.Header>Інформація про нового лікаря</Card.Header>
         <Card.Body>
           <Form onSubmit={handleNewDoctorFormSubmit}>

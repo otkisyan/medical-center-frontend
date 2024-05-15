@@ -21,12 +21,12 @@ export const UserContextProvider = ({
   const path = usePathname();
 
   const logout = async () => {
-    router.push("/login?logout=true");
+    router.push("/login");
     try {
       AuthService.logout();
     } catch (error) {
     } finally {
-      router.push("/login?logout=true");
+      router.push("/login");
       setUserDetails(null);
       localStorage.removeItem("access_token");
     }
@@ -70,7 +70,7 @@ export const UserContextProvider = ({
         try {
           decodedToken = jwtDecode(accessToken);
         } catch (error) {
-          router.push("/login?error=true");
+          throw error;
         }
         if (decodedToken) {
           localStorage.setItem("access_token", accessToken);
@@ -78,7 +78,7 @@ export const UserContextProvider = ({
         }
       }
     } catch (error) {
-      router.push("/login?error=true");
+      throw error;
     }
   };
 
