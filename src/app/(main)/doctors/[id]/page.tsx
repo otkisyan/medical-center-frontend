@@ -28,19 +28,21 @@ import {
 import { formatTimeSecondsToTime } from "@/shared/utils/date-utils";
 import SpinnerCenter from "@/components/spinner/SpinnerCenter";
 import { WorkScheduleService } from "@/shared/service/work-schedule-service";
+import useFetchOfficesOptions from "@/shared/hooks/useFetchOfficesOptions";
 
 export default function DoctorPage({ params }: { params: { id: number } }) {
-  const initialOfficesOptions = useMemo(
-    () => [{ value: "", label: "Без кабінету" }],
-    []
-  );
-
   enum Tab {
     Doctor,
     Work_Schedules,
   }
 
   const router = useRouter();
+  const {
+    loadingOfficesOptions,
+    officesOptions,
+    defaultOfficeOption,
+    findOfficeOptionByValue,
+  } = useFetchOfficesOptions();
   const [activeTab, setActiveTab] = useState<Tab>(Tab.Doctor);
   const [doctor, setDoctor] = useState<DoctorResponse | null>(null);
   const [editedDoctor, setEditedDoctor] = useState<DoctorRequest>(
@@ -55,22 +57,13 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
   const [workSchedulesValidated, setWorkSchedulesValidated] = useState(true);
   const [showWorkScheduleValidationError, setShowWorkScheduleValidationError] =
     useState(false);
-  const [officesOptions, setOfficesOptions] = useState<any[]>([]);
 
   const [loadingDoctor, setLoadingDoctor] = useState(true);
-  const [loadingOffices, setLoadingOffices] = useState(true);
   const [loadingDoctorWorkSchedules, setLoadingDoctorWorkSchedules] =
     useState(true);
   const [editingDoctor, setEditingDoctor] = useState(false);
   const [editingWorkSchedules, setEditingWorkSchedules] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  const defaultOfficeOption = officesOptions.find(
-    (option) => option.value === ""
-  );
-
-  const findOfficeOptionByValue = (value: any) =>
-    officesOptions.find((option) => option.value === value);
 
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
   const handleShowDeleteModal = () => setShowDeleteModal(true);
@@ -103,9 +96,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
     const endTime = editedDoctorWorkSchedules[index].workTimeEnd;
     const startTime = editedDoctorWorkSchedules[index].workTimeStart;
 
-    if (field === "workTimeStart" && newValue >= endTime) {
+    if (field === "workTimeStart" && !validateTime(newValue, endTime)) {
       setWorkSchedulesValidated(false);
-    } else if (field === "workTimeEnd" && startTime >= newValue) {
+    } else if (field === "workTimeEnd" && !validateTime(startTime, newValue)) {
       setWorkSchedulesValidated(false);
     } else {
       setWorkSchedulesValidated(true);
@@ -174,45 +167,6 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
       setLoadingDoctor(false);
     }
   }, []);
-
-  const fetchAllOffices = async () => {
-    let allOffices: OfficeResponse[] = [];
-    let params = {
-      page: 0,
-    };
-    let totalPages = 1;
-
-    try {
-      while (params.page < totalPages) {
-        const data = await OfficeService.findAllOffices(params);
-        allOffices = [...allOffices, ...data.content];
-        totalPages = data.totalPages;
-        params.page++;
-      }
-      return allOffices;
-    } catch (error) {
-      console.error("Error fetching offices:", error);
-    }
-  };
-
-  const fetchOffices = useCallback(async () => {
-    try {
-      setLoadingOffices(true);
-      const offices = await fetchAllOffices();
-      if (offices) {
-        setOfficesOptions([
-          ...initialOfficesOptions,
-          ...offices.map((office) => ({
-            value: office.id,
-            label: office.number + " - " + office.name,
-          })),
-        ]);
-      }
-    } catch (error) {
-    } finally {
-      setLoadingOffices(false);
-    }
-  }, [initialOfficesOptions]);
 
   const fetchAllDoctorWorkSchedules = useCallback(async () => {
     let allWorkSchedules: WorkScheduleResponse[] = [];
@@ -299,10 +253,6 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
   }, [fetchDoctor, params.id]);
 
   useEffect(() => {
-    fetchOffices();
-  }, [fetchOffices]);
-
-  useEffect(() => {
     fetchDoctorWorkSchedules();
   }, [fetchDoctorWorkSchedules]);
 
@@ -311,10 +261,10 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
       const startTime = new Date(`1970-01-01T${start}`);
       const endTime = new Date(`1970-01-01T${end}`);
       if (startTime >= endTime) {
-        return "Час початку роботи не може бути більше часу закінечення роботи";
+        return false;
       }
     }
-    return "";
+    return true;
   };
 
   return (
@@ -490,7 +440,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                       <Select
                         className="basic-single mb-3"
                         classNamePrefix="select"
-                        isLoading={loadingOffices}
+                        isLoading={loadingOfficesOptions}
                         isSearchable={true}
                         value={
                           editedDoctor.officeId
@@ -499,7 +449,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         }
                         isDisabled={!editingDoctor}
                         placeholder={
-                          loadingOffices ? "Завантаження..." : "Оберіть кабінет"
+                          loadingOfficesOptions
+                            ? "Завантаження..."
+                            : "Оберіть кабінет"
                         }
                         name="officeId"
                         onChange={(e) => {
@@ -512,14 +464,6 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         noOptionsMessage={() => "Кабінетів не знайдено"}
                         options={officesOptions}
                         styles={customReactSelectStyles}
-                        defaultValue={
-                          editedDoctor.officeId === null
-                            ? defaultOfficeOption
-                            : officesOptions.find(
-                                (option) =>
-                                  option.value === editedDoctor.officeId
-                              )
-                        }
                       />
                     </Form.Group>
                   </fieldset>

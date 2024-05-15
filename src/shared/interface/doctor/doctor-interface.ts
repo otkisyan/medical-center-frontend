@@ -1,4 +1,5 @@
 import { OfficeResponse } from "../office/office-interface";
+import { UserCredentials } from "../user/user-credentials-interface";
 
 export interface DoctorResponse {
   id: number;
@@ -25,6 +26,11 @@ export interface DoctorRequest {
   medicalSpecialty: string;
   qualificationCategory: string;
   officeId: number | null;
+}
+
+export interface DoctorResponseWithUserCredentials {
+  doctorResponseDto: DoctorResponse;
+  userCredentialsDto: UserCredentials;
 }
 
 export const initialDoctorResponseState: DoctorResponse = {

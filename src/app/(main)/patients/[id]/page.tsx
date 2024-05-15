@@ -10,7 +10,7 @@ import {
 } from "@/shared/interface/patient/patient-interface";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
-import { Alert, Button, Row } from "react-bootstrap";
+import { Alert, Button, Card, Row } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
 import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 import Modal from "react-bootstrap/Modal";
@@ -140,131 +140,136 @@ export default function PatientPage({ params }: { params: { id: number } }) {
               </Button>
             </Modal.Footer>
           </Modal>
-          <Form>
-            <fieldset disabled={!editing}>
-              <Row className="mb-3">
-                <Form.Group as={Col} controlId="formGridSurname">
-                  <Form.Label>Прізвище</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={editedPatient.surname ?? ""}
-                    name="surname"
-                    onChange={handleChangePatient}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} controlId="formGridName">
-                  <Form.Label>{`Ім'я`}</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={editedPatient.name ?? ""}
-                    name="name"
-                    onChange={handleChangePatient}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} controlId="formGridMiddleName">
-                  <Form.Label>По батькові</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={editedPatient.middleName ?? ""}
-                    name="middleName"
-                    onChange={handleChangePatient}
-                  />
-                </Form.Group>
-              </Row>
-              <Form.Group controlId="formGridBirthDate" className="mb-3">
-                <Form.Label>Дата народження</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={
-                    editedPatient.birthDate
-                      ? editedPatient.birthDate.toString()
-                      : ""
-                  }
-                  name="birthDate"
-                  max="9999-12-31"
-                  onChange={handleChangePatient}
-                />
-              </Form.Group>
-              <Row className="mb-3">
-                <Form.Group as={Col} controlId="formGridPhone">
-                  <Form.Label>Номер телефону</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={editedPatient.phone ?? ""}
-                    onChange={handleChangePatient}
-                    name="phone"
-                  />
-                </Form.Group>
-                <Form.Group as={Col} controlId="formGridMessengerContact">
-                  <Form.Label>Контактний номер Viber/Telegram</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={editedPatient.messengerContact ?? ""}
-                    name="messengerContact"
-                    onChange={handleChangePatient}
-                  />
-                </Form.Group>
-              </Row>
-              <Form.Group controlId="formGridAddress" className="mb-3">
-                <Form.Label>Домашня адреса</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={editedPatient.address ?? ""}
-                  name="address"
-                  onChange={handleChangePatient}
-                />
-              </Form.Group>
-              <Form.Group
-                controlId="formGridPreferentialCategory"
-                className="mb-3"
-              >
-                <Form.Label>Пільгова категорія</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={editedPatient.preferentialCategory ?? ""}
-                  name="preferentialCategory"
-                  onChange={handleChangePatient}
-                />
-              </Form.Group>
-            </fieldset>
-            <Button
-              variant="primary"
-              type="button"
-              className="me-2"
-              hidden={editing}
-              onClick={handleEdit}
-            >
-              <i className="bi bi-pencil-square" id="editButton"></i>
-            </Button>
-            <Button
-              variant="primary"
-              type="button"
-              className="me-2"
-              hidden={!editing}
-              id="confirmEdit"
-              onClick={handleEditFormSubmit}
-            >
-              Зберегти
-            </Button>
-            <Button
-              variant="secondary"
-              type="button"
-              id="cancelButton"
-              hidden={!editing}
-              onClick={handleCancelEdit}
-            >
-              Скасувати
-            </Button>
-            <Button
-              variant="danger"
-              type="button"
-              hidden={editing}
-              id="deleteButton"
-              onClick={handleShowDeleteModal}
-            >
-              <i className="bi bi-trash"></i>
-            </Button>
-          </Form>
+          <Card>
+            <Card.Header>Пацієнт</Card.Header>
+            <Card.Body>
+              <Form>
+                <fieldset disabled={!editing}>
+                  <Row className="mb-3">
+                    <Form.Group as={Col} controlId="formGridSurname">
+                      <Form.Label>Прізвище</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editedPatient.surname ?? ""}
+                        name="surname"
+                        onChange={handleChangePatient}
+                      />
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="formGridName">
+                      <Form.Label>{`Ім'я`}</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editedPatient.name ?? ""}
+                        name="name"
+                        onChange={handleChangePatient}
+                      />
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="formGridMiddleName">
+                      <Form.Label>По батькові</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editedPatient.middleName ?? ""}
+                        name="middleName"
+                        onChange={handleChangePatient}
+                      />
+                    </Form.Group>
+                  </Row>
+                  <Form.Group controlId="formGridBirthDate" className="mb-3">
+                    <Form.Label>Дата народження</Form.Label>
+                    <Form.Control
+                      type="date"
+                      value={
+                        editedPatient.birthDate
+                          ? editedPatient.birthDate.toString()
+                          : ""
+                      }
+                      name="birthDate"
+                      max="9999-12-31"
+                      onChange={handleChangePatient}
+                    />
+                  </Form.Group>
+                  <Row className="mb-3">
+                    <Form.Group as={Col} controlId="formGridPhone">
+                      <Form.Label>Номер телефону</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editedPatient.phone ?? ""}
+                        onChange={handleChangePatient}
+                        name="phone"
+                      />
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="formGridMessengerContact">
+                      <Form.Label>Контактний номер Viber/Telegram</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editedPatient.messengerContact ?? ""}
+                        name="messengerContact"
+                        onChange={handleChangePatient}
+                      />
+                    </Form.Group>
+                  </Row>
+                  <Form.Group controlId="formGridAddress" className="mb-3">
+                    <Form.Label>Домашня адреса</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={editedPatient.address ?? ""}
+                      name="address"
+                      onChange={handleChangePatient}
+                    />
+                  </Form.Group>
+                  <Form.Group
+                    controlId="formGridPreferentialCategory"
+                    className="mb-3"
+                  >
+                    <Form.Label>Пільгова категорія</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={editedPatient.preferentialCategory ?? ""}
+                      name="preferentialCategory"
+                      onChange={handleChangePatient}
+                    />
+                  </Form.Group>
+                </fieldset>
+                <Button
+                  variant="primary"
+                  type="button"
+                  className="me-2"
+                  hidden={editing}
+                  onClick={handleEdit}
+                >
+                  <i className="bi bi-pencil-square" id="editButton"></i>
+                </Button>
+                <Button
+                  variant="primary"
+                  type="button"
+                  className="me-2"
+                  hidden={!editing}
+                  id="confirmEdit"
+                  onClick={handleEditFormSubmit}
+                >
+                  Зберегти
+                </Button>
+                <Button
+                  variant="secondary"
+                  type="button"
+                  id="cancelButton"
+                  hidden={!editing}
+                  onClick={handleCancelEdit}
+                >
+                  Скасувати
+                </Button>
+                <Button
+                  variant="danger"
+                  type="button"
+                  hidden={editing}
+                  id="deleteButton"
+                  onClick={handleShowDeleteModal}
+                >
+                  <i className="bi bi-trash"></i>
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
         </>
       ) : (
         <Alert variant="danger">

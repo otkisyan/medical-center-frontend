@@ -3,6 +3,7 @@ import { Page } from "@/shared/interface/page/page-interface";
 import {
   DoctorRequest,
   DoctorResponse,
+  DoctorResponseWithUserCredentials,
 } from "../interface/doctor/doctor-interface";
 import { WorkScheduleResponse } from "../interface/work-schedule/work-schedule-interface";
 
@@ -35,10 +36,11 @@ export const DoctorService = {
   },
 
   async addDoctor(newDoctor: DoctorRequest) {
-    const { data } = await axiosInstance.post<DoctorResponse>(
-      "/doctors",
-      newDoctor
-    );
+    const { data } =
+      await axiosInstance.post<DoctorResponseWithUserCredentials>(
+        "/doctors",
+        newDoctor
+      );
     return data;
   },
 

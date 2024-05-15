@@ -21,8 +21,9 @@ export const UserContextProvider = ({
   const path = usePathname();
 
   const logout = async () => {
+    router.push("/login?logout=true");
     try {
-      await AuthService.logout();
+      AuthService.logout();
     } catch (error) {
     } finally {
       router.push("/login?logout=true");
