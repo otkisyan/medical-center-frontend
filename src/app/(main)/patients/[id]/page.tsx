@@ -16,14 +16,15 @@ import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 import Modal from "react-bootstrap/Modal";
 import { useRouter } from "next/navigation";
 import { Breadcrumb } from "react-bootstrap";
+import useFetchPatient from "@/shared/hooks/patients/useFetchPatient";
+import SpinnerCenter from "@/components/spinner/SpinnerCenter";
 
 export default function PatientPage({ params }: { params: { id: number } }) {
   const router = useRouter();
-  const [patient, setPatient] = useState<PatientResponse | null>(null);
+  const { patient, setPatient, loadingPatient } = useFetchPatient(params.id);
   const [editedPatient, setEditedPatient] = useState<PatientRequest>(
     initialPatientRequestState
   );
-  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -77,33 +78,18 @@ export default function PatientPage({ params }: { params: { id: number } }) {
     setEditing(false);
   };
 
-  const fetchPatient = useCallback(async (patientId: number) => {
-    try {
-      setLoading(true);
-      const data = await PatientService.findPatientById(patientId);
-      setPatient(data);
-      setEditedPatient(convertPatientResponseToPatientRequest(data));
-    } catch (error) {
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    const patientId = params.id;
-    fetchPatient(patientId);
-  }, [fetchPatient, params.id]);
+    if (patient != null) {
+      setEditedPatient(convertPatientResponseToPatientRequest(patient));
+    }
+  }, [patient]);
 
   return (
     <>
       <br></br>
-      {loading ? (
+      {loadingPatient ? (
         <>
-          <div className="d-flex justify-content-center">
-            <Spinner animation="grow" role="status" variant="secondary">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
+          <SpinnerCenter></SpinnerCenter>
         </>
       ) : patient ? (
         <>

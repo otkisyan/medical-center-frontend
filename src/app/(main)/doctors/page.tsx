@@ -1,32 +1,21 @@
 "use client";
 import "@/css/styles.css";
-import { DoctorResponse } from "@/shared/interface/doctor/doctor-interface";
-import { Page } from "@/shared/interface/page/page-interface";
-import { DoctorService } from "@/shared/service/doctor-service";
-import { formatDateToString } from "@/shared/utils/date-utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import Pagination from "react-bootstrap/Pagination";
 import Row from "react-bootstrap/Row";
-import Spinner from "react-bootstrap/Spinner";
 import Stack from "react-bootstrap/Stack";
 import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
+import useFetchDoctors from "@/shared/hooks/doctor/useFetchDoctors";
+import useFetchDoctorsCount from "@/shared/hooks/doctor/useFetchDoctorsCount";
+import { formatDateToString } from "@/shared/utils/date-utils";
+import SpinnerCenter from "@/components/spinner/SpinnerCenter";
 
-export default function PatientsPage() {
-  const initialDoctorPageState: Page<DoctorResponse> = {
-    content: [],
-    totalPages: 0,
-    totalElements: 0,
-    size: 0,
-    number: 0,
-    first: false,
-    last: false,
-  };
-
+export default function DoctorsPage() {
   const initialParamsState = useMemo(
     () => ({
       surname: "",
@@ -38,19 +27,16 @@ export default function PatientsPage() {
     []
   );
 
-  const [doctorPage, setDoctorPage] = useState<Page<DoctorResponse>>(
-    initialDoctorPageState
-  );
-  const [doctorsCount, setDoctorsCount] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
   const [params, setParams] = useState(initialParamsState);
+  const { doctorsCount, loadingDoctorsCount } = useFetchDoctorsCount();
+  const { doctorPage, loadingDoctors, fetchDoctors } = useFetchDoctors();
 
   const clearSearchParams = async () => {
     await fetchDoctors(initialParamsState);
     setParams(initialParamsState);
   };
 
-  const handleInputChange = (event: any) => {
+  const handleSearchFormInput = (event: any) => {
     const { name, value } = event.target;
     setParams((prevParams) => ({
       ...prevParams,
@@ -58,44 +44,19 @@ export default function PatientsPage() {
     }));
   };
 
-  const handleFormSubmit = async (event: any) => {
+  const handleDoctorSearchFormSubmit = async (event: any) => {
     event.preventDefault();
     await fetchDoctors(params);
   };
 
-  const fetchDoctors = useCallback(async (params: any) => {
-    try {
-      setLoading(true);
-      const data = await DoctorService.findAllDoctors(params);
-      setDoctorPage(data);
-    } catch (error) {
-      console.error("Error fetching doctor data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchDoctorsCount = useCallback(async () => {
-    try {
-      const count = await DoctorService.countDoctors();
-      setDoctorsCount(count);
-    } catch (error) {
-      console.error("Error fetching doctors data:", error);
-    } finally {
-    }
-  }, []);
-
   useEffect(() => {
-    fetchDoctorsCount();
-    if (doctorsCount > 0) {
-      fetchDoctors(initialParamsState);
-    }
-  }, [fetchDoctorsCount, fetchDoctors, initialParamsState, doctorsCount]);
+    fetchDoctors(initialParamsState);
+  }, [fetchDoctors, doctorsCount, initialParamsState]);
 
   return (
     <>
       <br></br>
-      <Form onSubmit={handleFormSubmit}>
+      <Form onSubmit={handleDoctorSearchFormSubmit}>
         <Row className="g-3">
           <Col sm>
             <FloatingLabel controlId="surname" label="Прізвище">
@@ -103,7 +64,7 @@ export default function PatientsPage() {
                 type="text"
                 name="surname"
                 value={params.surname}
-                onChange={handleInputChange}
+                onChange={handleSearchFormInput}
               />
             </FloatingLabel>
           </Col>
@@ -113,7 +74,7 @@ export default function PatientsPage() {
                 type="text"
                 name="name"
                 value={params.name}
-                onChange={handleInputChange}
+                onChange={handleSearchFormInput}
               />
             </FloatingLabel>
           </Col>
@@ -123,7 +84,7 @@ export default function PatientsPage() {
                 type="text"
                 name="middleName"
                 value={params.middleName}
-                onChange={handleInputChange}
+                onChange={handleSearchFormInput}
               />
             </FloatingLabel>
           </Col>
@@ -137,7 +98,7 @@ export default function PatientsPage() {
                 type="date"
                 name="birthDate"
                 value={params.birthDate}
-                onChange={handleInputChange}
+                onChange={handleSearchFormInput}
               />
             </FloatingLabel>
           </Col>
@@ -161,14 +122,8 @@ export default function PatientsPage() {
       </Form>
 
       <br></br>
-      {loading ? (
-        <>
-          <div className="d-flex justify-content-center">
-            <Spinner animation="grow" role="status" variant="secondary">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
-        </>
+      {loadingDoctorsCount || loadingDoctors ? (
+        <SpinnerCenter></SpinnerCenter>
       ) : doctorPage && doctorPage.content.length > 0 ? (
         <>
           <Table striped responsive>
@@ -258,13 +213,25 @@ export default function PatientsPage() {
           </Pagination>
         </>
       ) : (
-        <Alert
-          variant={"danger"}
-          className="text-center mx-auto"
-          style={{ maxWidth: "400px" }}
-        >
-          Лікарів за заданими критеріями не знайдено
-        </Alert>
+        <>
+          {doctorsCount > 0 ? (
+            <Alert
+              variant={"danger"}
+              className="text-center mx-auto"
+              style={{ maxWidth: "400px" }}
+            >
+              Лікарів за заданими критеріями не знайдено
+            </Alert>
+          ) : (
+            <Alert
+              variant="secondary"
+              className="text-center mx-auto"
+              style={{ maxWidth: "400px" }}
+            >
+              Ще не додано жодного лікаря
+            </Alert>
+          )}
+        </>
       )}
     </>
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { OfficeService } from "../service/office-service";
-import { OfficeResponse } from "../interface/office/office-interface";
+import { OfficeService } from "../../service/office-service";
+import { OfficeResponse } from "../../interface/office/office-interface";
 
 const useFetchOfficesOptions = () => {
   const initialOfficesOptions = useMemo(

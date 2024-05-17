@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PatientService } from "@/shared/service/patient-service";
-import { PatientResponse } from "../interface/patient/patient-interface";
-import { Page } from "../interface/page/page-interface";
+import { PatientResponse } from "../../interface/patient/patient-interface";
+import { Page } from "../../interface/page/page-interface";
 
-export default function useFetchPatients(params: any) {
+export default function useFetchPatients() {
   const initialPatientsPageState: Page<PatientResponse> = {
     content: [],
     totalPages: 0,
@@ -17,7 +17,7 @@ export default function useFetchPatients(params: any) {
   const [patientPage, setPatientPage] = useState<Page<PatientResponse>>(
     initialPatientsPageState
   );
-  const [loadingPatients, setLoadingPatients] = useState(false);
+  const [loadingPatients, setLoadingPatients] = useState(true);
 
   const fetchPatients = useCallback(async (params: any) => {
     try {

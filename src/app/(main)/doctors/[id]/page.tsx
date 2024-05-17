@@ -1,9 +1,9 @@
 "use client";
 import SpinnerCenter from "@/components/spinner/SpinnerCenter";
 import { customReactSelectStyles } from "@/css/react-select";
-import useFetchAllDoctorWorkSchedules from "@/shared/hooks/useFetchAllDoctorWorkSchedules";
-import useFetchDoctor from "@/shared/hooks/useFetchDoctor";
-import useFetchOfficesOptions from "@/shared/hooks/useFetchOfficesOptions";
+import useFetchAllDoctorWorkSchedules from "@/shared/hooks/doctor/useFetchAllDoctorWorkSchedules";
+import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
+import useFetchOfficesOptions from "@/shared/hooks/office/useFetchOfficesOptions";
 import {
   DoctorRequest,
   convertDoctorResponseToDoctorRequest,
@@ -195,6 +195,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
         const updatedWorkSchedules = await updateAllWorkSchedules(
           editedDoctorWorkSchedules
         );
+        console.log(updatedWorkSchedules);
         setDoctorWorkSchedules(updatedWorkSchedules);
         notifySuccess("Графік роботи лікаря успішно оновлений");
       } catch (error) {

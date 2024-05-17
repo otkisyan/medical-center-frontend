@@ -15,8 +15,9 @@ import Spinner from "react-bootstrap/Spinner";
 import Stack from "react-bootstrap/Stack";
 import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
-import useFetchPatients from "@/shared/hooks/useFetchPatients";
-import useFetchPatientsCount from "@/shared/hooks/useFetchPatientsCount";
+import useFetchPatients from "@/shared/hooks/patients/useFetchPatients";
+import useFetchPatientsCount from "@/shared/hooks/patients/useFetchPatientsCount";
+import SpinnerCenter from "@/components/spinner/SpinnerCenter";
 
 export default function PatientsPage() {
   const initialParamsState = useMemo(
@@ -32,8 +33,7 @@ export default function PatientsPage() {
 
   const [params, setParams] = useState(initialParamsState);
   const { patientsCount, loadingPatientsCount } = useFetchPatientsCount();
-  const { patientPage, loadingPatients, fetchPatients } =
-    useFetchPatients(params);
+  const { patientPage, loadingPatients, fetchPatients } = useFetchPatients();
 
   const clearSearchParams = async () => {
     await fetchPatients(initialParamsState);
@@ -54,9 +54,7 @@ export default function PatientsPage() {
   };
 
   useEffect(() => {
-    if (patientsCount > 0) {
-      fetchPatients(initialParamsState);
-    }
+    fetchPatients(initialParamsState);
   }, [fetchPatients, patientsCount, initialParamsState]);
 
   return (
@@ -130,11 +128,7 @@ export default function PatientsPage() {
       <br></br>
       {loadingPatientsCount || loadingPatients ? (
         <>
-          <div className="d-flex justify-content-center">
-            <Spinner animation="grow" role="status" variant="secondary">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
+          <SpinnerCenter></SpinnerCenter>
         </>
       ) : patientPage && patientPage.content.length > 0 ? (
         <>

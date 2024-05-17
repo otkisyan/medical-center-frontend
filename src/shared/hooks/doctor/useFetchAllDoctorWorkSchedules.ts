@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { WorkScheduleResponse } from "../interface/work-schedule/work-schedule-interface";
-import { DoctorService } from "../service/doctor-service";
+import { WorkScheduleResponse } from "../../interface/work-schedule/work-schedule-interface";
+import { DoctorService } from "../../service/doctor-service";
 
 const useFetchAllDoctorWorkSchedules = (doctorId: number) => {
   const [doctorWorkSchedules, setDoctorWorkSchedules] = useState<

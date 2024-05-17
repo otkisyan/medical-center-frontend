@@ -1,7 +1,7 @@
 "use client";
 import { customReactSelectStyles } from "@/css/react-select";
 import "@/css/styles.css";
-import useFetchOfficesOptions from "@/shared/hooks/useFetchOfficesOptions";
+import useFetchOfficesOptions from "@/shared/hooks/office/useFetchOfficesOptions";
 import {
   DoctorRequest,
   DoctorResponseWithUserCredentials,
@@ -31,7 +31,7 @@ export default function NewDoctorPage() {
   );
 
   const [doctorCredentials, setDoctorCredentials] =
-    useState<DoctorUserCredentials>(null);
+    useState<DoctorUserCredentials | null>(null);
   const [showDoctorModal, setShowDoctorModal] = useState(false);
 
   const handleCloseDoctorModal = () => setShowDoctorModal(false);
