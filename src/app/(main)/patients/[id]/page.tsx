@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { Breadcrumb } from "react-bootstrap";
 import useFetchPatient from "@/shared/hooks/patients/useFetchPatient";
 import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import Link from "next/link";
 
 export default function PatientPage({ params }: { params: { id: number } }) {
   const router = useRouter();
@@ -94,12 +95,14 @@ export default function PatientPage({ params }: { params: { id: number } }) {
       ) : patient ? (
         <>
           <Breadcrumb>
-            <Breadcrumb.Item href="/" className="link">
-              Домашня сторінка
-            </Breadcrumb.Item>
-            <Breadcrumb.Item href="/patients" className="link">
-              Пацієнти
-            </Breadcrumb.Item>
+            <Link href="/" passHref legacyBehavior>
+              <Breadcrumb.Item className="link">
+                Домашня сторінка
+              </Breadcrumb.Item>
+            </Link>
+            <Link href="/patients" passHref legacyBehavior>
+              <Breadcrumb.Item className="link">Пацієнти</Breadcrumb.Item>
+            </Link>
             <Breadcrumb.Item active>
               Інформація про пацієнта #{params.id}
             </Breadcrumb.Item>

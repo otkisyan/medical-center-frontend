@@ -7,6 +7,8 @@ import { jwtDecode } from "jwt-decode";
 import { AuthService } from "@/shared/service/user-service";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
+import { Role } from "../enum/role";
+import { convertStringRolesToEnumRole } from "../utils/auth-utils";
 
 const UserContextInstance = createContext<UserContext>({} as UserContext);
 
@@ -36,10 +38,11 @@ export const UserContextProvider = ({
     try {
       const res = await AuthService.getUserDetails();
       if (res) {
+        const rolesEnum = convertStringRolesToEnumRole(res.roles);
         const userDetailsObject: UserDetails = {
           id: res.id,
           username: res.username,
-          roles: res.roles,
+          roles: rolesEnum,
           accountNonExpired: res.accountNonExpired,
           accountNonLocked: res.accountNonLocked,
           credentialsNonExpired: res.credentialsNonExpired,
@@ -86,6 +89,10 @@ export const UserContextProvider = ({
     return !!userDetails;
   };
 
+  const hasAnyRole = (roles: Role[]) => {
+    return roles.some((role) => userDetails?.roles.includes(role)) ?? false;
+  };
+
   return (
     <UserContextInstance.Provider
       value={{
@@ -93,6 +100,7 @@ export const UserContextProvider = ({
         login: login,
         isAuthenticated: isAuthenticated,
         logout: logout,
+        hasAnyRole: hasAnyRole,
       }}
     >
       {isReady ? children : null}

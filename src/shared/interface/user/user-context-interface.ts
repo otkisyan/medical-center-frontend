@@ -1,3 +1,4 @@
+import { Role } from "@/shared/enum/role";
 import { UserDetails } from "./user-details-interface";
 
 export interface UserContext {
@@ -5,4 +6,5 @@ export interface UserContext {
   login: (username: string, password: string) => void;
   logout: () => void;
   isAuthenticated: () => boolean;
+  hasAnyRole: (roles: Role[]) => boolean;
 }

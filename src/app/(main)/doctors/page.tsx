@@ -14,6 +14,7 @@ import useFetchDoctors from "@/shared/hooks/doctor/useFetchDoctors";
 import useFetchDoctorsCount from "@/shared/hooks/doctor/useFetchDoctorsCount";
 import { formatDateToString } from "@/shared/utils/date-utils";
 import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import Link from "next/link";
 
 export default function DoctorsPage() {
   const initialParamsState = useMemo(
@@ -104,9 +105,9 @@ export default function DoctorsPage() {
           </Col>
         </Row>
         <Stack direction="horizontal" gap={3}>
-          <a href="/doctors/new" className="link">
+          <Link href="/doctors/new" className="link">
             Новий лікар →
-          </a>
+          </Link>
           <Button
             variant="link"
             className="ms-auto text-secondary"
@@ -152,13 +153,13 @@ export default function DoctorsPage() {
                   </td>
                   <td>{doctor.medicalSpecialty}</td>
                   <td>
-                    <a
+                    <Link
                       className="btn btn-primary"
                       href={`/doctors/${encodeURIComponent(doctor.id ?? "")}`}
                       role="button"
                     >
                       <i className="bi bi-eye"></i>
-                    </a>
+                    </Link>
                   </td>
                 </tr>
               ))}

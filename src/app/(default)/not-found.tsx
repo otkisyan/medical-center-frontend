@@ -6,7 +6,7 @@ export default function NotFound() {
   const hour = date.getHours().toString().padStart(2, "0");
   const minute = date.getMinutes().toString().padStart(2, "0");
 
-  const formattedDate = `${day}.${month}.${year} ${hour}:${minute}`;
+  const formattedDate = `${day}.${month}.${year}, ${hour}:${minute}`;
   return (
     <>
       <br></br>

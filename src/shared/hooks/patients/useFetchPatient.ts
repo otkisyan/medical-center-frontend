@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { PatientService } from "@/shared/service/patient-service";
 import { PatientResponse } from "@/shared/interface/patient/patient-interface";
+import { delay } from "@/shared/utils/delay";
 
-export default function useFetchPatient(patientId: number) {
+export default function useFetchPatient(patientId: number | null) {
   const [patient, setPatient] = useState<PatientResponse | null>(null);
   const [loadingPatient, setLoadingPatient] = useState(true);
 
@@ -19,7 +20,11 @@ export default function useFetchPatient(patientId: number) {
   }, []);
 
   useEffect(() => {
-    fetchPatient(patientId);
+    if (patientId) {
+      fetchPatient(patientId);
+    } else {
+      setLoadingPatient(false);
+    }
   }, [fetchPatient, patientId]);
 
   return { patient, loadingPatient, setPatient };

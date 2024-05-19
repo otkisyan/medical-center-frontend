@@ -1,8 +1,8 @@
 import { DoctorResponse } from "@/shared/interface/doctor/doctor-interface";
 import { DoctorService } from "@/shared/service/doctor-service";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-const useFetchDoctorsOptions = () => {
+export default function useFetchDoctorsOptions() {
   const [loadingDoctorsOptions, setLoadingDoctors] = useState(false);
   const [doctorsOptions, setDoctorsOptions] = useState<any[]>([]);
   const defaultDoctorOption = doctorsOptions.find(
@@ -40,7 +40,13 @@ const useFetchDoctorsOptions = () => {
           ...doctors.map((doctor: DoctorResponse) => ({
             value: doctor.id,
             label:
-              doctor.surname + " " + doctor.name[0] + "." + doctor.surname[0],
+              doctor.surname +
+              " " +
+              doctor.name[0] +
+              "." +
+              doctor.middleName[0] +
+              " - " +
+              doctor.medicalSpecialty,
           })),
         ]);
       }
@@ -60,7 +66,6 @@ const useFetchDoctorsOptions = () => {
     doctorsOptions,
     defaultDoctorOption,
     findDoctorOptionByValue,
+    setDoctorsOptions,
   };
-};
-
-export default useFetchDoctorsOptions;
+}

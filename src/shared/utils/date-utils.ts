@@ -5,6 +5,10 @@ export function formatDateToString(date: Date) {
   return format(date, "dd.MM.yyyy").toString();
 }
 
+export function formatDateToHtml5(date: Date) {
+  return moment(date).format(moment.HTML5_FMT.DATE);
+}
+
 export function formatTimeSecondsToTime(date: Date) {
   return moment(date, "HH:mm:ss").format("HH:mm");
 }

@@ -21,6 +21,7 @@ import {
   formatTimeSecondsToTime,
   timeStartBiggerThanEnd,
 } from "@/shared/utils/date-utils";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -235,12 +236,14 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
       ) : doctor ? (
         <>
           <Breadcrumb>
-            <Breadcrumb.Item href="/" className="link">
-              Домашня сторінка
-            </Breadcrumb.Item>
-            <Breadcrumb.Item href="/patients" className="link">
-              Лікарі
-            </Breadcrumb.Item>
+            <Link href="/" passHref legacyBehavior>
+              <Breadcrumb.Item className="link">
+                Домашня сторінка
+              </Breadcrumb.Item>
+            </Link>
+            <Link href="/doctors" passHref legacyBehavior>
+              <Breadcrumb.Item className="link">Лікарі</Breadcrumb.Item>
+            </Link>
             <Breadcrumb.Item active>
               Інформація про лікаря #{params.id}
             </Breadcrumb.Item>

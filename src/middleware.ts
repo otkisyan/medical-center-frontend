@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isProtectedRoute } from "@/shared/utils/auth-utils";
+import {
+  convertStringRolesToEnumRole,
+  isProtectedRoute,
+} from "@/shared/utils/auth-utils";
 import { hasSufficientRole } from "@/shared/utils/auth-utils";
+import { Role } from "./shared/enum/role";
 
 const isAuthenticated = async (request: NextRequest) => {
   const refreshToken = request.cookies.get("refreshToken");
@@ -37,7 +41,7 @@ const getUserRoles = async (request: NextRequest) => {
     });
     if (response.ok) {
       const responseData = await response.json();
-      return responseData.roles;
+      return convertStringRolesToEnumRole(responseData.roles);
     } else {
       return null;
     }

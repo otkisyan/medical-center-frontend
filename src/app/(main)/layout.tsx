@@ -7,6 +7,7 @@ import { UserContextProvider } from "@/shared/context/UserContextProvider";
 import Wrapper from "@/components/layout/Wrapper";
 import NavBar from "@/components/layout/NavBar";
 import ToastContainerInstance from "@/components/toast/ToastContainerInstance";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,7 +26,9 @@ export default function RootLayout({
           <ToastContainerInstance></ToastContainerInstance>
           <UserContextProvider>
             <NavBar></NavBar>
-            <Wrapper>{children}</Wrapper>
+            <Wrapper>
+              <Suspense>{children}</Suspense>
+            </Wrapper>
           </UserContextProvider>
         </body>
       </html>

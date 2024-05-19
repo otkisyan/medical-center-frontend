@@ -1,5 +1,4 @@
 "use client";
-import "@/css/styles.css";
 import { Page } from "@/shared/interface/page/page-interface";
 import { PatientResponse } from "@/shared/interface/patient/patient-interface";
 import { PatientService } from "@/shared/service/patient-service";
@@ -11,13 +10,13 @@ import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import Pagination from "react-bootstrap/Pagination";
 import Row from "react-bootstrap/Row";
-import Spinner from "react-bootstrap/Spinner";
 import Stack from "react-bootstrap/Stack";
 import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
 import useFetchPatients from "@/shared/hooks/patients/useFetchPatients";
 import useFetchPatientsCount from "@/shared/hooks/patients/useFetchPatientsCount";
 import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import Link from "next/link";
 
 export default function PatientsPage() {
   const initialParamsState = useMemo(
@@ -108,9 +107,9 @@ export default function PatientsPage() {
           </Col>
         </Row>
         <Stack direction="horizontal" gap={3}>
-          <a href="/patients/new" className="link">
+          <Link href="/patients/new" className="link">
             Новий пацієнт →
-          </a>
+          </Link>
           <Button
             variant="link"
             className="ms-auto text-secondary"
@@ -156,13 +155,23 @@ export default function PatientsPage() {
                       : ""}
                   </td>
                   <td>
-                    <a
-                      className="btn btn-primary"
+                    <Link
+                      className="btn btn-primary me-2"
                       href={`/patients/${encodeURIComponent(patient.id ?? "")}`}
                       role="button"
                     >
                       <i className="bi bi-eye"></i>
-                    </a>
+                    </Link>
+                    <Link
+                      className="btn btn-primary"
+                      href={{
+                        pathname: "/appointments/timetable",
+                        query: { patientId: patient.id },
+                      }}
+                      role="button"
+                    >
+                      <i className="bi bi-journal-plus"></i>
+                    </Link>
                   </td>
                 </tr>
               ))}

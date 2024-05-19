@@ -1,7 +1,9 @@
+import { Role } from "@/shared/enum/role";
+
 export interface UserDetails {
   id: number;
   username: string | undefined;
-  roles: string[];
+  roles: Role[];
   accountNonExpired: boolean;
   accountNonLocked: boolean;
   credentialsNonExpired: boolean;

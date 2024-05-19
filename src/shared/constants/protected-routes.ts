@@ -1,5 +1,7 @@
+import { Role } from "../enum/role";
+
 const protectedRoutes = {
-  "/patients": ["ROLE_DOCTOR", "ROLE_RECEPTIONIST", "ROLE_ADMIN"],
+  "/patients": [Role.ADMIN, Role.RECEPTIONIST, Role.Doctor],
 };
 
 export default protectedRoutes;
