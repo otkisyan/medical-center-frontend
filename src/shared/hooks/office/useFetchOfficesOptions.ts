@@ -7,11 +7,14 @@ const useFetchOfficesOptions = () => {
     () => [{ value: "", label: "Без кабінету" }],
     []
   );
+
   const [loadingOfficesOptions, setLoadingOffices] = useState(false);
   const [officesOptions, setOfficesOptions] = useState<any[]>([]);
+
   const defaultOfficeOption = officesOptions.find(
     (option) => option.value === ""
   );
+
   const findOfficeOptionByValue = (value: any) =>
     officesOptions.find((option) => option.value === value);
 

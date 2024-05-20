@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { DoctorService } from "@/shared/service/doctor-service";
 import { DoctorResponse } from "@/shared/interface/doctor/doctor-interface";
 
-export default function useFetchDoctor(doctorId: number) {
+export default function useFetchDoctor(doctorId: number | null) {
   const [doctor, setDoctor] = useState<DoctorResponse | null>(null);
   const [loadingDoctor, setLoadingDoctor] = useState(true);
 
@@ -19,7 +19,11 @@ export default function useFetchDoctor(doctorId: number) {
   }, []);
 
   useEffect(() => {
-    fetchDoctor(doctorId);
+    if (doctorId) {
+      fetchDoctor(doctorId);
+    } else {
+      setLoadingDoctor(false);
+    }
   }, [fetchDoctor, doctorId]);
 
   return { doctor, loadingDoctor, setDoctor };

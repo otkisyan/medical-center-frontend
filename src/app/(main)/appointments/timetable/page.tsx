@@ -16,7 +16,7 @@ import {
 } from "react-bootstrap";
 import { customReactSelectStyles } from "@/css/react-select";
 import useFetchDoctorsOptions from "@/shared/hooks/doctor/useFetchDoctorsOptions";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useFetchDoctorTimeTable from "@/shared/hooks/doctor/useFetchDoctorTimeTable";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import { AppointmentResponse } from "@/shared/interface/appointment/appointment-interface";
@@ -30,17 +30,29 @@ import useFetchPatient from "@/shared/hooks/patients/useFetchPatient";
 import Link from "next/link";
 import { AppointmentService } from "@/shared/service/appointment-service";
 import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
+import useFetchDoctors from "@/shared/hooks/doctor/useFetchDoctors";
+import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
+import { useAuth } from "@/shared/context/UserContextProvider";
+import { Role } from "@/shared/enum/role";
 
 export default function TimeTablePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const { hasAnyRole, userDetails } = useAuth();
+
+  const [isDoctor, setIsDoctor] = useState<boolean>(false);
   const [doctorId, setDoctorId] = useState<number | null>(null);
   const [patientId, setPatientId] = useState<number | null>(null);
   const { patient, loadingPatient } = useFetchPatient(patientId);
+  const { doctor, loadingDoctor } = useFetchDoctor(doctorId);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const { loadingDoctorsOptions, doctorsOptions, findDoctorOptionByValue } =
-    useFetchDoctorsOptions();
+  const {
+    loadingDoctorsOptions,
+    doctorsOptions,
+    findDoctorOptionByValue,
+    fetchDoctorsOptions,
+  } = useFetchDoctorsOptions();
   const [initialLoading, setInitialLoading] = useState(true);
   const { timeTable, loadingTimeTable, fetchTimeTable } =
     useFetchDoctorTimeTable(doctorId, currentDate);
@@ -51,9 +63,23 @@ export default function TimeTablePage() {
   const [appointmentTime, setAppointmentTime] = useState<any>(
     appointmentTimeInitialState
   );
+  const [defaultDoctorOption, setDefaultDoctorOption] = useState<any>(null);
 
-  const timeStartRef = useRef<HTMLInputElement>(null);
-  const timeEndRef = useRef<HTMLInputElement>(null);
+  const generateDefaultDoctorOption = useCallback(() => {
+    if (doctor) {
+      return {
+        value: doctor.id,
+        label:
+          doctor.surname +
+          " " +
+          doctor.name[0] +
+          "." +
+          doctor.middleName[0] +
+          " - " +
+          doctor.medicalSpecialty,
+      };
+    }
+  }, [doctor]);
 
   useEffect(() => {
     const appointmentIdParam = searchParams.get("appointmentId");
@@ -65,6 +91,23 @@ export default function TimeTablePage() {
     }
     setInitialLoading(false);
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!hasAnyRole([Role.Doctor])) {
+      fetchDoctorsOptions();
+    } else {
+      if (userDetails) {
+        setDoctorId(userDetails.id);
+      }
+      setIsDoctor(true);
+    }
+  }, [userDetails, fetchDoctorsOptions, hasAnyRole]);
+
+  useEffect(() => {
+    if (hasAnyRole([Role.Doctor])) {
+      setDefaultDoctorOption(generateDefaultDoctorOption());
+    }
+  }, [doctor, generateDefaultDoctorOption, hasAnyRole]);
 
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
 
@@ -103,7 +146,7 @@ export default function TimeTablePage() {
     event.preventDefault();
     if (patient != null && doctorId != null) {
       try {
-        const data = await AppointmentService.newAppointment({
+        await AppointmentService.newAppointment({
           date: currentDate,
           timeStart: appointmentTime.timeStart,
           timeEnd: appointmentTime.timeEnd,
@@ -198,22 +241,36 @@ export default function TimeTablePage() {
             {doctorId && (
               <>
                 <Form.Label>Лікар</Form.Label>
-                <InputGroup className="mb-3">
-                  <Form.Control
-                    type="text"
-                    value={findDoctorOptionByValue(doctorId).label}
-                    disabled
-                  />
-                  <Link href={`/doctors/${doctorId}`} passHref legacyBehavior>
-                    <Button
-                      variant="primary"
-                      id="button-addon2"
-                      target="_blank"
-                    >
-                      <i className="bi bi-eye"></i>
-                    </Button>
-                  </Link>
-                </InputGroup>
+                {!isDoctor ? (
+                  <InputGroup className="mb-3">
+                    <Form.Control
+                      type="text"
+                      value={findDoctorOptionByValue(doctorId).label}
+                      disabled
+                    />
+                    <Link href={`/doctors/${doctorId}`} passHref legacyBehavior>
+                      <Button
+                        variant="primary"
+                        id="button-addon2"
+                        target="_blank"
+                      >
+                        <i className="bi bi-eye"></i>
+                      </Button>
+                    </Link>
+                  </InputGroup>
+                ) : (
+                  <>
+                    {defaultDoctorOption && (
+                      <InputGroup className="mb-3">
+                        <Form.Control
+                          type="text"
+                          value={defaultDoctorOption.label}
+                          disabled
+                        />
+                      </InputGroup>
+                    )}
+                  </>
+                )}
               </>
             )}
             <Row>
@@ -277,21 +334,37 @@ export default function TimeTablePage() {
         <Col sm lg={4}>
           <Form.Group>
             <Form.Label>Лікар</Form.Label>
-            <Select
-              className="basic-single mb-3"
-              classNamePrefix="select"
-              isLoading={loadingDoctorsOptions}
-              isSearchable={true}
-              placeholder={"Оберіть лікаря"}
-              name="doctorId"
-              onChange={(e) => {
-                setDoctorId(e.value);
-              }}
-              loadingMessage={() => "Завантаження..."}
-              noOptionsMessage={() => "Лікарів не знайдено"}
-              options={doctorsOptions}
-              styles={customReactSelectStyles}
-            />
+            {!isDoctor ? (
+              <Select
+                className="basic-single mb-3"
+                classNamePrefix="select"
+                isLoading={loadingDoctorsOptions}
+                isSearchable={true}
+                placeholder={"Оберіть лікаря"}
+                name="doctorId"
+                onChange={(e) => {
+                  setDoctorId(e.value);
+                }}
+                loadingMessage={() => "Завантаження..."}
+                noOptionsMessage={() => "Лікарів не знайдено"}
+                options={doctorsOptions}
+                styles={customReactSelectStyles}
+              />
+            ) : (
+              <Select
+                isDisabled
+                className="basic-single mb-3"
+                classNamePrefix="select"
+                isLoading={loadingDoctor}
+                isSearchable={true}
+                value={defaultDoctorOption}
+                placeholder={"Оберіть лікаря"}
+                name="doctorId"
+                loadingMessage={() => "Завантаження..."}
+                noOptionsMessage={() => "Лікаря не знайдено"}
+                styles={customReactSelectStyles}
+              />
+            )}
           </Form.Group>
         </Col>
         {patientId && (
@@ -342,7 +415,7 @@ export default function TimeTablePage() {
             />
           </Form.Group>
         </Col>
-        <Col sm lg={3} className="d-flex align-self-center">
+        <Col sm lg={3} className="d-flex align-self-center mb-3">
           <Button
             variant="primary"
             className="w-100"
@@ -355,7 +428,7 @@ export default function TimeTablePage() {
       </Row>
       {loadingTimeTable ? (
         <SpinnerCenter />
-      ) : timeTable && timeTable.length !== 0 ? (
+      ) : timeTable !== null ? (
         <Table striped>
           <thead>
             <tr>
@@ -406,13 +479,25 @@ export default function TimeTablePage() {
         <>
           <br></br>
           {doctorId && (
-            <Alert
-              variant="danger"
-              className="text-center mx-auto"
-              style={{ maxWidth: "400px" }}
-            >
-              Лікар не має графіку роботи на обрану дату!
-            </Alert>
+            <>
+              {!isDoctor ? (
+                <Alert
+                  variant="danger"
+                  className="text-center mx-auto"
+                  style={{ maxWidth: "400px" }}
+                >
+                  Лікар не має графіку роботи на обрану дату!
+                </Alert>
+              ) : (
+                <Alert
+                  variant="danger"
+                  className="text-center mx-auto"
+                  style={{ maxWidth: "400px" }}
+                >
+                  Ви не маєте графіку роботи на обрану дату!
+                </Alert>
+              )}
+            </>
           )}
         </>
       )}

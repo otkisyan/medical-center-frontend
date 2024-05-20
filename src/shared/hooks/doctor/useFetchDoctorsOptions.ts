@@ -31,7 +31,7 @@ export default function useFetchDoctorsOptions() {
     }
   };
 
-  const fetchDoctors = useCallback(async () => {
+  const fetchDoctorsOptions = useCallback(async () => {
     try {
       setLoadingDoctors(true);
       const doctors = await fetchAllDoctors();
@@ -57,15 +57,12 @@ export default function useFetchDoctorsOptions() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchDoctors();
-  }, [fetchDoctors]);
-
   return {
     loadingDoctorsOptions,
     doctorsOptions,
     defaultDoctorOption,
     findDoctorOptionByValue,
     setDoctorsOptions,
+    fetchDoctorsOptions,
   };
 }

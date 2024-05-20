@@ -22,7 +22,7 @@ export default function useFetchDoctorTimeTable(
       const data = await AppointmentService.getTimeTable(id, params);
       setTimeTable(data);
     } catch (error) {
-      setTimeTable([]);
+      setTimeTable(null);
       console.error("Error fetching timetable:", error);
     } finally {
       setLoadingTimeTable(false);
