@@ -1,5 +1,5 @@
 "use client";
-import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import { customReactSelectStyles } from "@/css/react-select";
 import useFetchAllDoctorWorkSchedules from "@/shared/hooks/doctor/useFetchAllDoctorWorkSchedules";
 import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";

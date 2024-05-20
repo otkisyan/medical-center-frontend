@@ -15,8 +15,9 @@ import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
 import useFetchPatients from "@/shared/hooks/patients/useFetchPatients";
 import useFetchPatientsCount from "@/shared/hooks/patients/useFetchPatientsCount";
-import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
+import { ButtonGroup } from "react-bootstrap";
 
 export default function PatientsPage() {
   const initialParamsState = useMemo(
@@ -155,23 +156,27 @@ export default function PatientsPage() {
                       : ""}
                   </td>
                   <td>
-                    <Link
-                      className="btn btn-primary me-2"
-                      href={`/patients/${encodeURIComponent(patient.id ?? "")}`}
-                      role="button"
-                    >
-                      <i className="bi bi-eye"></i>
-                    </Link>
-                    <Link
-                      className="btn btn-primary"
-                      href={{
-                        pathname: "/appointments/timetable",
-                        query: { patientId: patient.id },
-                      }}
-                      role="button"
-                    >
-                      <i className="bi bi-journal-plus"></i>
-                    </Link>
+                    <ButtonGroup>
+                      <Link
+                        className="btn btn-primary me-2 rounded"
+                        href={`/patients/${encodeURIComponent(
+                          patient.id ?? ""
+                        )}`}
+                        role="button"
+                      >
+                        <i className="bi bi-eye"></i>
+                      </Link>
+                      <Link
+                        className="btn btn-primary rounded"
+                        href={{
+                          pathname: "/appointments/timetable",
+                          query: { patientId: patient.id },
+                        }}
+                        role="button"
+                      >
+                        <i className="bi bi-journal-plus"></i>
+                      </Link>
+                    </ButtonGroup>
                   </td>
                 </tr>
               ))}

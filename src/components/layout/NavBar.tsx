@@ -7,10 +7,12 @@ import { useAuth } from "@/shared/context/UserContextProvider";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Role } from "@/shared/enum/role";
+import React from "react";
 
-export default function NavBar() {
+const NavBar = () => {
   const { logout, hasAnyRole } = useAuth();
   const pathname = usePathname();
+
   return (
     <Navbar expand="sm" className="bg-body-tertiary">
       <Container style={{ maxWidth: "960px" }}>
@@ -51,4 +53,5 @@ export default function NavBar() {
       </Container>
     </Navbar>
   );
-}
+};
+export default React.memo(NavBar);

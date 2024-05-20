@@ -17,7 +17,7 @@ import Modal from "react-bootstrap/Modal";
 import { useRouter } from "next/navigation";
 import { Breadcrumb } from "react-bootstrap";
 import useFetchPatient from "@/shared/hooks/patients/useFetchPatient";
-import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
 
 export default function PatientPage({ params }: { params: { id: number } }) {

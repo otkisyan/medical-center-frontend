@@ -9,9 +9,13 @@ import { Role } from "./shared/enum/role";
 
 const isAuthenticated = async (request: NextRequest) => {
   const refreshToken = request.cookies.get("refreshToken");
+  if (!refreshToken) {
+    return false;
+  }
   try {
     const response = await fetch("http://localhost:8080/auth/validate", {
       method: "GET",
+      cache: "no-store",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -30,9 +34,13 @@ const isAuthenticated = async (request: NextRequest) => {
 
 const getUserRoles = async (request: NextRequest) => {
   const refreshToken = request.cookies.get("refreshToken");
+  if (!refreshToken) {
+    return null;
+  }
   try {
     const response = await fetch("http://localhost:8080/auth/details", {
       method: "GET",
+      cache: "no-store",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -41,7 +49,13 @@ const getUserRoles = async (request: NextRequest) => {
     });
     if (response.ok) {
       const responseData = await response.json();
-      return convertStringRolesToEnumRole(responseData.roles);
+      let roles: Role[];
+      try {
+        roles = convertStringRolesToEnumRole(responseData.roles);
+        return roles;
+      } catch (error) {
+        return null;
+      }
     } else {
       return null;
     }
@@ -56,6 +70,9 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoute(pathname)) {
     const isAuth = await isAuthenticated(request);
     const userRoles = await getUserRoles(request);
+    if (!userRoles) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
     if (!isAuth) {
       return NextResponse.redirect(new URL("/login", request.url));
     } else if (!hasSufficientRole(request.nextUrl.pathname, userRoles)) {
@@ -72,7 +89,11 @@ export async function middleware(request: NextRequest) {
 
   if (pathname === "/") {
     const isAuth = await isAuthenticated(request);
+    const userRoles = await getUserRoles(request);
     if (!isAuth) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    if (!userRoles) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }

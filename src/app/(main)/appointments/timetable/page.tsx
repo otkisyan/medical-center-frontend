@@ -3,8 +3,12 @@ import Select, { components } from "react-select";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Alert,
+  Breadcrumb,
+  Button,
   Col,
   Form,
+  InputGroup,
+  Modal,
   Placeholder,
   Row,
   Spinner,
@@ -12,18 +16,20 @@ import {
 } from "react-bootstrap";
 import { customReactSelectStyles } from "@/css/react-select";
 import useFetchDoctorsOptions from "@/shared/hooks/doctor/useFetchDoctorsOptions";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useFetchDoctorTimeTable from "@/shared/hooks/doctor/useFetchDoctorTimeTable";
-import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import { AppointmentResponse } from "@/shared/interface/appointment/appointment-interface";
 import { TimeSlotResponse } from "@/shared/interface/time-slot/time-slot-interface";
 import {
   formatDateToHtml5,
   formatTimeSecondsToTime,
+  timeStartBiggerThanEnd,
 } from "@/shared/utils/date-utils";
 import useFetchPatient from "@/shared/hooks/patients/useFetchPatient";
-import { axiosInstance } from "@/axios.config";
-import useSWR from "swr";
+import Link from "next/link";
+import { AppointmentService } from "@/shared/service/appointment-service";
+import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 
 export default function TimeTablePage() {
   const router = useRouter();
@@ -33,12 +39,21 @@ export default function TimeTablePage() {
   const [patientId, setPatientId] = useState<number | null>(null);
   const { patient, loadingPatient } = useFetchPatient(patientId);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const { loadingDoctorsOptions, doctorsOptions } = useFetchDoctorsOptions();
+  const { loadingDoctorsOptions, doctorsOptions, findDoctorOptionByValue } =
+    useFetchDoctorsOptions();
   const [initialLoading, setInitialLoading] = useState(true);
-  const { timeTable, loadingTimeTable } = useFetchDoctorTimeTable(
-    doctorId,
-    currentDate
+  const { timeTable, loadingTimeTable, fetchTimeTable } =
+    useFetchDoctorTimeTable(doctorId, currentDate);
+  const appointmentTimeInitialState = {
+    timeStart: "",
+    timeEnd: "",
+  };
+  const [appointmentTime, setAppointmentTime] = useState<any>(
+    appointmentTimeInitialState
   );
+
+  const timeStartRef = useRef<HTMLInputElement>(null);
+  const timeEndRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const appointmentIdParam = searchParams.get("appointmentId");
@@ -47,10 +62,101 @@ export default function TimeTablePage() {
       //
     } else if (patientIdParam != null) {
       setPatientId(Number(patientIdParam));
-      //
     }
     setInitialLoading(false);
   }, [searchParams]);
+
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+
+  const handleCloseAppointmentModal = () => setShowAppointmentModal(false);
+  const handleShowAppointmentModal = () => setShowAppointmentModal(true);
+
+  const handleChangeAppointmentTime = (event: any) => {
+    const { name, value } = event.target;
+    setAppointmentTime((prevAppointmentTime: any) => ({
+      ...prevAppointmentTime,
+      [name]: value,
+    }));
+    const timeStartInput = document.getElementsByName(
+      "timeStart"
+    )[0] as HTMLInputElement;
+    const timeEndInput = document.getElementsByName(
+      "timeEnd"
+    )[0] as HTMLInputElement;
+
+    if (name === "timeStart" || name === "timeEnd") {
+      if (
+        timeStartInput.value &&
+        timeEndInput.value &&
+        timeStartInput.value >= timeEndInput.value
+      ) {
+        timeEndInput.setCustomValidity(
+          "Час початку прийому не може бути більше або дорівнювати часу закінчення прийому"
+        );
+      } else {
+        timeEndInput.setCustomValidity("");
+      }
+    }
+  };
+
+  const handleNewAppointmentFormSubmit = async (event: any) => {
+    event.preventDefault();
+    if (patient != null && doctorId != null) {
+      try {
+        const data = await AppointmentService.newAppointment({
+          date: currentDate,
+          timeStart: appointmentTime.timeStart,
+          timeEnd: appointmentTime.timeEnd,
+          patientId: patient.id,
+          doctorId: doctorId,
+          diagnosis: null,
+          symptoms: null,
+          medicalRecommendations: null,
+        });
+        handleCloseAppointmentModal();
+        fetchTimeTable(doctorId, { date: formatDateToHtml5(currentDate) });
+        setAppointmentTime(appointmentTimeInitialState);
+        notifySuccess("Новий прийом успішно призначено!");
+      } catch (error: any) {
+        const errorMessage = error.response.data.message;
+        if (error.response && error.response.status === 409) {
+          if (errorMessage.includes("The doctor already has an appointment")) {
+            notifyError("Лікар вже має інший прийом на обраний час!");
+          } else if (
+            errorMessage.includes("The patient already has an appointment")
+          ) {
+            notifyError("Пацієнт вже має інший прийом на обраний час!");
+          } else {
+            notifyError(
+              "Непередбачена помилка конфлікту при призначенні прийому"
+            );
+          }
+        } else if (error.response && error.response.status === 400) {
+          if (
+            errorMessage &&
+            errorMessage.includes(
+              "Appointment is outside the doctor's working hours"
+            )
+          ) {
+            notifyError("Час прийому виходить за межі графіку роботи лікаря!");
+          } else if (
+            errorMessage &&
+            errorMessage.includes(
+              "The start time of the appointment cannot be greater than the end time"
+            )
+          ) {
+            notifyError(
+              "Час початку прийому не може бути більше часу закінчення прийому"
+            );
+          }
+        } else {
+          notifyError(
+            "При створенні нового прийому сталася непередбачена помилка!"
+          );
+        }
+      }
+    }
+  };
 
   return initialLoading || loadingDoctorsOptions || loadingPatient ? (
     <>
@@ -60,66 +166,191 @@ export default function TimeTablePage() {
   ) : (
     <>
       <br></br>
+      <Modal show={showAppointmentModal} onHide={handleCloseAppointmentModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Інформація про прийом</Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={handleNewAppointmentFormSubmit}>
+          <Modal.Body>
+            {patient && (
+              <>
+                <Form.Label>Пацієнт</Form.Label>
+                <InputGroup className="mb-3">
+                  <Form.Control
+                    type="text"
+                    value={`${patient.surname} ${patient.name.charAt(
+                      0
+                    )}.${patient.middleName.charAt(0)}`}
+                    disabled
+                  />
+                  <Link href={`/patients/${patientId}`} passHref legacyBehavior>
+                    <Button
+                      variant="primary"
+                      id="button-addon2"
+                      target="_blank"
+                    >
+                      <i className="bi bi-eye"></i>
+                    </Button>
+                  </Link>
+                </InputGroup>
+              </>
+            )}
+            {doctorId && (
+              <>
+                <Form.Label>Лікар</Form.Label>
+                <InputGroup className="mb-3">
+                  <Form.Control
+                    type="text"
+                    value={findDoctorOptionByValue(doctorId).label}
+                    disabled
+                  />
+                  <Link href={`/doctors/${doctorId}`} passHref legacyBehavior>
+                    <Button
+                      variant="primary"
+                      id="button-addon2"
+                      target="_blank"
+                    >
+                      <i className="bi bi-eye"></i>
+                    </Button>
+                  </Link>
+                </InputGroup>
+              </>
+            )}
+            <Row>
+              <Col lg={4} sm>
+                <Form.Group>
+                  <Form.Label>Дата</Form.Label>
+                  <Form.Control
+                    className="mb-3"
+                    max="9999-12-31"
+                    type="date"
+                    disabled
+                    value={formatDateToHtml5(currentDate)}
+                  />
+                </Form.Group>
+              </Col>
+              <Col sm>
+                <Form.Group>
+                  <Form.Label>Час початку</Form.Label>
+                  <Form.Control
+                    required
+                    className="mb-3"
+                    type="time"
+                    name="timeStart"
+                    value={appointmentTime.timeStart}
+                    onChange={handleChangeAppointmentTime}
+                  />
+                </Form.Group>
+              </Col>
+              <Col sm>
+                <Form.Group>
+                  <Form.Label>Час закінчення</Form.Label>
+                  <Form.Control
+                    className="mb-3"
+                    type="time"
+                    required
+                    name="timeEnd"
+                    value={appointmentTime.timeEnd}
+                    onChange={handleChangeAppointmentTime}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary" type="submit">
+              Призначити
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+      <Breadcrumb>
+        <Link href="/" passHref legacyBehavior>
+          <Breadcrumb.Item className="link">Домашня сторінка</Breadcrumb.Item>
+        </Link>
+        <Link href="/patients" passHref legacyBehavior>
+          <Breadcrumb.Item className="link">Пацієнти</Breadcrumb.Item>
+        </Link>
+        <Breadcrumb.Item active>Призначення нового прийому</Breadcrumb.Item>
+      </Breadcrumb>
       <Row>
-        <Col sm lg={5}>
-          <Form.Label>Лікар</Form.Label>
-          <Select
-            className="basic-single mb-3"
-            classNamePrefix="select"
-            isLoading={loadingDoctorsOptions}
-            isSearchable={true}
-            placeholder={"Оберіть лікаря"}
-            name="doctorId"
-            onChange={(e) => {
-              setDoctorId(e.value);
-            }}
-            loadingMessage={() => "Завантаження..."}
-            noOptionsMessage={() => "Кабінетів не знайдено"}
-            options={doctorsOptions}
-            styles={customReactSelectStyles}
-          />
+        <Col sm lg={4}>
+          <Form.Group>
+            <Form.Label>Лікар</Form.Label>
+            <Select
+              className="basic-single mb-3"
+              classNamePrefix="select"
+              isLoading={loadingDoctorsOptions}
+              isSearchable={true}
+              placeholder={"Оберіть лікаря"}
+              name="doctorId"
+              onChange={(e) => {
+                setDoctorId(e.value);
+              }}
+              loadingMessage={() => "Завантаження..."}
+              noOptionsMessage={() => "Лікарів не знайдено"}
+              options={doctorsOptions}
+              styles={customReactSelectStyles}
+            />
+          </Form.Group>
         </Col>
         {patientId && (
           <>
             {loadingPatient ? (
               <Col sm lg={3}>
-                <Form.Label>Пацієнт</Form.Label>
-                <Form.Control
-                  className="mb-3"
-                  max="9999-12-31"
-                  type="text"
-                  value=""
-                  placeholder={"Завантаження..."}
-                  disabled
-                />
+                <Form.Group>
+                  <Form.Label>Пацієнт</Form.Label>
+                  <Form.Control
+                    className="mb-3"
+                    max="9999-12-31"
+                    type="text"
+                    value=""
+                    placeholder={"Завантаження..."}
+                    disabled
+                  />
+                </Form.Group>
               </Col>
             ) : patient ? (
               <Col sm lg={3}>
-                <Form.Label>Пацієнт</Form.Label>
-                <Form.Control
-                  className="mb-3"
-                  max="9999-12-31"
-                  type="text"
-                  disabled
-                  value={`${patient.surname} ${patient.name.charAt(
-                    0
-                  )}.${patient.middleName.charAt(0)}`}
-                />
+                <Form.Group>
+                  <Form.Label>Пацієнт</Form.Label>
+                  <Form.Control
+                    className="mb-3"
+                    max="9999-12-31"
+                    type="text"
+                    disabled
+                    value={`${patient.surname} ${patient.name.charAt(
+                      0
+                    )}.${patient.middleName.charAt(0)}`}
+                  />
+                </Form.Group>
               </Col>
             ) : null}
           </>
         )}
         <Col sm lg={2}>
-          <Form.Label>Дата</Form.Label>
-          <Form.Control
-            className="mb-3"
-            max="9999-12-31"
-            type="date"
-            value={formatDateToHtml5(currentDate)}
-            onChange={(e) => {
-              setCurrentDate(new Date(e.target.value));
-            }}
-          />
+          <Form.Group>
+            <Form.Label>Дата</Form.Label>
+            <Form.Control
+              className="mb-3"
+              max="9999-12-31"
+              type="date"
+              value={formatDateToHtml5(currentDate)}
+              onChange={(e) => {
+                setCurrentDate(new Date(e.target.value));
+              }}
+            />
+          </Form.Group>
+        </Col>
+        <Col sm lg={3} className="d-flex align-self-center">
+          <Button
+            variant="primary"
+            className="w-100"
+            onClick={handleShowAppointmentModal}
+            hidden={!patient || !doctorId}
+          >
+            Призначити прийом
+          </Button>
         </Col>
       </Row>
       {loadingTimeTable ? (

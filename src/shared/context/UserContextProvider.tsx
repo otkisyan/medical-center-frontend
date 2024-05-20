@@ -9,6 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Role } from "../enum/role";
 import { convertStringRolesToEnumRole } from "../utils/auth-utils";
+import ContextLoading from "@/components/loading/ContextLoading";
 
 const UserContextInstance = createContext<UserContext>({} as UserContext);
 
@@ -18,17 +19,18 @@ export const UserContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
-  const [isReady, setIsReady] = useState(true);
+  const [isReady, setIsReady] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
   const router = useRouter();
   const path = usePathname();
 
   const logout = async () => {
-    router.push("/login");
     try {
-      AuthService.logout();
+      await AuthService.logout();
     } catch (error) {
+      // Handle logout error
     } finally {
-      router.push("/login");
+      setIsReady(false);
       setUserDetails(null);
       localStorage.removeItem("access_token");
     }
@@ -58,9 +60,17 @@ export const UserContextProvider = ({
   }, []);
 
   useEffect(() => {
+    let loadingTimer: NodeJS.Timeout;
     if (path !== "/login") {
-      fetchUserDetails();
+      loadingTimer = setTimeout(() => setShowLoading(true), 1000);
+      fetchUserDetails().finally(() => {
+        clearTimeout(loadingTimer);
+        setShowLoading(false);
+      });
+    } else {
+      setIsReady(true);
     }
+    return () => clearTimeout(loadingTimer);
   }, [fetchUserDetails, path]);
 
   const login = async (username: string, password: string) => {
@@ -103,7 +113,7 @@ export const UserContextProvider = ({
         hasAnyRole: hasAnyRole,
       }}
     >
-      {isReady ? children : null}
+      {isReady ? children : showLoading && <ContextLoading />}
     </UserContextInstance.Provider>
   );
 };

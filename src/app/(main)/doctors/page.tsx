@@ -13,7 +13,7 @@ import Alert from "react-bootstrap/Alert";
 import useFetchDoctors from "@/shared/hooks/doctor/useFetchDoctors";
 import useFetchDoctorsCount from "@/shared/hooks/doctor/useFetchDoctorsCount";
 import { formatDateToString } from "@/shared/utils/date-utils";
-import SpinnerCenter from "@/components/spinner/SpinnerCenter";
+import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
 
 export default function DoctorsPage() {
