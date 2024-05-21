@@ -6,9 +6,9 @@ export interface AppointmentResponse {
   date: Date;
   timeStart: Date;
   timeEnd: Date;
-  diagnosis: string;
-  symptoms: string;
-  medicalRecommendations: string;
+  diagnosis: string | null;
+  symptoms: string | null;
+  medicalRecommendations: string | null;
   doctor: DoctorResponse;
   patient: PatientResponse;
 }

@@ -10,6 +10,7 @@ import {
   InputGroup,
   Modal,
   Placeholder,
+  ProgressBar,
   Row,
   Spinner,
   Table,
@@ -34,6 +35,7 @@ import useFetchDoctors from "@/shared/hooks/doctor/useFetchDoctors";
 import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
 import { useAuth } from "@/shared/context/UserContextProvider";
 import { Role } from "@/shared/enum/role";
+import useFetchAppointment from "@/shared/hooks/appointment/useFetchAppointment";
 
 export default function TimeTablePage() {
   const router = useRouter();
@@ -56,6 +58,8 @@ export default function TimeTablePage() {
   const [initialLoading, setInitialLoading] = useState(true);
   const { timeTable, loadingTimeTable, fetchTimeTable } =
     useFetchDoctorTimeTable(doctorId, currentDate);
+  const { appointment, loadingAppointment, fetchAppointment, setAppointment } =
+    useFetchAppointment();
   const appointmentTimeInitialState = {
     timeStart: "",
     timeEnd: "",
@@ -85,12 +89,16 @@ export default function TimeTablePage() {
     const appointmentIdParam = searchParams.get("appointmentId");
     const patientIdParam = searchParams.get("patientId");
     if (appointmentIdParam != null) {
-      //
+      fetchAppointment(parseInt(appointmentIdParam)).catch(() => {
+        if (patientIdParam != null) {
+          setPatientId(Number(patientIdParam));
+        }
+      });
     } else if (patientIdParam != null) {
       setPatientId(Number(patientIdParam));
     }
     setInitialLoading(false);
-  }, [searchParams]);
+  }, [searchParams, fetchAppointment]);
 
   useEffect(() => {
     if (!hasAnyRole([Role.Doctor])) {
@@ -108,6 +116,30 @@ export default function TimeTablePage() {
       setDefaultDoctorOption(generateDefaultDoctorOption());
     }
   }, [doctor, generateDefaultDoctorOption, hasAnyRole]);
+
+  useEffect(() => {
+    const patientIdParam = searchParams.get("patientId");
+    if (appointment) {
+      if (isDoctor) {
+        if (userDetails) {
+          if (appointment.doctor.id === userDetails.id) {
+            setPatientId(appointment.patient.id);
+            setDoctorId(userDetails.id);
+            setCurrentDate(appointment.date);
+          } else {
+            if (patientIdParam) {
+              setPatientId(Number(patientIdParam));
+            }
+            setAppointment(null);
+          }
+        }
+      } else {
+        setPatientId(appointment.patient.id);
+        setDoctorId(appointment.doctor.id);
+        setCurrentDate(appointment.date);
+      }
+    }
+  }, [appointment, isDoctor, userDetails, setAppointment, searchParams]);
 
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
 
@@ -201,7 +233,10 @@ export default function TimeTablePage() {
     }
   };
 
-  return initialLoading || loadingDoctorsOptions || loadingPatient ? (
+  return initialLoading ||
+    loadingDoctorsOptions ||
+    loadingPatient ||
+    loadingDoctor ? (
     <>
       <br></br>
       <SpinnerCenter />
@@ -316,7 +351,7 @@ export default function TimeTablePage() {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary" type="submit">
-              Призначити
+              {appointment ? "Перепланувати прийом" : "Призначити прийом"}
             </Button>
           </Modal.Footer>
         </Form>
@@ -325,12 +360,32 @@ export default function TimeTablePage() {
         <Link href="/" passHref legacyBehavior>
           <Breadcrumb.Item className="link">Домашня сторінка</Breadcrumb.Item>
         </Link>
-        <Link href="/patients" passHref legacyBehavior>
-          <Breadcrumb.Item className="link">Пацієнти</Breadcrumb.Item>
-        </Link>
-        <Breadcrumb.Item active>Призначення нового прийому</Breadcrumb.Item>
+        {!appointment ? (
+          <Link href="/patients" passHref legacyBehavior>
+            <Breadcrumb.Item className="link">Пацієнти</Breadcrumb.Item>
+          </Link>
+        ) : (
+          <Link href="/appointments" passHref legacyBehavior>
+            <Breadcrumb.Item className="link">Прийоми</Breadcrumb.Item>
+          </Link>
+        )}
+        {!appointment ? (
+          <Breadcrumb.Item active>Призначення нового прийому</Breadcrumb.Item>
+        ) : (
+          <>
+            <Breadcrumb.Item active>Перепланування прийому</Breadcrumb.Item>
+            &nbsp;
+            <Link
+              href={`/appointments/${appointment.id}`}
+              style={{ textDecoration: "none" }}
+              target="_blank"
+            >
+              {"#" + appointment.id}
+            </Link>
+          </>
+        )}
       </Breadcrumb>
-      <Row>
+      <Row className="mb-3">
         <Col sm lg={4}>
           <Form.Group>
             <Form.Label>Лікар</Form.Label>
@@ -348,6 +403,11 @@ export default function TimeTablePage() {
                 loadingMessage={() => "Завантаження..."}
                 noOptionsMessage={() => "Лікарів не знайдено"}
                 options={doctorsOptions}
+                defaultValue={
+                  appointment
+                    ? findDoctorOptionByValue(appointment.doctor.id)
+                    : ""
+                }
                 styles={customReactSelectStyles}
               />
             ) : (
@@ -415,14 +475,14 @@ export default function TimeTablePage() {
             />
           </Form.Group>
         </Col>
-        <Col sm lg={3} className="d-flex align-self-center mb-3">
+        <Col sm lg={3} className="d-flex align-self-center">
           <Button
             variant="primary"
             className="w-100"
             onClick={handleShowAppointmentModal}
             hidden={!patient || !doctorId}
           >
-            Призначити прийом
+            {appointment ? "Перепланувати прийом" : "Призначити прийом"}
           </Button>
         </Col>
       </Row>
@@ -437,47 +497,52 @@ export default function TimeTablePage() {
             </tr>
           </thead>
           <tbody>
-            {timeTable.map((timeSlot: TimeSlotResponse) => (
-              <tr key={timeSlot.startTime.toString()}>
-                <td>{`${formatTimeSecondsToTime(
-                  timeSlot.startTime
-                )} - ${formatTimeSecondsToTime(timeSlot.endTime)}`}</td>
-                <td>
-                  {timeSlot.appointments.length === 0 ? (
-                    <span className="text-success">Вільно</span>
-                  ) : (
-                    timeSlot.appointments.map(
-                      (appointment: AppointmentResponse) => (
-                        <div key={appointment.id}>
-                          <a
-                            href={`/appointments/${appointment.id}`}
-                            style={{ textDecoration: "none" }}
-                            target="_blank"
-                          >
-                            <span>{`${
-                              appointment.patient.surname
-                            } ${appointment.patient.name.charAt(
-                              0
-                            )}.${appointment.patient.middleName.charAt(
-                              0
-                            )}. ${formatTimeSecondsToTime(
-                              appointment.timeStart
-                            )} - ${formatTimeSecondsToTime(
-                              appointment.timeEnd
-                            )}`}</span>
-                          </a>
-                        </div>
+            {timeTable.map((timeSlot: TimeSlotResponse) => {
+              const filteredAppointments = timeSlot.appointments.filter(
+                (timeSlotAppointment: AppointmentResponse) =>
+                  timeSlotAppointment.id !== appointment?.id
+              );
+              return (
+                <tr key={timeSlot.startTime.toString()}>
+                  <td>{`${formatTimeSecondsToTime(
+                    timeSlot.startTime
+                  )} - ${formatTimeSecondsToTime(timeSlot.endTime)}`}</td>
+                  <td>
+                    {filteredAppointments.length === 0 ? (
+                      <span className="text-success">Вільно</span>
+                    ) : (
+                      filteredAppointments.map(
+                        (timeSlotAppointment: AppointmentResponse) => (
+                          <div key={timeSlotAppointment.id}>
+                            <Link
+                              href={`/appointments/${timeSlotAppointment.id}`}
+                              style={{ textDecoration: "none" }}
+                              target="_blank"
+                            >
+                              <span>{`${
+                                timeSlotAppointment.patient.surname
+                              } ${timeSlotAppointment.patient.name.charAt(
+                                0
+                              )}.${timeSlotAppointment.patient.middleName.charAt(
+                                0
+                              )}. ${formatTimeSecondsToTime(
+                                timeSlotAppointment.timeStart
+                              )} - ${formatTimeSecondsToTime(
+                                timeSlotAppointment.timeEnd
+                              )}`}</span>
+                            </Link>
+                          </div>
+                        )
                       )
-                    )
-                  )}
-                </td>
-              </tr>
-            ))}
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </Table>
       ) : (
         <>
-          <br></br>
           {doctorId && (
             <>
               {!isDoctor ? (

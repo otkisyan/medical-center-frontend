@@ -14,6 +14,13 @@ export const AppointmentService = {
     return data;
   },
 
+  async findAppointmentById(id: number) {
+    const { data } = await axiosInstance.get<AppointmentResponse>(
+      `/appointments/${id}`
+    );
+    return data;
+  },
+
   async newAppointment(newAppointment: AppointmentRequest) {
     const { data } = await axiosInstance.post<AppointmentResponse>(
       "/appointments",
