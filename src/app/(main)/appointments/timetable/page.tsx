@@ -1,6 +1,20 @@
 "use client";
-import Select, { components } from "react-select";
+import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
+import TimeTable from "@/components/timetable/TimeTable";
+import { customReactSelectStyles } from "@/css/react-select";
+import { useAuth } from "@/shared/context/UserContextProvider";
+import { Role } from "@/shared/enum/role";
+import useFetchAppointment from "@/shared/hooks/appointment/useFetchAppointment";
+import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
+import useFetchDoctorTimeTable from "@/shared/hooks/doctor/useFetchDoctorTimeTable";
+import useFetchDoctorsOptions from "@/shared/hooks/doctor/useFetchDoctorsOptions";
+import useFetchPatient from "@/shared/hooks/patients/useFetchPatient";
+import { AppointmentService } from "@/shared/service/appointment-service";
+import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
+import { formatDateToHtml5 } from "@/shared/utils/date-utils";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Breadcrumb,
@@ -9,33 +23,9 @@ import {
   Form,
   InputGroup,
   Modal,
-  Placeholder,
-  ProgressBar,
   Row,
-  Spinner,
-  Table,
 } from "react-bootstrap";
-import { customReactSelectStyles } from "@/css/react-select";
-import useFetchDoctorsOptions from "@/shared/hooks/doctor/useFetchDoctorsOptions";
-import { useCallback, useEffect, useRef, useState } from "react";
-import useFetchDoctorTimeTable from "@/shared/hooks/doctor/useFetchDoctorTimeTable";
-import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
-import { AppointmentResponse } from "@/shared/interface/appointment/appointment-interface";
-import { TimeSlotResponse } from "@/shared/interface/time-slot/time-slot-interface";
-import {
-  formatDateToHtml5,
-  formatTimeSecondsToTime,
-  timeStartBiggerThanEnd,
-} from "@/shared/utils/date-utils";
-import useFetchPatient from "@/shared/hooks/patients/useFetchPatient";
-import Link from "next/link";
-import { AppointmentService } from "@/shared/service/appointment-service";
-import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
-import useFetchDoctors from "@/shared/hooks/doctor/useFetchDoctors";
-import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
-import { useAuth } from "@/shared/context/UserContextProvider";
-import { Role } from "@/shared/enum/role";
-import useFetchAppointment from "@/shared/hooks/appointment/useFetchAppointment";
+import Select from "react-select";
 
 export default function TimeTablePage() {
   const router = useRouter();
@@ -46,7 +36,7 @@ export default function TimeTablePage() {
   const [isDoctor, setIsDoctor] = useState<boolean>(false);
   const [doctorId, setDoctorId] = useState<number | null>(null);
   const [patientId, setPatientId] = useState<number | null>(null);
-  const { patient, loadingPatient } = useFetchPatient(patientId);
+  const { patient, loadingPatient, setPatient } = useFetchPatient(patientId);
   const { doctor, loadingDoctor } = useFetchDoctor(doctorId);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const {
@@ -56,7 +46,7 @@ export default function TimeTablePage() {
     fetchDoctorsOptions,
   } = useFetchDoctorsOptions();
   const [initialLoading, setInitialLoading] = useState(true);
-  const { timeTable, loadingTimeTable, fetchTimeTable } =
+  const { timeTable, loadingTimeTable, fetchTimeTable, setTimeTable } =
     useFetchDoctorTimeTable(doctorId, currentDate);
   const { appointment, loadingAppointment, fetchAppointment, setAppointment } =
     useFetchAppointment();
@@ -68,6 +58,7 @@ export default function TimeTablePage() {
     appointmentTimeInitialState
   );
   const [defaultDoctorOption, setDefaultDoctorOption] = useState<any>(null);
+  const selectDoctorRef = useRef<any>();
 
   const generateDefaultDoctorOption = useCallback(() => {
     if (doctor) {
@@ -85,7 +76,25 @@ export default function TimeTablePage() {
     }
   }, [doctor]);
 
+  const isSearchParamsEmpty = useCallback(() => {
+    if (!searchParams.has("patientId") && !searchParams.has("appointmentId")) {
+      return true;
+    }
+    return false;
+  }, [searchParams]);
+
   useEffect(() => {
+    if (isSearchParamsEmpty()) {
+      setInitialLoading(true);
+      setAppointment(null);
+      setPatientId(null);
+      setCurrentDate(new Date());
+      setPatient(null);
+      setTimeTable(null);
+      if (selectDoctorRef.current) {
+        selectDoctorRef.current.setValue("");
+      }
+    }
     const appointmentIdParam = searchParams.get("appointmentId");
     const patientIdParam = searchParams.get("patientId");
     if (appointmentIdParam != null) {
@@ -98,7 +107,14 @@ export default function TimeTablePage() {
       setPatientId(Number(patientIdParam));
     }
     setInitialLoading(false);
-  }, [searchParams, fetchAppointment]);
+  }, [
+    searchParams,
+    fetchAppointment,
+    isSearchParamsEmpty,
+    setAppointment,
+    setPatient,
+    setTimeTable,
+  ]);
 
   useEffect(() => {
     if (!hasAnyRole([Role.Doctor])) {
@@ -119,7 +135,8 @@ export default function TimeTablePage() {
 
   useEffect(() => {
     const patientIdParam = searchParams.get("patientId");
-    if (appointment) {
+    const appointmentIdParam = searchParams.get("appointmentId");
+    if (appointment && appointmentIdParam) {
       if (isDoctor) {
         if (userDetails) {
           if (appointment.doctor.id === userDetails.id) {
@@ -233,10 +250,66 @@ export default function TimeTablePage() {
     }
   };
 
-  return initialLoading ||
-    loadingDoctorsOptions ||
-    loadingPatient ||
-    loadingDoctor ? (
+  const handleUpdateAppointmentFormSubmit = async (event: any) => {
+    event.preventDefault();
+    if (patient != null && doctorId != null && appointment) {
+      try {
+        await AppointmentService.updateAppointment(appointment.id, {
+          date: currentDate,
+          timeStart: appointmentTime.timeStart,
+          timeEnd: appointmentTime.timeEnd,
+          patientId: patient.id,
+          doctorId: doctorId,
+          diagnosis: null,
+          symptoms: null,
+          medicalRecommendations: null,
+        });
+        handleCloseAppointmentModal();
+        fetchTimeTable(doctorId, { date: formatDateToHtml5(currentDate) });
+        setAppointmentTime(appointmentTimeInitialState);
+        notifySuccess("Прийом успішно переплановано!");
+      } catch (error: any) {
+        const errorMessage = error.response.data.message;
+        if (error.response && error.response.status === 409) {
+          if (errorMessage.includes("The doctor already has an appointment")) {
+            notifyError("Лікар вже має інший прийом на обраний час!");
+          } else if (
+            errorMessage.includes("The patient already has an appointment")
+          ) {
+            notifyError("Пацієнт вже має інший прийом на обраний час!");
+          } else {
+            notifyError(
+              "Непередбачена помилка конфлікту при переплануванні прийому"
+            );
+          }
+        } else if (error.response && error.response.status === 400) {
+          if (
+            errorMessage &&
+            errorMessage.includes(
+              "Appointment is outside the doctor's working hours"
+            )
+          ) {
+            notifyError("Час прийому виходить за межі графіку роботи лікаря!");
+          } else if (
+            errorMessage &&
+            errorMessage.includes(
+              "The start time of the appointment cannot be greater than the end time"
+            )
+          ) {
+            notifyError(
+              "Час початку прийому не може бути більше часу закінчення прийому"
+            );
+          }
+        } else {
+          notifyError(
+            "При переплануванніприйому сталася непередбачена помилка!"
+          );
+        }
+      }
+    }
+  };
+
+  return initialLoading || loadingDoctorsOptions || loadingPatient ? (
     <>
       <br></br>
       <SpinnerCenter />
@@ -248,7 +321,13 @@ export default function TimeTablePage() {
         <Modal.Header closeButton>
           <Modal.Title>Інформація про прийом</Modal.Title>
         </Modal.Header>
-        <Form onSubmit={handleNewAppointmentFormSubmit}>
+        <Form
+          onSubmit={
+            appointment
+              ? handleUpdateAppointmentFormSubmit
+              : handleNewAppointmentFormSubmit
+          }
+        >
           <Modal.Body>
             {patient && (
               <>
@@ -361,16 +440,32 @@ export default function TimeTablePage() {
           <Breadcrumb.Item className="link">Домашня сторінка</Breadcrumb.Item>
         </Link>
         {!appointment ? (
-          <Link href="/patients" passHref legacyBehavior>
-            <Breadcrumb.Item className="link">Пацієнти</Breadcrumb.Item>
-          </Link>
+          <>
+            {patient || patientId ? (
+              <Link href="/patients" passHref legacyBehavior>
+                <Breadcrumb.Item className="link">Пацієнти</Breadcrumb.Item>
+              </Link>
+            ) : (
+              <Link href="/appointments" passHref legacyBehavior>
+                <Breadcrumb.Item className="link">Прийоми</Breadcrumb.Item>
+              </Link>
+            )}
+          </>
         ) : (
           <Link href="/appointments" passHref legacyBehavior>
             <Breadcrumb.Item className="link">Прийоми</Breadcrumb.Item>
           </Link>
         )}
         {!appointment ? (
-          <Breadcrumb.Item active>Призначення нового прийому</Breadcrumb.Item>
+          <>
+            {patient || patientId ? (
+              <Breadcrumb.Item active>
+                Призначення нового прийому
+              </Breadcrumb.Item>
+            ) : (
+              <Breadcrumb.Item active>Розклад</Breadcrumb.Item>
+            )}
+          </>
         ) : (
           <>
             <Breadcrumb.Item active>Перепланування прийому</Breadcrumb.Item>
@@ -395,6 +490,7 @@ export default function TimeTablePage() {
                 classNamePrefix="select"
                 isLoading={loadingDoctorsOptions}
                 isSearchable={true}
+                ref={selectDoctorRef}
                 placeholder={"Оберіть лікаря"}
                 name="doctorId"
                 onChange={(e) => {
@@ -418,7 +514,7 @@ export default function TimeTablePage() {
                 isLoading={loadingDoctor}
                 isSearchable={true}
                 value={defaultDoctorOption}
-                placeholder={"Оберіть лікаря"}
+                placeholder={"Завантаження..."}
                 name="doctorId"
                 loadingMessage={() => "Завантаження..."}
                 noOptionsMessage={() => "Лікаря не знайдено"}
@@ -480,7 +576,7 @@ export default function TimeTablePage() {
             variant="primary"
             className="w-100"
             onClick={handleShowAppointmentModal}
-            hidden={!patient || !doctorId}
+            hidden={!patient || !doctorId || !patientId}
           >
             {appointment ? "Перепланувати прийом" : "Призначити прийом"}
           </Button>
@@ -489,81 +585,20 @@ export default function TimeTablePage() {
       {loadingTimeTable ? (
         <SpinnerCenter />
       ) : timeTable !== null ? (
-        <Table striped>
-          <thead>
-            <tr>
-              <th>Час</th>
-              <th>Прийом</th>
-            </tr>
-          </thead>
-          <tbody>
-            {timeTable.map((timeSlot: TimeSlotResponse) => {
-              const filteredAppointments = timeSlot.appointments.filter(
-                (timeSlotAppointment: AppointmentResponse) =>
-                  timeSlotAppointment.id !== appointment?.id
-              );
-              return (
-                <tr key={timeSlot.startTime.toString()}>
-                  <td>{`${formatTimeSecondsToTime(
-                    timeSlot.startTime
-                  )} - ${formatTimeSecondsToTime(timeSlot.endTime)}`}</td>
-                  <td>
-                    {filteredAppointments.length === 0 ? (
-                      <span className="text-success">Вільно</span>
-                    ) : (
-                      filteredAppointments.map(
-                        (timeSlotAppointment: AppointmentResponse) => (
-                          <div key={timeSlotAppointment.id}>
-                            <Link
-                              href={`/appointments/${timeSlotAppointment.id}`}
-                              style={{ textDecoration: "none" }}
-                              target="_blank"
-                            >
-                              <span>{`${
-                                timeSlotAppointment.patient.surname
-                              } ${timeSlotAppointment.patient.name.charAt(
-                                0
-                              )}.${timeSlotAppointment.patient.middleName.charAt(
-                                0
-                              )}. ${formatTimeSecondsToTime(
-                                timeSlotAppointment.timeStart
-                              )} - ${formatTimeSecondsToTime(
-                                timeSlotAppointment.timeEnd
-                              )}`}</span>
-                            </Link>
-                          </div>
-                        )
-                      )
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
+        <TimeTable timeTable={timeTable} appointment={appointment} />
       ) : (
         <>
-          {doctorId && (
-            <>
-              {!isDoctor ? (
-                <Alert
-                  variant="danger"
-                  className="text-center mx-auto"
-                  style={{ maxWidth: "400px" }}
-                >
-                  Лікар не має графіку роботи на обрану дату!
-                </Alert>
-              ) : (
-                <Alert
-                  variant="danger"
-                  className="text-center mx-auto"
-                  style={{ maxWidth: "400px" }}
-                >
-                  Ви не маєте графіку роботи на обрану дату!
-                </Alert>
-              )}
-            </>
-          )}
+          {doctorId ? (
+            <Alert
+              variant="danger"
+              className="text-center mx-auto"
+              style={{ maxWidth: "400px" }}
+            >
+              {isDoctor
+                ? "Ви не маєте графіку роботи на обрану дату!"
+                : "Лікар не має графіку роботи на обрану дату!"}
+            </Alert>
+          ) : null}
         </>
       )}
     </>

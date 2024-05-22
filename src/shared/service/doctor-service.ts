@@ -45,7 +45,6 @@ export const DoctorService = {
   },
 
   async updateDoctor(id: number, updatedDoctor: DoctorRequest) {
-    console.log(updatedDoctor);
     const { data } = await axiosInstance.put<DoctorResponse>(
       `/doctors/${id}`,
       updatedDoctor

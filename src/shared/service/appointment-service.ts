@@ -4,6 +4,7 @@ import {
   AppointmentRequest,
   AppointmentResponse,
 } from "../interface/appointment/appointment-interface";
+import { Page } from "../interface/page/page-interface";
 
 export const AppointmentService = {
   async getTimeTable(doctorId: number, params: any) {
@@ -11,6 +12,21 @@ export const AppointmentService = {
       `/appointments/timetable/${doctorId}`,
       { params }
     );
+    return data;
+  },
+
+  async findAllAppointments(params: any) {
+    const { data } = await axiosInstance.get<Page<AppointmentResponse>>(
+      "/appointments",
+      {
+        params,
+      }
+    );
+    return data;
+  },
+
+  async countAppointments() {
+    const { data } = await axiosInstance.get<number>("/appointments/count");
     return data;
   },
 
@@ -25,6 +41,14 @@ export const AppointmentService = {
     const { data } = await axiosInstance.post<AppointmentResponse>(
       "/appointments",
       newAppointment
+    );
+    return data;
+  },
+
+  async updateAppointment(id: number, updatedAppointment: AppointmentRequest) {
+    const { data } = await axiosInstance.put<AppointmentResponse>(
+      `/appointments/${id}`,
+      updatedAppointment
     );
     return data;
   },

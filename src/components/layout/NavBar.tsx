@@ -41,9 +41,9 @@ const NavBar = () => {
               <NavDropdown.Item as={Link} href="/appointments">
                 Пошук
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} href="/appointments/timetable">
-                Розклад
-              </NavDropdown.Item>
+              <Link href="/appointments/timetable" passHref legacyBehavior>
+                <NavDropdown.Item>Розклад</NavDropdown.Item>
+              </Link>
             </NavDropdown>
           </Nav>
           <a href="" onClick={logout}>

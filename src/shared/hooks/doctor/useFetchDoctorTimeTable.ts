@@ -38,5 +38,5 @@ export default function useFetchDoctorTimeTable(
     }
   }, [fetchTimeTable, doctorId, params]);
 
-  return { timeTable, loadingTimeTable, fetchTimeTable };
+  return { timeTable, loadingTimeTable, fetchTimeTable, setTimeTable };
 }

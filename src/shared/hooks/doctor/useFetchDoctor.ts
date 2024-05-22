@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { DoctorService } from "@/shared/service/doctor-service";
 import { DoctorResponse } from "@/shared/interface/doctor/doctor-interface";
+import { delay } from "@/shared/utils/delay";
 
 export default function useFetchDoctor(doctorId: number | null) {
   const [doctor, setDoctor] = useState<DoctorResponse | null>(null);
