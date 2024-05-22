@@ -46,7 +46,7 @@ export default function TimeTablePage() {
     fetchDoctorsOptions,
   } = useFetchDoctorsOptions();
   const [initialLoading, setInitialLoading] = useState(true);
-  const { timeTable, loadingTimeTable, fetchTimeTable, setTimeTable } =
+  const { timeTable, loadingTimeTable, fetchTimeTable, setTimeTable, error } =
     useFetchDoctorTimeTable(doctorId, currentDate);
   const { appointment, loadingAppointment, fetchAppointment, setAppointment } =
     useFetchAppointment();
@@ -588,7 +588,7 @@ export default function TimeTablePage() {
         <TimeTable timeTable={timeTable} appointment={appointment} />
       ) : (
         <>
-          {doctorId ? (
+          {doctorId && error ? (
             <Alert
               variant="danger"
               className="text-center mx-auto"
