@@ -132,7 +132,7 @@ export default function AppointmentsPage() {
                 <th>#</th>
                 <th>Пацієнт</th>
                 <th>Лікар</th>
-                <th>Спеціальність</th>
+                <th>Спеціальність лікаря</th>
                 <th>Дата</th>
                 <th>Час</th>
                 <th>Кабінет</th>

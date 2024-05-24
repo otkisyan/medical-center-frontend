@@ -23,3 +23,19 @@ export interface AppointmentRequest {
   doctorId: number;
   patientId: number;
 }
+
+export const convertAppointmentResponseToAppointmentRequest = (
+  appointmentResponse: AppointmentResponse
+) => {
+  const appointmentRequest: AppointmentRequest = {
+    date: appointmentResponse.date,
+    timeStart: appointmentResponse.timeStart,
+    timeEnd: appointmentResponse.timeEnd,
+    diagnosis: appointmentResponse?.diagnosis,
+    symptoms: appointmentResponse?.symptoms,
+    medicalRecommendations: appointmentResponse?.medicalRecommendations,
+    patientId: appointmentResponse.patient.id,
+    doctorId: appointmentResponse.doctor.id,
+  };
+  return appointmentRequest;
+};

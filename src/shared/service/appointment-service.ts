@@ -52,4 +52,9 @@ export const AppointmentService = {
     );
     return data;
   },
+
+  async deleteAppointment(id: number) {
+    const { data } = await axiosInstance.delete<any>(`/appointments/${id}`);
+    return data;
+  },
 };

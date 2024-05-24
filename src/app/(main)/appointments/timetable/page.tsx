@@ -302,14 +302,17 @@ export default function TimeTablePage() {
           }
         } else {
           notifyError(
-            "При переплануванніприйому сталася непередбачена помилка!"
+            "При переплануванні прийому сталася непередбачена помилка!"
           );
         }
       }
     }
   };
 
-  return initialLoading || loadingDoctorsOptions || loadingPatient ? (
+  return initialLoading ||
+    loadingDoctorsOptions ||
+    loadingPatient ||
+    (hasAnyRole([Role.Doctor]) && loadingDoctor) ? (
     <>
       <br></br>
       <SpinnerCenter />
