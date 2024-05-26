@@ -2,9 +2,9 @@ import { axiosInstance } from "@/axios.config";
 import { noInterceptorsAxiosInstance } from "@/axios.config";
 import { UserDetails } from "@/shared/interface/user/user-details-interface";
 
-export const AuthService = {
+export const UserService = {
   async loginUser(username: string, password: string) {
-    const data = await noInterceptorsAxiosInstance.post<any>("/auth/login", {
+    const data = await noInterceptorsAxiosInstance.post<any>("/user/login", {
       username: username,
       password: password,
     });
@@ -13,7 +13,7 @@ export const AuthService = {
 
   async registerUser(username: string, password: string) {
     const data = await noInterceptorsAxiosInstance.post<String>(
-      "/auth/register",
+      "/user/register",
       {
         username: username,
         password: password,
@@ -23,7 +23,7 @@ export const AuthService = {
   },
 
   async refresh() {
-    const data = await noInterceptorsAxiosInstance.post<any>("/auth/refresh");
+    const data = await noInterceptorsAxiosInstance.post<any>("/user/refresh");
     if (data.status === 401) {
       throw Error;
     }
@@ -32,20 +32,20 @@ export const AuthService = {
 
   async getUserDetails() {
     const { data } = await noInterceptorsAxiosInstance.get<UserDetails>(
-      "/auth/details"
+      "/user/details"
     );
     return data;
   },
 
   async validate() {
     const { data } = await noInterceptorsAxiosInstance.get<any>(
-      "/auth/validate"
+      "/user/validate"
     );
     return data;
   },
 
   async logout() {
-    const data = await noInterceptorsAxiosInstance.get<any>("/auth/logout");
+    const data = await noInterceptorsAxiosInstance.get<any>("/user/logout");
     return data;
   },
 };

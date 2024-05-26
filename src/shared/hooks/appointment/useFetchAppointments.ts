@@ -24,6 +24,7 @@ export default function useFetchAppointments() {
     try {
       setLoadingAppointments(true);
       const data = await AppointmentService.findAllAppointments(params);
+      console.log(data);
       setAppointmentPage(data);
     } catch (error) {
       console.error("Error fetching appointments:", error);

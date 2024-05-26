@@ -4,7 +4,7 @@ import { UserContext } from "@/shared/interface/user/user-context-interface";
 import { useState } from "react";
 import { UserDetails } from "@/shared/interface/user/user-details-interface";
 import { jwtDecode } from "jwt-decode";
-import { AuthService } from "@/shared/service/user-service";
+import { UserService } from "@/shared/service/user-service";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Role } from "../enum/role";
@@ -26,7 +26,7 @@ export const UserContextProvider = ({
 
   const logout = async () => {
     try {
-      await AuthService.logout();
+      await UserService.logout();
     } catch (error) {
       // Handle logout error
     } finally {
@@ -38,7 +38,7 @@ export const UserContextProvider = ({
 
   const fetchUserDetails = useCallback(async () => {
     try {
-      const res = await AuthService.getUserDetails();
+      const res = await UserService.getUserDetails();
       if (res) {
         const rolesEnum = convertStringRolesToEnumRole(res.roles);
         const userDetailsObject: UserDetails = {
@@ -76,7 +76,7 @@ export const UserContextProvider = ({
   const login = async (username: string, password: string) => {
     localStorage.removeItem("access_token");
     try {
-      const res = await AuthService.loginUser(username, password);
+      const res = await UserService.loginUser(username, password);
       if (res) {
         const accessToken = res?.data.accessToken;
         let decodedToken = undefined;

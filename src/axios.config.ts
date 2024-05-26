@@ -25,14 +25,10 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (originalRequest?._isRetry && error.response.status === 401) {
-      window.location.href = "/login";
-    }
-
     if (!originalRequest?._isRetry && error.response.status === 401) {
       originalRequest._isRetry = true;
       try {
-        const resp = await noInterceptorsAxiosInstance.post("/auth/refresh");
+        const resp = await noInterceptorsAxiosInstance.post("/user/refresh");
         localStorage.setItem("access_token", resp?.data.accessToken);
         return axiosInstance.request(originalRequest);
       } catch (error) {

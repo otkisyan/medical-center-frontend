@@ -3,12 +3,19 @@ import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import { useAuth } from "@/shared/context/UserContextProvider";
 import { Role } from "@/shared/enum/role";
 import useFetchAppointment from "@/shared/hooks/appointment/useFetchAppointment";
+import useFetchAppointmentConsultation from "@/shared/hooks/appointment/useFetchAppointmentConsultation";
+import useFetchAppointmentsCount from "@/shared/hooks/appointment/useFetchAppointmentsCount";
 import {
   AppointmentRequest,
   AppointmentResponse,
   convertAppointmentResponseToAppointmentRequest,
 } from "@/shared/interface/appointment/appointment-interface";
+import {
+  ConsultationRequest,
+  convertConsultationResponseToConsultationRequest,
+} from "@/shared/interface/consultation/consultation-interface";
 import { AppointmentService } from "@/shared/service/appointment-service";
+import { ConsultationService } from "@/shared/service/consultation-service";
 import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 import { formatTimeSecondsToTime } from "@/shared/utils/date-utils";
 import Link from "next/link";
@@ -35,42 +42,49 @@ export default function AppointmentPage({
   const { hasAnyRole, userDetails } = useAuth();
   const { appointment, setAppointment, loadingAppointment, fetchAppointment } =
     useFetchAppointment();
-  const [editedAppointment, setEditedAppointment] =
-    useState<AppointmentRequest | null>(null);
+  const {
+    consultation,
+    setConsultation,
+    loadingConsultation,
+    fetchAppointmentConsultation,
+  } = useFetchAppointmentConsultation();
+  const [editedConsultation, setEditedConsultation] =
+    useState<ConsultationRequest | null>(null);
   const [editing, setEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
   const handleShowDeleteModal = () => setShowDeleteModal(true);
 
-  const handleChangeAppointment = (event: any) => {
+  const handleChangeConsultation = (event: any) => {
     const { name, value } = event.target;
-    setEditedAppointment((prevAppointment) => {
-      if (prevAppointment) {
+    setEditedConsultation((prevConsultation) => {
+      if (prevConsultation) {
         return {
-          ...prevAppointment,
+          ...prevConsultation,
           [name]: value,
         };
       }
-      return prevAppointment;
+      return prevConsultation;
     });
   };
 
-  const handleEditFormSubmit = async () => {
-    if (!editedAppointment) return;
+  const handleEditFormSubmit = async (event: any) => {
+    event.preventDefault();
+    if (!editedConsultation) return;
     try {
-      const data = await AppointmentService.updateAppointment(
+      const data = await ConsultationService.updateConsultation(
         params.id,
-        editedAppointment
+        editedConsultation
       );
-      setAppointment(data);
-      setEditedAppointment(
-        convertAppointmentResponseToAppointmentRequest(data)
+      setConsultation(data);
+      setEditedConsultation(
+        convertConsultationResponseToConsultationRequest(data)
       );
       notifySuccess("Редагування інформації про прийом успішне!");
     } catch (error) {
-      if (appointment) {
-        setEditedAppointment(
-          convertAppointmentResponseToAppointmentRequest(appointment)
+      if (consultation) {
+        setEditedConsultation(
+          convertConsultationResponseToConsultationRequest(consultation)
         );
       }
       notifyError("При редагуванні сталася непередбачена помилка!");
@@ -82,8 +96,8 @@ export default function AppointmentPage({
   const deleteAppointment = async () => {
     try {
       const data = await AppointmentService.deleteAppointment(params.id);
-      router.push("/appointments");
       notifySuccess("Прийом було успішно видалено!");
+      router.push("/appointments");
     } catch (error) {
       notifyError("При видаленні прийома сталася непередбачена помилка!");
     } finally {
@@ -96,9 +110,9 @@ export default function AppointmentPage({
   };
 
   const handleCancelEdit = () => {
-    if (appointment) {
-      setEditedAppointment(
-        convertAppointmentResponseToAppointmentRequest(appointment)
+    if (consultation) {
+      setEditedConsultation(
+        convertConsultationResponseToConsultationRequest(consultation)
       );
     }
     setEditing(false);
@@ -106,20 +120,23 @@ export default function AppointmentPage({
 
   useEffect(() => {
     fetchAppointment(params.id);
-  }, [fetchAppointment, params.id]);
+    if (hasAnyRole([Role.ADMIN, Role.Doctor])) {
+      fetchAppointmentConsultation(params.id);
+    }
+  }, [fetchAppointment, hasAnyRole, fetchAppointmentConsultation, params.id]);
 
   useEffect(() => {
-    if (appointment) {
-      setEditedAppointment(
-        convertAppointmentResponseToAppointmentRequest(appointment)
+    if (consultation) {
+      setEditedConsultation(
+        convertConsultationResponseToConsultationRequest(consultation)
       );
     }
-  }, [appointment]);
+  }, [consultation]);
 
   return (
     <>
       <br></br>
-      {loadingAppointment ? (
+      {loadingAppointment || loadingConsultation ? (
         <SpinnerCenter></SpinnerCenter>
       ) : appointment ? (
         <>
@@ -207,24 +224,24 @@ export default function AppointmentPage({
                   </Link>
                 )}
               </InputGroup>
-              <Form>
+              <Form onSubmit={handleEditFormSubmit}>
                 <fieldset disabled={!editing}>
                   <Form.Group controlId="formGridDiagnosis" className="mb-3">
                     <Form.Label>Діагноз</Form.Label>
                     <Form.Control
                       type="text"
-                      value={editedAppointment?.diagnosis ?? ""}
+                      value={editedConsultation?.diagnosis ?? ""}
                       name="diagnosis"
-                      onChange={handleChangeAppointment}
+                      onChange={handleChangeConsultation}
                     />
                   </Form.Group>
                   <Form.Group controlId="formGridSymptoms" className="mb-3">
                     <Form.Label>Симптоми</Form.Label>
                     <Form.Control
                       type="text"
-                      value={editedAppointment?.symptoms ?? ""}
+                      value={editedConsultation?.symptoms ?? ""}
                       name="symptoms"
-                      onChange={handleChangeAppointment}
+                      onChange={handleChangeConsultation}
                     />
                   </Form.Group>
                   <Form.Group
@@ -233,10 +250,11 @@ export default function AppointmentPage({
                   >
                     <Form.Label>Медичні рекомендації</Form.Label>
                     <Form.Control
+                      as="textarea"
                       type="text"
-                      value={editedAppointment?.medicalRecommendations ?? ""}
+                      value={editedConsultation?.medicalRecommendations ?? ""}
                       name="medicalRecommendations"
-                      onChange={handleChangeAppointment}
+                      onChange={handleChangeConsultation}
                     />
                   </Form.Group>
                 </fieldset>
@@ -246,9 +264,9 @@ export default function AppointmentPage({
                       <Form.Label>Дата</Form.Label>
                       <Form.Control
                         type="date"
-                        value={editedAppointment?.date.toString() ?? ""}
+                        value={appointment?.date.toString() ?? ""}
                         name="date"
-                        onChange={handleChangeAppointment}
+                        onChange={handleChangeConsultation}
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridTimeStart">
@@ -256,12 +274,12 @@ export default function AppointmentPage({
                       <Form.Control
                         type="time"
                         value={
-                          editedAppointment?.timeStart
+                          appointment?.timeStart
                             ? formatTimeSecondsToTime(appointment.timeStart)
                             : ""
                         }
                         name="timeStart"
-                        onChange={handleChangeAppointment}
+                        onChange={handleChangeConsultation}
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridTimeEnd">
@@ -269,12 +287,12 @@ export default function AppointmentPage({
                       <Form.Control
                         type="time"
                         value={
-                          editedAppointment?.timeEnd
+                          appointment?.timeEnd
                             ? formatTimeSecondsToTime(appointment.timeEnd)
                             : ""
                         }
                         name="timeEnd"
-                        onChange={handleChangeAppointment}
+                        onChange={handleChangeConsultation}
                       />
                     </Form.Group>
                   </Row>
@@ -299,45 +317,49 @@ export default function AppointmentPage({
                         Перепланувати
                       </Button>
                     </Link>
-                    <Button
-                      variant="primary"
-                      type="button"
-                      className="me-2"
-                      hidden={editing}
-                      onClick={handleEdit}
-                    >
-                      <i className="bi bi-pencil-square" id="editButton"></i>
-                    </Button>
-                    <Button
-                      variant="primary"
-                      type="button"
-                      className="me-2"
-                      hidden={!editing}
-                      id="confirmEdit"
-                      onClick={handleEditFormSubmit}
-                    >
-                      Зберегти
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      type="button"
-                      id="cancelButton"
-                      hidden={!editing}
-                      onClick={handleCancelEdit}
-                    >
-                      Скасувати
-                    </Button>
-                    <Button
-                      variant="danger"
-                      type="button"
-                      hidden={editing}
-                      id="deleteButton"
-                      onClick={handleShowDeleteModal}
-                    >
-                      <i className="bi bi-trash"></i>
-                    </Button>
                   </>
                 )}
+                {userDetails?.id === appointment.doctor.id &&
+                  hasAnyRole([Role.Doctor]) && (
+                    <>
+                      <Button
+                        variant="primary"
+                        type="button"
+                        className="me-2"
+                        hidden={editing}
+                        onClick={handleEdit}
+                      >
+                        <i className="bi bi-pencil-square" id="editButton"></i>
+                      </Button>
+                      <Button
+                        variant="primary"
+                        type="submit"
+                        className="me-2"
+                        hidden={!editing}
+                        id="confirmEdit"
+                      >
+                        Зберегти
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        type="button"
+                        id="cancelButton"
+                        hidden={!editing}
+                        onClick={handleCancelEdit}
+                      >
+                        Скасувати
+                      </Button>
+                      <Button
+                        variant="danger"
+                        type="button"
+                        hidden={editing}
+                        id="deleteButton"
+                        onClick={handleShowDeleteModal}
+                      >
+                        <i className="bi bi-trash"></i>
+                      </Button>
+                    </>
+                  )}
               </Form>
             </Card.Body>
           </Card>

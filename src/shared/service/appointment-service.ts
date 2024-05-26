@@ -5,6 +5,7 @@ import {
   AppointmentResponse,
 } from "../interface/appointment/appointment-interface";
 import { Page } from "../interface/page/page-interface";
+import { ConsultationResponse } from "../interface/consultation/consultation-interface";
 
 export const AppointmentService = {
   async getTimeTable(doctorId: number, params: any) {
@@ -33,6 +34,13 @@ export const AppointmentService = {
   async findAppointmentById(id: number) {
     const { data } = await axiosInstance.get<AppointmentResponse>(
       `/appointments/${id}`
+    );
+    return data;
+  },
+
+  async getAppointmentConsultation(id: number) {
+    const { data } = await axiosInstance.get<ConsultationResponse>(
+      `/appointments/${id}/consultation`
     );
     return data;
   },

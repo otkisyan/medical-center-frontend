@@ -13,7 +13,7 @@ const isAuthenticated = async (request: NextRequest) => {
     return false;
   }
   try {
-    const response = await fetch("http://localhost:8080/auth/validate", {
+    const response = await fetch("http://localhost:8080/user/validate", {
       method: "GET",
       cache: "no-store",
       headers: {
@@ -38,7 +38,7 @@ const getUserRoles = async (request: NextRequest) => {
     return null;
   }
   try {
-    const response = await fetch("http://localhost:8080/auth/details", {
+    const response = await fetch("http://localhost:8080/user/details", {
       method: "GET",
       cache: "no-store",
       headers: {
