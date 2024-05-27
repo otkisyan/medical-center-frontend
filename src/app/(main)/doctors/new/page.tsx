@@ -298,7 +298,7 @@ export default function NewDoctorPage() {
                 styles={customReactSelectStyles}
               />
             </Form.Group>
-            <Button variant="primary" type="submit" id="confirmAddNewPatient">
+            <Button variant="primary" type="submit" id="confirmAddNewDoctor">
               Додати нового лікаря
             </Button>
           </Form>

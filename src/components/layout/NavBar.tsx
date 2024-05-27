@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Role } from "@/shared/enum/role";
 import React from "react";
+import { Button } from "react-bootstrap";
 
 const NavBar = () => {
   const { logout, hasAnyRole } = useAuth();
@@ -46,9 +47,9 @@ const NavBar = () => {
               </Link>
             </NavDropdown>
           </Nav>
-          <a href="" onClick={logout}>
+          <Button variant="link" onClick={logout}>
             <i className="bi bi-box-arrow-left link-black"></i>
-          </a>
+          </Button>
         </Navbar.Collapse>
       </Container>
     </Navbar>

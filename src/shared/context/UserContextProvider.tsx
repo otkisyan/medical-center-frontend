@@ -25,14 +25,14 @@ export const UserContextProvider = ({
   const path = usePathname();
 
   const logout = async () => {
+    setIsReady(false);
+    let loadingTimer: NodeJS.Timeout;
+    loadingTimer = setTimeout(() => setShowLoading(true), 500);
     try {
       await UserService.logout();
     } catch (error) {
-      // Handle logout error
     } finally {
-      setIsReady(false);
-      setUserDetails(null);
-      localStorage.removeItem("access_token");
+      router.push("/login?logout");
     }
   };
 
@@ -70,6 +70,7 @@ export const UserContextProvider = ({
     } else {
       setIsReady(true);
     }
+
     return () => clearTimeout(loadingTimer);
   }, [fetchUserDetails, path]);
 

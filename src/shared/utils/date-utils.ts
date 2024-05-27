@@ -9,6 +9,10 @@ export function formatDateToHtml5(date: Date) {
   return moment(date).format(moment.HTML5_FMT.DATE);
 }
 
+export function formatDateToStringWithTime(date: Date) {
+  return moment(date).format("DD.MM.YYYY hh:mm");
+}
+
 export function formatTimeSecondsToTime(date: Date) {
   return moment(date, "HH:mm:ss").format("HH:mm");
 }

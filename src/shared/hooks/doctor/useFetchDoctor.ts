@@ -27,5 +27,5 @@ export default function useFetchDoctor(doctorId: number | null) {
     }
   }, [fetchDoctor, doctorId]);
 
-  return { doctor, loadingDoctor, setDoctor };
+  return { doctor, loadingDoctor, setDoctor, fetchDoctor };
 }

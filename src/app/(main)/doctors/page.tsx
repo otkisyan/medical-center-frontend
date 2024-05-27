@@ -136,6 +136,7 @@ export default function DoctorsPage() {
                 <th>По батькові</th>
                 <th>Дата народження</th>
                 <th>Медична спеціальність</th>
+                <th>Кабінет</th>
                 <th>Дія</th>
               </tr>
             </thead>
@@ -152,6 +153,9 @@ export default function DoctorsPage() {
                       : ""}
                   </td>
                   <td>{doctor.medicalSpecialty}</td>
+                  <td>
+                    {doctor.office ? doctor.office.number : "Без кабінету"}
+                  </td>
                   <td>
                     <Link
                       className="btn btn-primary"
