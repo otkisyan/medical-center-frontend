@@ -28,7 +28,7 @@ export const OfficeService = {
     return data;
   },
 
-  async addOffice(newOffice: OfficeResponse) {
+  async addOffice(newOffice: OfficeRequest) {
     const { data } = await axiosInstance.post<OfficeResponse>(
       "/offices",
       newOffice

@@ -27,7 +27,7 @@ export const UserContextProvider = ({
   const logout = async () => {
     setIsReady(false);
     let loadingTimer: NodeJS.Timeout;
-    loadingTimer = setTimeout(() => setShowLoading(true), 500);
+    loadingTimer = setTimeout(() => setShowLoading(true), 1000);
     try {
       await UserService.logout();
     } catch (error) {

@@ -27,6 +27,7 @@ const NavBar = () => {
               as={Link}
               href="/patients"
               active={pathname == "/patients"}
+              hidden={!hasAnyRole([Role.ADMIN, Role.RECEPTIONIST, Role.Doctor])}
             >
               Пацієнти
             </Nav.Link>
@@ -38,7 +39,12 @@ const NavBar = () => {
             >
               Лікарі
             </Nav.Link>
-            <NavDropdown title="Прийоми" id="navbarScrollingDropdown">
+
+            <NavDropdown
+              title="Прийоми"
+              id="navbarScrollingDropdown"
+              hidden={!hasAnyRole([Role.ADMIN, Role.RECEPTIONIST, Role.Doctor])}
+            >
               <NavDropdown.Item as={Link} href="/appointments">
                 Пошук
               </NavDropdown.Item>
@@ -46,6 +52,14 @@ const NavBar = () => {
                 <NavDropdown.Item>Розклад</NavDropdown.Item>
               </Link>
             </NavDropdown>
+            <Nav.Link
+              as={Link}
+              href="/offices"
+              active={pathname == "/offices"}
+              hidden={!hasAnyRole([Role.ADMIN, Role.RECEPTIONIST, Role.Doctor])}
+            >
+              Кабінети
+            </Nav.Link>
           </Nav>
           <Button variant="link" onClick={logout}>
             <i className="bi bi-box-arrow-left link-black"></i>

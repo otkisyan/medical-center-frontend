@@ -19,3 +19,13 @@ export const initialOfficeRequestState: OfficeRequest = {
   number: 0,
   name: "",
 };
+
+export const convertOfficeResponseToOfficeRequest = (
+  officeResponse: OfficeResponse
+) => {
+  const officeRequest: OfficeRequest = {
+    name: officeResponse.name,
+    number: officeResponse.number,
+  };
+  return officeRequest;
+};
