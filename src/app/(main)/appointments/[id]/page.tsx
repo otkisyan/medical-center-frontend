@@ -5,6 +5,7 @@ import { Role } from "@/shared/enum/role";
 import useFetchAppointment from "@/shared/hooks/appointment/useFetchAppointment";
 import useFetchAppointmentConsultation from "@/shared/hooks/appointment/useFetchAppointmentConsultation";
 import useFetchAppointmentsCount from "@/shared/hooks/appointment/useFetchAppointmentsCount";
+import useAutosizeTextArea from "@/shared/hooks/textarea/useAutoSizeTextArea";
 import {
   AppointmentRequest,
   AppointmentResponse,
@@ -20,7 +21,7 @@ import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 import { formatTimeSecondsToTime } from "@/shared/utils/date-utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Breadcrumb,
@@ -55,6 +56,15 @@ export default function AppointmentPage({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
   const handleShowDeleteModal = () => setShowDeleteModal(true);
+
+  const symptomsRef = useRef(null);
+  const medicalRecommendationsRef = useRef(null);
+
+  useAutosizeTextArea(symptomsRef.current, editedConsultation?.symptoms);
+  useAutosizeTextArea(
+    medicalRecommendationsRef.current,
+    editedConsultation?.medicalRecommendations
+  );
 
   const handleChangeConsultation = (event: any) => {
     const { name, value } = event.target;
@@ -249,7 +259,9 @@ export default function AppointmentPage({
                     <Form.Group controlId="formGridSymptoms" className="mb-3">
                       <Form.Label>Симптоми</Form.Label>
                       <Form.Control
+                        as="textarea"
                         type="text"
+                        ref={symptomsRef}
                         value={editedConsultation?.symptoms ?? ""}
                         name="symptoms"
                         onChange={handleChangeConsultation}
@@ -262,6 +274,7 @@ export default function AppointmentPage({
                       <Form.Label>Медичні рекомендації</Form.Label>
                       <Form.Control
                         as="textarea"
+                        ref={medicalRecommendationsRef}
                         type="text"
                         value={editedConsultation?.medicalRecommendations ?? ""}
                         name="medicalRecommendations"

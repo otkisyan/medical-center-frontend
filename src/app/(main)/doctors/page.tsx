@@ -23,6 +23,7 @@ export default function DoctorsPage() {
       name: "",
       middleName: "",
       birthDate: "",
+      medicalSpecialty: "",
       page: 0,
     }),
     []
@@ -85,6 +86,20 @@ export default function DoctorsPage() {
                 type="text"
                 name="middleName"
                 value={params.middleName}
+                onChange={handleSearchFormInput}
+              />
+            </FloatingLabel>
+          </Col>
+          <Col>
+            <FloatingLabel
+              controlId="medicalSpecialty"
+              label="Медична спеціальність"
+              className="mb-3"
+            >
+              <Form.Control
+                type="text"
+                name="medicalSpecialty"
+                value={params.medicalSpecialty}
                 onChange={handleSearchFormInput}
               />
             </FloatingLabel>
