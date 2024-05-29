@@ -33,7 +33,8 @@ export default function OfficePage({ params }: { params: { id: number } }) {
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
   const handleShowDeleteModal = () => setShowDeleteModal(true);
 
-  const handleEditFormSubmit = async () => {
+  const handleEditFormSubmit = async (event: any) => {
+    event.preventDefault();
     try {
       const data = await OfficeService.updateOffice(params.id, editedOffice);
       setOffice(data);
@@ -133,7 +134,7 @@ export default function OfficePage({ params }: { params: { id: number } }) {
           <Card>
             <Card.Header>Кабінет</Card.Header>
             <Card.Body>
-              <Form>
+              <Form onSubmit={handleEditFormSubmit}>
                 <fieldset disabled={!editing}>
                   <Form.Group controlId="formGridNumber" className="mb-3">
                     <Form.Label>Номер</Form.Label>
@@ -165,11 +166,10 @@ export default function OfficePage({ params }: { params: { id: number } }) {
                 </Button>
                 <Button
                   variant="primary"
-                  type="button"
+                  type="submit"
                   className="me-2"
                   hidden={!editing}
                   id="confirmEdit"
-                  onClick={handleEditFormSubmit}
                 >
                   Зберегти
                 </Button>

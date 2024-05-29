@@ -60,7 +60,16 @@ const NavBar = () => {
             >
               Кабінети
             </Nav.Link>
+            <Nav.Link
+              as={Link}
+              href="/receptionists"
+              active={pathname == "/receptionists"}
+              hidden={!hasAnyRole([Role.ADMIN])}
+            >
+              Реєстратори
+            </Nav.Link>
           </Nav>
+
           <Button variant="link" onClick={logout}>
             <i className="bi bi-box-arrow-left link-black"></i>
           </Button>

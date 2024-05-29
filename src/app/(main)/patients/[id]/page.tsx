@@ -32,7 +32,8 @@ export default function PatientPage({ params }: { params: { id: number } }) {
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
   const handleShowDeleteModal = () => setShowDeleteModal(true);
 
-  const handleEditFormSubmit = async () => {
+  const handleEditFormSubmit = async (event: any) => {
+    event.preventDefault();
     try {
       const data = await PatientService.updatePatient(params.id, editedPatient);
       setPatient(data);
@@ -129,7 +130,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
               </Button>
             </Modal.Footer>
           </Modal>
-          <Card>
+          <Card onSubmit={handleEditFormSubmit}>
             <Card.Header>Пацієнт</Card.Header>
             <Card.Body>
               <Form>
@@ -230,11 +231,10 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                 </Button>
                 <Button
                   variant="primary"
-                  type="button"
+                  type="submit"
                   className="me-2"
                   hidden={!editing}
                   id="confirmEdit"
-                  onClick={handleEditFormSubmit}
                 >
                   Зберегти
                 </Button>

@@ -1,6 +1,8 @@
 "use client";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import { customReactSelectStyles } from "@/css/react-select";
+import { useAuth } from "@/shared/context/UserContextProvider";
+import { Role } from "@/shared/enum/role";
 import useFetchAllDoctorWorkSchedules from "@/shared/hooks/doctor/useFetchAllDoctorWorkSchedules";
 import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
 import useFetchOfficesOptions from "@/shared/hooks/office/useFetchOfficesOptions";
@@ -40,6 +42,7 @@ import Select from "react-select";
 
 export default function DoctorPage({ params }: { params: { id: number } }) {
   const router = useRouter();
+  const { hasAnyRole, userDetails } = useAuth();
   enum Tab {
     Doctor,
     Work_Schedules,
@@ -428,42 +431,46 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                       />
                     </Form.Group>
                   </fieldset>
-                  <Button
-                    variant="primary"
-                    type="button"
-                    className="me-2"
-                    hidden={editingDoctor}
-                    onClick={handleEditDoctor}
-                  >
-                    <i className="bi bi-pencil-square" id="editButton"></i>
-                  </Button>
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    className="me-2"
-                    hidden={!editingDoctor}
-                    id="confirmEdit"
-                  >
-                    Зберегти
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    type="button"
-                    id="cancelButton"
-                    hidden={!editingDoctor}
-                    onClick={handleCancelEditDoctor}
-                  >
-                    Скасувати
-                  </Button>
-                  <Button
-                    variant="danger"
-                    type="button"
-                    hidden={editingDoctor}
-                    id="deleteButton"
-                    onClick={handleShowDeleteModal}
-                  >
-                    <i className="bi bi-trash"></i>
-                  </Button>
+                  {hasAnyRole([Role.ADMIN]) && (
+                    <>
+                      <Button
+                        variant="primary"
+                        type="button"
+                        className="me-2"
+                        hidden={editingDoctor}
+                        onClick={handleEditDoctor}
+                      >
+                        <i className="bi bi-pencil-square" id="editButton"></i>
+                      </Button>
+                      <Button
+                        variant="primary"
+                        type="submit"
+                        className="me-2"
+                        hidden={!editingDoctor}
+                        id="confirmEdit"
+                      >
+                        Зберегти
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        type="button"
+                        id="cancelButton"
+                        hidden={!editingDoctor}
+                        onClick={handleCancelEditDoctor}
+                      >
+                        Скасувати
+                      </Button>
+                      <Button
+                        variant="danger"
+                        type="button"
+                        hidden={editingDoctor}
+                        id="deleteButton"
+                        onClick={handleShowDeleteModal}
+                      >
+                        <i className="bi bi-trash"></i>
+                      </Button>
+                    </>
+                  )}
                 </Form>
               )}
               {activeTab === Tab.Work_Schedules && (

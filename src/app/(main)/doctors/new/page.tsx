@@ -5,7 +5,6 @@ import useFetchOfficesOptions from "@/shared/hooks/office/useFetchOfficesOptions
 import {
   DoctorRequest,
   DoctorResponseWithUserCredentials,
-  DoctorUserCredentials,
   initialDoctorRequestState,
 } from "@/shared/interface/doctor/doctor-interface";
 import { DoctorService } from "@/shared/service/doctor-service";
@@ -22,6 +21,7 @@ import Select from "react-select";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { saveAs } from "file-saver";
+import { RegisterSuccessCredentials } from "@/shared/interface/user/register-success-credentials-interface";
 
 export default function NewDoctorPage() {
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function NewDoctorPage() {
   );
 
   const [doctorCredentials, setDoctorCredentials] =
-    useState<DoctorUserCredentials | null>(null);
+    useState<RegisterSuccessCredentials | null>(null);
   const [showDoctorModal, setShowDoctorModal] = useState(false);
 
   const handleCloseDoctorModal = () => setShowDoctorModal(false);
@@ -62,18 +62,19 @@ export default function NewDoctorPage() {
       const data: DoctorResponseWithUserCredentials =
         await DoctorService.addDoctor(doctor);
       setDoctorCredentials({
-        doctorId: data.doctorResponseDto.id,
+        id: data.doctor.id,
         fullName:
-          data?.doctorResponseDto.surname +
+          data?.doctor.surname +
           " " +
-          data?.doctorResponseDto.name +
+          data?.doctor.name +
           " " +
-          data?.doctorResponseDto.middleName,
+          data?.doctor.middleName,
         userCredentials: {
-          username: data.userCredentialsDto.username,
-          password: data.userCredentialsDto.password,
+          username: data.userCredentials.username,
+          password: data.userCredentials.password,
         },
       });
+      setDoctor(initialDoctorRequestState);
       handleShowDoctorModal();
     } catch (error) {
       notifyError(
@@ -172,7 +173,7 @@ export default function NewDoctorPage() {
               <Button
                 variant="primary"
                 onClick={() => {
-                  router.push(`/doctors/${doctorCredentials?.doctorId}`);
+                  router.push(`/doctors/${doctorCredentials?.id}`);
                 }}
               >
                 Зрозуміло

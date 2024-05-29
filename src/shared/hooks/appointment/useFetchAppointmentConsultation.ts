@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import { AppointmentService } from "@/shared/service/appointment-service";
-import { AppointmentResponse } from "@/shared/interface/appointment/appointment-interface";
 import { ConsultationResponse } from "@/shared/interface/consultation/consultation-interface";
+import { AppointmentService } from "@/shared/service/appointment-service";
+import { useCallback, useState } from "react";
 
 export default function useFetchAppointmentConsultation() {
   const [consultation, setConsultation] = useState<ConsultationResponse | null>(
@@ -27,5 +26,6 @@ export default function useFetchAppointmentConsultation() {
     loadingConsultation,
     fetchAppointmentConsultation,
     setConsultation,
+    setLoadingConsultation
   };
 }

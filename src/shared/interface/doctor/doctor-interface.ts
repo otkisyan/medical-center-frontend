@@ -29,13 +29,7 @@ export interface DoctorRequest {
 }
 
 export interface DoctorResponseWithUserCredentials {
-  doctorResponseDto: DoctorResponse;
-  userCredentialsDto: UserCredentials;
-}
-
-export interface DoctorUserCredentials {
-  doctorId: number;
-  fullName: string;
+  doctor: DoctorResponse;
   userCredentials: UserCredentials;
 }
 

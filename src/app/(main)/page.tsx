@@ -1,15 +1,13 @@
 "use client";
 import Badge from "react-bootstrap/Badge";
 
-import { useEffect, useState } from "react";
-import {
-  formatDateToString,
-  formatDateToStringWithTime,
-} from "@/shared/utils/date-utils";
+import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import { useAuth } from "@/shared/context/UserContextProvider";
 import { Role } from "@/shared/enum/role";
 import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
-import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
+import useFetchReceptionist from "@/shared/hooks/receptionist/useFetchReceptionist";
+import { formatDateToStringWithTime } from "@/shared/utils/date-utils";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const { hasAnyRole, userDetails } = useAuth();
@@ -17,6 +15,8 @@ export default function Home() {
   const [role, setRole] = useState("");
   const [fullName, setFullName] = useState("");
   const { doctor, fetchDoctor, loadingDoctor } = useFetchDoctor(null);
+  const { receptionist, fetchReceptionist, loadingReceptionist } =
+    useFetchReceptionist(null);
   const currentDate = new Date();
 
   useEffect(() => {
@@ -38,24 +38,35 @@ export default function Home() {
       }
     } else if (hasAnyRole([Role.RECEPTIONIST])) {
       setRole("Реєстратор");
+      if (userDetails) {
+        fetchReceptionist(userDetails.id);
+      }
     } else if (hasAnyRole([Role.ADMIN])) {
       setRole("Адміністратор");
       setFullName("admin");
     }
-  }, [hasAnyRole, userDetails, fetchDoctor]);
+  }, [hasAnyRole, userDetails, fetchDoctor, fetchReceptionist]);
 
   useEffect(() => {
     if (doctor) {
       setFullName(
         doctor.surname + " " + doctor.name[0] + "." + doctor.middleName[0]
       );
+    } else if (receptionist) {
+      setFullName(
+        receptionist.surname +
+          " " +
+          receptionist.name[0] +
+          "." +
+          receptionist.middleName[0]
+      );
     }
-  }, [doctor]);
+  }, [doctor, receptionist]);
 
   return (
     <>
       <br></br>
-      {loadingDoctor ? (
+      {loadingDoctor || loadingReceptionist ? (
         <SpinnerCenter></SpinnerCenter>
       ) : (
         <>

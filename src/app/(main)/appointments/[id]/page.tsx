@@ -46,6 +46,7 @@ export default function AppointmentPage({
     consultation,
     setConsultation,
     loadingConsultation,
+    setLoadingConsultation,
     fetchAppointmentConsultation,
   } = useFetchAppointmentConsultation();
   const [editedConsultation, setEditedConsultation] =
@@ -122,8 +123,16 @@ export default function AppointmentPage({
     fetchAppointment(params.id);
     if (hasAnyRole([Role.ADMIN, Role.Doctor])) {
       fetchAppointmentConsultation(params.id);
+    } else {
+      setLoadingConsultation(false);
     }
-  }, [fetchAppointment, hasAnyRole, fetchAppointmentConsultation, params.id]);
+  }, [
+    fetchAppointment,
+    hasAnyRole,
+    fetchAppointmentConsultation,
+    params.id,
+    setLoadingConsultation,
+  ]);
 
   useEffect(() => {
     if (consultation) {
@@ -224,40 +233,43 @@ export default function AppointmentPage({
                   </Link>
                 )}
               </InputGroup>
+
               <Form onSubmit={handleEditFormSubmit}>
-                <fieldset disabled={!editing}>
-                  <Form.Group controlId="formGridDiagnosis" className="mb-3">
-                    <Form.Label>Діагноз</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={editedConsultation?.diagnosis ?? ""}
-                      name="diagnosis"
-                      onChange={handleChangeConsultation}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formGridSymptoms" className="mb-3">
-                    <Form.Label>Симптоми</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={editedConsultation?.symptoms ?? ""}
-                      name="symptoms"
-                      onChange={handleChangeConsultation}
-                    />
-                  </Form.Group>
-                  <Form.Group
-                    controlId="formGridMedicalRecommendations"
-                    className="mb-3"
-                  >
-                    <Form.Label>Медичні рекомендації</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      type="text"
-                      value={editedConsultation?.medicalRecommendations ?? ""}
-                      name="medicalRecommendations"
-                      onChange={handleChangeConsultation}
-                    />
-                  </Form.Group>
-                </fieldset>
+                {hasAnyRole([Role.ADMIN, Role.Doctor]) && (
+                  <fieldset disabled={!editing}>
+                    <Form.Group controlId="formGridDiagnosis" className="mb-3">
+                      <Form.Label>Діагноз</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editedConsultation?.diagnosis ?? ""}
+                        name="diagnosis"
+                        onChange={handleChangeConsultation}
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formGridSymptoms" className="mb-3">
+                      <Form.Label>Симптоми</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editedConsultation?.symptoms ?? ""}
+                        name="symptoms"
+                        onChange={handleChangeConsultation}
+                      />
+                    </Form.Group>
+                    <Form.Group
+                      controlId="formGridMedicalRecommendations"
+                      className="mb-3"
+                    >
+                      <Form.Label>Медичні рекомендації</Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        type="text"
+                        value={editedConsultation?.medicalRecommendations ?? ""}
+                        name="medicalRecommendations"
+                        onChange={handleChangeConsultation}
+                      />
+                    </Form.Group>
+                  </fieldset>
+                )}
                 <fieldset disabled>
                   <Row className="mb-3">
                     <Form.Group as={Col} controlId="formGridDate">
@@ -266,7 +278,6 @@ export default function AppointmentPage({
                         type="date"
                         value={appointment?.date.toString() ?? ""}
                         name="date"
-                        onChange={handleChangeConsultation}
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridTimeStart">
@@ -279,7 +290,6 @@ export default function AppointmentPage({
                             : ""
                         }
                         name="timeStart"
-                        onChange={handleChangeConsultation}
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridTimeEnd">
@@ -292,7 +302,6 @@ export default function AppointmentPage({
                             : ""
                         }
                         name="timeEnd"
-                        onChange={handleChangeConsultation}
                       />
                     </Form.Group>
                   </Row>
