@@ -8,6 +8,7 @@ import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
 import useFetchReceptionist from "@/shared/hooks/receptionist/useFetchReceptionist";
 import { formatDateToStringWithTime } from "@/shared/utils/date-utils";
 import { useEffect, useState } from "react";
+import ua from "@/shared/locale/ua-locale.json";
 
 export default function Home() {
   const { hasAnyRole, userDetails } = useAuth();
@@ -32,17 +33,17 @@ export default function Home() {
 
   useEffect(() => {
     if (hasAnyRole([Role.Doctor])) {
-      setRole("Лікар");
+      setRole(ua.roles.DOCTOR);
       if (userDetails) {
         fetchDoctor(userDetails.id);
       }
     } else if (hasAnyRole([Role.RECEPTIONIST])) {
-      setRole("Реєстратор");
+      setRole(ua.roles.RECEPTIONIST);
       if (userDetails) {
         fetchReceptionist(userDetails.id);
       }
     } else if (hasAnyRole([Role.ADMIN])) {
-      setRole("Адміністратор");
+      setRole(ua.roles.ADMIN);
       setFullName("admin");
     }
   }, [hasAnyRole, userDetails, fetchDoctor, fetchReceptionist]);

@@ -208,6 +208,7 @@ export default function AppointmentPage({
                     appointment.patient.middleName
                   }
                   disabled
+                  readOnly
                 />
                 <Link
                   href={`/patients/${appointment.patient.id}`}
@@ -230,6 +231,7 @@ export default function AppointmentPage({
                     appointment.doctor.middleName
                   }
                   disabled
+                  readOnly
                 />
                 {hasAnyRole([Role.ADMIN, Role.RECEPTIONIST]) && (
                   <Link
@@ -288,6 +290,7 @@ export default function AppointmentPage({
                     <Form.Group as={Col} controlId="formGridDate">
                       <Form.Label>Дата</Form.Label>
                       <Form.Control
+                        readOnly
                         type="date"
                         value={appointment?.date.toString() ?? ""}
                         name="date"
@@ -296,6 +299,7 @@ export default function AppointmentPage({
                     <Form.Group as={Col} controlId="formGridTimeStart">
                       <Form.Label>Час початку</Form.Label>
                       <Form.Control
+                        readOnly
                         type="time"
                         value={
                           appointment?.timeStart
@@ -308,6 +312,7 @@ export default function AppointmentPage({
                     <Form.Group as={Col} controlId="formGridTimeEnd">
                       <Form.Label>Час закінчення</Form.Label>
                       <Form.Control
+                        readOnly
                         type="time"
                         value={
                           appointment?.timeEnd

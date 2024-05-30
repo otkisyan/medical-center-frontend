@@ -1,6 +1,7 @@
 import { axiosInstance } from "@/axios.config";
 import { noInterceptorsAxiosInstance } from "@/axios.config";
 import { UserDetails } from "@/shared/interface/user/user-details-interface";
+import { ChangePasswordRequest } from "../interface/user/password-change";
 
 export const UserService = {
   async loginUser(username: string, password: string) {
@@ -46,6 +47,14 @@ export const UserService = {
 
   async logout() {
     const data = await noInterceptorsAxiosInstance.get<any>("/user/logout");
+    return data;
+  },
+
+  async changePassword(changePasswordRequest: ChangePasswordRequest) {
+    const data = await axiosInstance.put<any>(
+      "/user/password",
+      changePasswordRequest
+    );
     return data;
   },
 };
