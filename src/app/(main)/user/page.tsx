@@ -1,8 +1,15 @@
 "use client";
-import { Role } from "@/shared/enum/role";
-import { useEffect, useState } from "react";
-import ua from "@/shared/locale/ua-locale.json";
+import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import { useAuth } from "@/shared/context/UserContextProvider";
+import { Role } from "@/shared/enum/role";
+import {
+  ChangePasswordRequest,
+  initialChangePasswordRequestState,
+} from "@/shared/interface/user/password-change";
+import ua from "@/shared/locale/ua-locale.json";
+import { UserService } from "@/shared/service/user-service";
+import { notifySuccess } from "@/shared/toast/toast-notifiers";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Button,
@@ -12,13 +19,6 @@ import {
   Modal,
   Row,
 } from "react-bootstrap";
-import {
-  ChangePasswordRequest,
-  initialChangePasswordRequestState,
-} from "@/shared/interface/user/password-change";
-import { UserService } from "@/shared/service/user-service";
-import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
-import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 
 export default function UserPage() {
   const [role, setRole] = useState("");
@@ -79,7 +79,6 @@ export default function UserPage() {
       handleCloseChangePasswordModal();
       notifySuccess("Пароль від облікового запису успішно змінено!");
     } catch (error: any) {
-      console.log(error);
       const errorMessage = error.response.data.message;
       if (error.response && error.response.status === 400) {
         if (

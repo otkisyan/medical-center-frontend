@@ -69,18 +69,19 @@ const NavBar = () => {
               Реєстратори
             </Nav.Link>
           </Nav>
-
-          <Nav.Link
-            as={Link}
-            style={{ marginRight: "5px" }}
-            href="/user"
-            hidden={!isAuthenticated}
-          >
-            <i className="bi bi-person-workspace"></i>
-          </Nav.Link>
-          <Button variant="link" onClick={logout}>
-            <i className="bi bi-box-arrow-left link-black"></i>
-          </Button>
+          <div className="d-flex align-items-center">
+            <Link href="/user" passHref legacyBehavior>
+              <Nav.Link
+                hidden={!isAuthenticated}
+                style={{ marginRight: "10px" }}
+              >
+                <i className="bi bi-person-workspace"></i>
+              </Nav.Link>
+            </Link>
+            <Button variant="link" onClick={logout}>
+              <i className="bi bi-box-arrow-left link-black"></i>
+            </Button>
+          </div>
         </Navbar.Collapse>
       </Container>
     </Navbar>
