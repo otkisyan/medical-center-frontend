@@ -6,6 +6,7 @@ const protectedRoutes = {
   "/appointments": [Role.ADMIN, Role.RECEPTIONIST, Role.Doctor],
   "/offices": [Role.ADMIN, Role.RECEPTIONIST, Role.Doctor],
   "/receptionists": [Role.ADMIN],
+  "/user": [Role.ADMIN, Role.RECEPTIONIST, Role.Doctor],
 };
 
 export default protectedRoutes;

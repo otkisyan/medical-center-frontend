@@ -67,6 +67,14 @@ const getUserRoles = async (request: NextRequest) => {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  if (pathname === "/login") {
+    const isAuth = await isAuthenticated(request);
+    if (isAuth) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
+
   if (isProtectedRoute(pathname)) {
     const isAuth = await isAuthenticated(request);
     const userRoles = await getUserRoles(request);
@@ -80,13 +88,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (pathname.startsWith("/login")) {
-    const isAuth = await isAuthenticated(request);
-    if (isAuth) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-  }
-
   if (pathname === "/") {
     const isAuth = await isAuthenticated(request);
     const userRoles = await getUserRoles(request);
@@ -97,4 +98,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
+
+  return NextResponse.next();
 }

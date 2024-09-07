@@ -4,11 +4,8 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useAuth } from "@/shared/context/UserContextProvider";
 import { Alert } from "react-bootstrap";
-import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
 import { InputGroup } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
-import { access } from "fs";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -20,11 +17,17 @@ export default function LoginPage() {
 
   const handleLogin = async (event: any) => {
     event.preventDefault();
+    setError(false);
     setLoading(true);
     try {
       await login(username, password);
     } catch (error) {
+      setLoading(false);
       setError(true);
+    } finally {
+      if (!error) {
+        let loadingTimer = setTimeout(() => setLoading(false), 1000);
+      }
     }
     if (!localStorage.getItem("access_token")) {
       setLoading(false);

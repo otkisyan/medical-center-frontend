@@ -18,14 +18,7 @@ export default function UserLayout({
 }) {
   return (
     <>
-      <html lang="en">
-        <body>
-          <ToastContainerInstance></ToastContainerInstance>
-          <UserContextProvider>
-            <Wrapper>{children}</Wrapper>
-          </UserContextProvider>
-        </body>
-      </html>
+      <Wrapper>{children}</Wrapper>
     </>
   );
 }

@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { Container } from "react-bootstrap";
+
 export default function NotFound() {
   const date = new Date();
   const day = date.getDate().toString().padStart(2, "0");
@@ -14,6 +17,10 @@ export default function NotFound() {
         <i className="bi bi-emoji-frown h1"></i>
         <h2>Сторінка не знайдена</h2>
         <p>{formattedDate}</p>
+
+        <Link href="/" style={{ textDecoration: "none" }}>
+          На домашню сторінку →
+        </Link>
       </div>
     </>
   );
