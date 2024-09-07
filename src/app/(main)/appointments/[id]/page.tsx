@@ -346,47 +346,49 @@ export default function AppointmentPage({
                     </Link>
                   </>
                 )}
-                {userDetails?.id === appointment.doctor.id &&
-                  hasAnyRole([Role.Doctor]) && (
-                    <>
-                      <Button
-                        variant="primary"
-                        type="button"
-                        className="me-2"
-                        hidden={editing}
-                        onClick={handleEdit}
-                      >
-                        <i className="bi bi-pencil-square" id="editButton"></i>
-                      </Button>
-                      <Button
-                        variant="primary"
-                        type="submit"
-                        className="me-2"
-                        hidden={!editing}
-                        id="confirmEdit"
-                      >
-                        Зберегти
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        type="button"
-                        id="cancelButton"
-                        hidden={!editing}
-                        onClick={handleCancelEdit}
-                      >
-                        Скасувати
-                      </Button>
-                      <Button
-                        variant="danger"
-                        type="button"
-                        hidden={editing}
-                        id="deleteButton"
-                        onClick={handleShowDeleteModal}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </Button>
-                    </>
-                  )}
+                {userDetails?.id === appointment.doctor.id && (
+                  <>
+                    <Button
+                      variant="primary"
+                      type="button"
+                      className="me-2"
+                      hidden={editing}
+                      onClick={handleEdit}
+                    >
+                      <i className="bi bi-pencil-square" id="editButton"></i>
+                    </Button>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      className="me-2"
+                      hidden={!editing}
+                      id="confirmEdit"
+                    >
+                      Зберегти
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      type="button"
+                      id="cancelButton"
+                      hidden={!editing}
+                      onClick={handleCancelEdit}
+                    >
+                      Скасувати
+                    </Button>
+                  </>
+                )}
+                {userDetails?.id === appointment.doctor.id ||
+                  (hasAnyRole([Role.ADMIN, Role.RECEPTIONIST]) && (
+                    <Button
+                      variant="danger"
+                      type="button"
+                      hidden={editing}
+                      id="deleteButton"
+                      onClick={handleShowDeleteModal}
+                    >
+                      <i className="bi bi-trash"></i>
+                    </Button>
+                  ))}
               </Form>
             </Card.Body>
           </Card>

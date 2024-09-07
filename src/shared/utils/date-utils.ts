@@ -10,7 +10,7 @@ export function formatDateToHtml5(date: Date) {
 }
 
 export function formatDateToStringWithTime(date: Date) {
-  return moment(date).format("DD.MM.YYYY hh:mm");
+  return moment(date).format("DD.MM.YYYY HH:mm");
 }
 
 export function formatTimeSecondsToTime(date: Date) {

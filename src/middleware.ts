@@ -6,7 +6,6 @@ import {
 } from "@/shared/utils/auth-utils";
 import { hasSufficientRole } from "@/shared/utils/auth-utils";
 import { Role } from "./shared/enum/role";
-import path from "path";
 
 const isAuthenticated = async (request: NextRequest) => {
   const refreshToken = request.cookies.get("refreshToken");
