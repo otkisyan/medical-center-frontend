@@ -24,6 +24,7 @@ export default function DoctorsPage() {
       middleName: "",
       birthDate: "",
       medicalSpecialty: "",
+      office: "",
       page: 0,
     }),
     []
@@ -90,12 +91,8 @@ export default function DoctorsPage() {
               />
             </FloatingLabel>
           </Col>
-          <Col>
-            <FloatingLabel
-              controlId="medicalSpecialty"
-              label="Медична спеціальність"
-              className="mb-3"
-            >
+          <Col sm>
+            <FloatingLabel controlId="medicalSpecialty" label="Спеціальність">
               <Form.Control
                 type="text"
                 name="medicalSpecialty"
@@ -105,6 +102,16 @@ export default function DoctorsPage() {
             </FloatingLabel>
           </Col>
           <Col>
+            <FloatingLabel controlId="number" label="Кабінет">
+              <Form.Control
+                type="number"
+                name="office"
+                value={params.office}
+                onChange={handleSearchFormInput}
+              />
+            </FloatingLabel>
+          </Col>
+          <Col sm>
             <FloatingLabel
               controlId="birthDate"
               label="Дата народження"
