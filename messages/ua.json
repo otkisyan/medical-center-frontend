@@ -56,14 +56,52 @@
     "welcome_evening_label": "Добрий вечір"
   },
   "PatientsPage": {
-    "new_patient_link_label": "Новий пацієнт →"
+    "new_patient_link_label": "Новий пацієнт →",
+    "alerts": {
+      "no_patients_found": "Пацієнтів за заданими критеріями не знайдено",
+      "no_patients": "Ще не додано жодного пацієнта",
+      "error_fetching_patients": "При виконанні запиту на пацієнтів виникла непередбачена помилка"
+    }
   },
   "PagesNavigation": {
     "home_page": "Домашня сторінка",
     "patients": "Пацієнти",
     "doctors": "Лікарі",
     "appointments": "Прийоми",
-    "specific_patient": "Пацієнт #{id}"
+    "specific_patient": "Пацієнт #{id}",
+    "new_patient": "Новий пацієнт",
+    "user": "Обліковий запис"
   },
-  "SpecificPatientPage": {}
+  "SpecificPatientPage": {
+    "breadcrumb_active_page": "Інформація про пацієнта #{id}",
+    "patient_card_header": "Пацієнт",
+    "patient_delete_dialog": {
+      "title": "Видалення пацієнта",
+      "text": "Ви впевнені що хочете видалити пацієнта?",
+      "warning": "Ви не сможете відновити інформацію про пацієнта після підтвердження видалення!",
+      "confirm_button_label": "Видалити пацієнта"
+    },
+    "toasts": {
+      "edit_success": "Редагування інформації про пацієнта успішне!",
+      "edit_error": "При редагуванні інформації про пацієнта сталася непередбачена помилка!",
+      "delete_success": "Пацієнт був успішно видалений!",
+      "delete_error": "При видаленні пацієнта сталася непередбачена помилка!"
+    },
+    "error_alert": {
+      "header": "Ууупсс...",
+      "text": "При виконанні запиту виникла помилка або запитуваного пацієнта не існує"
+    }
+  },
+  "NewPatientPage": {
+    "new_patient": {
+      "card": {
+        "header": "Інформація про нового пацієнта"
+      },
+      "add_button_label": "Додати нового пацієнта"
+    },
+    "toasts": {
+      "new_patient_success": "Новий пацієнт був успішно доданий!",
+      "new_patient_error": "При додаванні нового пацієнта сталася непередбачувана помилка!"
+    }
+  }
 }

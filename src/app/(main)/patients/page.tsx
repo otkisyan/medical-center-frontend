@@ -35,8 +35,17 @@ export default function PatientsPage() {
   );
 
   const [params, setParams] = useState(initialParamsState);
-  const { patientsCount, loadingPatientsCount } = useFetchPatientsCount();
-  const { patientPage, loadingPatients, fetchPatients } = useFetchPatients();
+  const {
+    patientsCount,
+    loadingPatientsCount,
+    error: errorLoadingPatientsCount,
+  } = useFetchPatientsCount();
+  const {
+    patientPage,
+    loadingPatients,
+    fetchPatients,
+    error: errorLoadingPatients,
+  } = useFetchPatients();
 
   const clearSearchParams = async () => {
     await fetchPatients(initialParamsState);
@@ -244,13 +253,21 @@ export default function PatientsPage() {
         </>
       ) : (
         <>
-          {patientsCount > 0 ? (
+          {errorLoadingPatients || errorLoadingPatientsCount ? (
             <Alert
               variant={"danger"}
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Пацієнтів за заданими критеріями не знайдено
+              {tPatientsPage("alerts.error_fetching_patients")}
+            </Alert>
+          ) : patientsCount > 0 ? (
+            <Alert
+              variant={"danger"}
+              className="text-center mx-auto"
+              style={{ maxWidth: "400px" }}
+            >
+              {tPatientsPage("alerts.no_patients_found")}
             </Alert>
           ) : (
             <Alert
@@ -258,7 +275,7 @@ export default function PatientsPage() {
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Ще не додано жодного пацієнта
+              {tPatientsPage("alerts.no_patients")}
             </Alert>
           )}
         </>

@@ -19,8 +19,12 @@ import { Breadcrumb } from "react-bootstrap";
 import useFetchPatient from "@/shared/hooks/patients/useFetchPatient";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function PatientPage({ params }: { params: { id: number } }) {
+  const tCommon = useTranslations("Common");
+  const tPagesNavigation = useTranslations("PagesNavigation");
+  const tSpecificPatientPage = useTranslations("SpecificPatientPage");
   const router = useRouter();
   const { patient, setPatient, loadingPatient } = useFetchPatient(params.id);
   const [editedPatient, setEditedPatient] = useState<PatientRequest>(
@@ -38,12 +42,12 @@ export default function PatientPage({ params }: { params: { id: number } }) {
       const data = await PatientService.updatePatient(params.id, editedPatient);
       setPatient(data);
       setEditedPatient(convertPatientResponseToPatientRequest(data));
-      notifySuccess("Редагування інформації про пацієнта успішне!");
+      notifySuccess(tSpecificPatientPage("toasts.edit_success"));
     } catch (error) {
       if (patient) {
         setEditedPatient(convertPatientResponseToPatientRequest(patient));
       }
-      notifyError("При редагуванні сталася непередбачена помилка!");
+      notifyError(tSpecificPatientPage("toasts.edit_error"));
     } finally {
       setEditing(false);
     }
@@ -53,9 +57,9 @@ export default function PatientPage({ params }: { params: { id: number } }) {
     try {
       const data = await PatientService.deletePatient(params.id);
       router.push("/patients");
-      notifySuccess("Пацієнт був успішно видалений!");
+      notifySuccess(tSpecificPatientPage("toasts.delete_success"));
     } catch (error) {
-      notifyError("При видаленні пацієнта сталася непередбачена помилка!");
+      notifyError(tSpecificPatientPage("toasts.edit_error"));
     } finally {
       setShowDeleteModal(false);
     }
@@ -98,46 +102,56 @@ export default function PatientPage({ params }: { params: { id: number } }) {
           <Breadcrumb>
             <Link href="/" passHref legacyBehavior>
               <Breadcrumb.Item className="link">
-                Домашня сторінка
+                {tPagesNavigation("home_page")}
               </Breadcrumb.Item>
             </Link>
             <Link href="/patients" passHref legacyBehavior>
-              <Breadcrumb.Item className="link">Пацієнти</Breadcrumb.Item>
+              <Breadcrumb.Item className="link">
+                {" "}
+                {tPagesNavigation("patients")}
+              </Breadcrumb.Item>
             </Link>
             <Breadcrumb.Item active>
-              Інформація про пацієнта #{params.id}
+              {tSpecificPatientPage("breadcrumb_active_page", {
+                id: params.id,
+              })}
             </Breadcrumb.Item>
           </Breadcrumb>
           <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
             <Modal.Header closeButton>
-              <Modal.Title>Видалення пацієнта</Modal.Title>
+              <Modal.Title>
+                {tSpecificPatientPage("patient_delete_dialog.title")}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>Ви впевнені що хочете видалити пацієнта?</p>
+              <p>{tSpecificPatientPage("patient_delete_dialog.text")}</p>
               <p>
-                <i>
-                  Ви не сможете відновити інформацію про пацієнта після
-                  підтвердження видалення!
-                </i>
+                <i>{tSpecificPatientPage("patient_delete_dialog.warning")}</i>
               </p>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                Скасувати
+                {tCommon("action_cancel_button_label")}
               </Button>
               <Button variant="danger" onClick={deletePatient}>
-                Видалити пацієнта
+                {tSpecificPatientPage(
+                  "patient_delete_dialog.confirm_button_label"
+                )}
               </Button>
             </Modal.Footer>
           </Modal>
           <Card onSubmit={handleEditFormSubmit}>
-            <Card.Header>Пацієнт</Card.Header>
+            <Card.Header>
+              {tSpecificPatientPage("patient_card_header")}
+            </Card.Header>
             <Card.Body>
               <Form>
                 <fieldset disabled={!editing}>
                   <Row className="mb-3">
                     <Form.Group as={Col} controlId="formGridSurname">
-                      <Form.Label>Прізвище</Form.Label>
+                      <Form.Label>
+                        {tCommon("personal_data.surname")}
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={editedPatient.surname ?? ""}
@@ -146,7 +160,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridName">
-                      <Form.Label>{`Ім'я`}</Form.Label>
+                      <Form.Label>{tCommon("personal_data.name")}</Form.Label>
                       <Form.Control
                         type="text"
                         value={editedPatient.name ?? ""}
@@ -155,7 +169,10 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridMiddleName">
-                      <Form.Label>По батькові</Form.Label>
+                      <Form.Label>
+                        {" "}
+                        {tCommon("personal_data.middle_name")}
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={editedPatient.middleName ?? ""}
@@ -165,7 +182,10 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                     </Form.Group>
                   </Row>
                   <Form.Group controlId="formGridBirthDate" className="mb-3">
-                    <Form.Label>Дата народження</Form.Label>
+                    <Form.Label>
+                      {" "}
+                      {tCommon("personal_data.birth_date")}
+                    </Form.Label>
                     <Form.Control
                       type="date"
                       value={
@@ -180,7 +200,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   </Form.Group>
                   <Row className="mb-3">
                     <Form.Group as={Col} controlId="formGridPhone">
-                      <Form.Label>Номер телефону</Form.Label>
+                      <Form.Label> {tCommon("personal_data.phone")}</Form.Label>
                       <Form.Control
                         type="text"
                         value={editedPatient.phone ?? ""}
@@ -189,7 +209,10 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridMessengerContact">
-                      <Form.Label>Контактний номер Viber/Telegram</Form.Label>
+                      <Form.Label>
+                        {" "}
+                        {tCommon("personal_data.messenger_contact")}
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={editedPatient.messengerContact ?? ""}
@@ -199,7 +222,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                     </Form.Group>
                   </Row>
                   <Form.Group controlId="formGridAddress" className="mb-3">
-                    <Form.Label>Домашня адреса</Form.Label>
+                    <Form.Label> {tCommon("personal_data.address")}</Form.Label>
                     <Form.Control
                       type="text"
                       value={editedPatient.address ?? ""}
@@ -211,7 +234,10 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                     controlId="formGridPreferentialCategory"
                     className="mb-3"
                   >
-                    <Form.Label>Пільгова категорія</Form.Label>
+                    <Form.Label>
+                      {" "}
+                      {tCommon("personal_data.preferential_category")}
+                    </Form.Label>
                     <Form.Control
                       type="text"
                       value={editedPatient.preferentialCategory ?? ""}
@@ -236,7 +262,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   hidden={!editing}
                   id="confirmEdit"
                 >
-                  Зберегти
+                  {tCommon("action_save_button_label")}
                 </Button>
                 <Button
                   variant="secondary"
@@ -245,7 +271,7 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   hidden={!editing}
                   onClick={handleCancelEdit}
                 >
-                  Скасувати
+                  {tCommon("action_cancel_button_label")}
                 </Button>
                 <Button
                   variant="danger"
@@ -262,11 +288,10 @@ export default function PatientPage({ params }: { params: { id: number } }) {
         </>
       ) : (
         <Alert variant="danger">
-          <Alert.Heading>Ууупсс...</Alert.Heading>
-          <p>
-            При виконанні запиту виникла помилка або запитуваного пацієнта не
-            існує
-          </p>
+          <Alert.Heading>
+            {tSpecificPatientPage("error_alert.header")}
+          </Alert.Heading>
+          <p>{tSpecificPatientPage("error_alert.text")}</p>
         </Alert>
       )}
     </>

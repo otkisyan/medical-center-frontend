@@ -15,8 +15,12 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
+import { useTranslations } from "next-intl";
 
 export default function NewPatientPage() {
+  const tCommon = useTranslations("Common");
+  const tPagesNavigation = useTranslations("PagesNavigation");
+  const tNewPatientPage = useTranslations("NewPatientPage");
   const router = useRouter();
 
   const [patient, setPatient] = useState<PatientRequest>(
@@ -40,11 +44,9 @@ export default function NewPatientPage() {
     try {
       const data = await PatientService.addPatient(patient);
       router.push(`/patients/${data.id}`);
-      notifySuccess("Новий пацієнт був успішно доданий!");
+      notifySuccess(tNewPatientPage("toasts.new_patient_success"));
     } catch (error) {
-      notifyError(
-        "При додаванні нового пацієнта сталася непередбачувана помилка!"
-      );
+      notifyError(tNewPatientPage("toasts.new_patient_error"));
     }
   };
 
@@ -53,20 +55,23 @@ export default function NewPatientPage() {
       <br></br>
       <Breadcrumb>
         <Breadcrumb.Item href="/" className="link">
-          Домашня сторінка
+          {tPagesNavigation("home_page")}
         </Breadcrumb.Item>
         <Breadcrumb.Item href="/patients" className="link">
-          Пацієнти
+          {tPagesNavigation("patients")}
         </Breadcrumb.Item>
-        <Breadcrumb.Item active>Новий пацієнт</Breadcrumb.Item>
+        <Breadcrumb.Item active>
+          {" "}
+          {tPagesNavigation("new_patient")}
+        </Breadcrumb.Item>
       </Breadcrumb>
       <Card>
-        <Card.Header>Інформація про нового пацієнта</Card.Header>
+        <Card.Header>{tNewPatientPage("new_patient.card.header")}</Card.Header>
         <Card.Body>
           <Form onSubmit={handleNewPatientFormSubmit}>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridSurname">
-                <Form.Label>Прізвище</Form.Label>
+                <Form.Label>{tCommon("personal_data.surname")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={patient.surname ?? ""}
@@ -76,7 +81,7 @@ export default function NewPatientPage() {
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridName">
-                <Form.Label>{`Ім'я`}</Form.Label>
+                <Form.Label>{tCommon("personal_data.name")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={patient.name ?? ""}
@@ -86,7 +91,7 @@ export default function NewPatientPage() {
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridMiddleName">
-                <Form.Label>По батькові</Form.Label>
+                <Form.Label>{tCommon("personal_data.middle_name")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={patient.middleName ?? ""}
@@ -97,7 +102,7 @@ export default function NewPatientPage() {
               </Form.Group>
             </Row>
             <Form.Group controlId="formGridBirthDate" className="mb-3">
-              <Form.Label>Дата народження</Form.Label>
+              <Form.Label>{tCommon("personal_data.birth_date")}</Form.Label>
               <Form.Control
                 type="date"
                 value={patient.birthDate ? patient.birthDate.toString() : ""}
@@ -109,7 +114,7 @@ export default function NewPatientPage() {
             </Form.Group>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridPhone">
-                <Form.Label>Номер телефону</Form.Label>
+                <Form.Label>{tCommon("personal_data.phone")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={patient.phone ?? ""}
@@ -119,7 +124,9 @@ export default function NewPatientPage() {
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridMessengerContact">
-                <Form.Label>Контактний номер Viber/Telegram</Form.Label>
+                <Form.Label>
+                  {tCommon("personal_data.messenger_contact")}
+                </Form.Label>
                 <Form.Control
                   type="text"
                   value={patient.messengerContact ?? ""}
@@ -129,7 +136,7 @@ export default function NewPatientPage() {
               </Form.Group>
             </Row>
             <Form.Group controlId="formGridAddress" className="mb-3">
-              <Form.Label>Домашня адреса</Form.Label>
+              <Form.Label>{tCommon("personal_data.address")}</Form.Label>
               <Form.Control
                 type="text"
                 value={patient.address ?? ""}
@@ -141,7 +148,9 @@ export default function NewPatientPage() {
               controlId="formGridPreferentialCategory"
               className="mb-3"
             >
-              <Form.Label>Пільгова категорія</Form.Label>
+              <Form.Label>
+                {tCommon("personal_data.preferential_category")}
+              </Form.Label>
               <Form.Control
                 type="text"
                 value={patient.preferentialCategory ?? ""}
@@ -150,7 +159,7 @@ export default function NewPatientPage() {
               />
             </Form.Group>
             <Button variant="primary" type="submit" id="confirmAddNewPatient">
-              Додати нового пацієнта
+              {tNewPatientPage("new_patient.add_button_label")}
             </Button>
           </Form>
         </Card.Body>

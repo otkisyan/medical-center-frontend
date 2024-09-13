@@ -56,14 +56,52 @@
     "welcome_evening_label": "Good evening"
   },
   "PatientsPage": {
-    "new_patient_link_label": "New Patient →"
+    "new_patient_link_label": "New Patient →",
+    "alerts": {
+      "no_patients_found": "No patients were found according to the specified criteria",
+      "no_patients": "No patients have been added yet",
+      "error_fetching_patients": "An unexpected error occurred while executing a patient query"
+    }
   },
   "PagesNavigation": {
     "home_page": "Home Page",
     "patients": "Patients",
     "doctors": "Doctors",
     "appointments": "Appointments",
-    "specific_patient": "Patient #{id}"
+    "specific_patient": "Patient #{id}",
+    "new_patient": "New patient",
+    "user": "My Account"
   },
-  "SpecificPatientPage": {}
+  "SpecificPatientPage": {
+    "breadcrumb_active_page": "Information about patient #{id}",
+    "patient_card_header": "Patient",
+    "patient_delete_dialog": {
+      "title": "Deleting a patient",
+      "text": "Are you sure you want to delete a patient?",
+      "warning": "You will not be able to restore patient information after confirming deletion!",
+      "confirm_button_label": "Delete patient"
+    },
+    "toasts": {
+      "edit_success": "Editing patient information is successful!",
+      "edit_error": "An unexpected error occurred while editing patient information!",
+      "delete_success": "The patient was successfully deleted!",
+      "delete_error": "An unexpected error occurred while deleting a patient!"
+    },
+    "error_alert": {
+      "header": "Ooopss...",
+      "text": "An error occurred while executing the request or the requested patient does not exist"
+    }
+  },
+  "NewPatientPage": {
+    "new_patient": {
+      "card": {
+        "header": "Information about new patient"
+      },
+      "add_button_label": "Add new patient"
+    },
+    "toasts": {
+      "new_patient_success": "A new patient has been successfully added!",
+      "new_patient_error": "An unexpected error occurred while adding a new patient!"
+    }
+  }
 }
