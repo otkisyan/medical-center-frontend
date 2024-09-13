@@ -18,8 +18,11 @@ import useFetchPatientsCount from "@/shared/hooks/patients/useFetchPatientsCount
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
 import { ButtonGroup } from "react-bootstrap";
+import { useTranslations } from "use-intl";
 
 export default function PatientsPage() {
+  const tCommon = useTranslations("Common");
+  const tPatientsPage = useTranslations("PatientsPage");
   const initialParamsState = useMemo(
     () => ({
       surname: "",
@@ -63,7 +66,10 @@ export default function PatientsPage() {
       <Form onSubmit={handlePatientSearchFormSubmit}>
         <Row className="g-3">
           <Col sm>
-            <FloatingLabel controlId="surname" label="Прізвище">
+            <FloatingLabel
+              controlId="surname"
+              label={tCommon("personal_data.surname")}
+            >
               <Form.Control
                 type="text"
                 name="surname"
@@ -73,7 +79,10 @@ export default function PatientsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="name" label="Ім'я">
+            <FloatingLabel
+              controlId="name"
+              label={tCommon("personal_data.name")}
+            >
               <Form.Control
                 type="text"
                 name="name"
@@ -83,7 +92,10 @@ export default function PatientsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="middleName" label="По батькові">
+            <FloatingLabel
+              controlId="middleName"
+              label={tCommon("personal_data.middle_name")}
+            >
               <Form.Control
                 type="text"
                 name="middleName"
@@ -95,7 +107,7 @@ export default function PatientsPage() {
           <Col>
             <FloatingLabel
               controlId="birthDate"
-              label="Дата народження"
+              label={tCommon("personal_data.birth_date")}
               className="mb-3"
             >
               <Form.Control
@@ -109,7 +121,7 @@ export default function PatientsPage() {
         </Row>
         <Stack direction="horizontal" gap={3}>
           <Link href="/patients/new" className="link">
-            Новий пацієнт →
+            {tPatientsPage("new_patient_link_label")}
           </Link>
           <Button
             variant="link"
@@ -117,10 +129,10 @@ export default function PatientsPage() {
             style={{ textDecoration: "none" }}
             onClick={clearSearchParams}
           >
-            Очистити пошук
+            {tCommon("search.clear_button_label")}
           </Button>
           <Button variant="primary" type="submit" className="d-grid col-3">
-            Пошук
+            {tCommon("search.button_label")}
           </Button>
         </Stack>
       </Form>
@@ -136,11 +148,11 @@ export default function PatientsPage() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Прізвище</th>
-                <th>{`Ім'я`}</th>
-                <th>По батькові</th>
-                <th>Дата народження</th>
-                <th>Дія</th>
+                <th>{tCommon("personal_data.surname")}</th>
+                <th>{tCommon("personal_data.name")}</th>
+                <th>{tCommon("personal_data.middle_name")}</th>
+                <th>{tCommon("personal_data.birth_date")}</th>
+                <th>{tCommon("action_label")}</th>
               </tr>
             </thead>
             <tbody>

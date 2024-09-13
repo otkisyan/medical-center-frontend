@@ -1,0 +1,69 @@
+{
+  "User": {
+    "roles": {
+      "doctor": "Лікар",
+      "receptionist": "Реєстратор",
+      "admin": "Адміністратор"
+    }
+  },
+  "UserPage": {
+    "security_label": "Безпека",
+    "settings_label": "Налаштування",
+    "change_password_button_label": "Змінити пароль",
+    "login_label": "Логін",
+    "role_label": "Роль",
+    "change_password_dialog": {
+      "dialog_label": "Зміна паролю",
+      "current_password": "Поточний пароль",
+      "new_password": "Новий пароль",
+      "confirm_password": "Підтвердження паролю",
+      "confirm_password_tip": "У поле \"Підтвердження паролю\" введіть той самий пароль який ви ввели у поле \"Новий пароль\"",
+      "confirm_button_label": "Змінити пароль"
+    },
+    "toasts": {
+      "change_password_success": "Пароль від облікового запису успішно змінено!",
+      "current_password_incorrect": "Поточний пароль не співпадає з реальним!",
+      "confirm_password_incorrect": "Підтвердження паролю не співпадає з новим паролем!"
+    }
+  },
+  "Common": {
+    "action_cancel_button_label": "Скасувати",
+    "action_save_button_label": "Зберегти",
+    "action_label": "Дія",
+    "search": {
+      "button_label": "Пошук",
+      "clear_button_label": "Очистити пошук"
+    },
+    "personal_data": {
+      "surname": "Прізвище",
+      "name": "Ім'я",
+      "middle_name": "По батькові",
+      "birth_date": "Дата народження",
+      "phone": "Номер телефону",
+      "messenger_contact": "Контактний номер Viber/Telegram",
+      "address": "Домашня адреса",
+      "preferential_category": "Пільгова категорія"
+    }
+  },
+  "LocaleSwitcher": {
+    "ua": "Українська",
+    "en": "English",
+    "language_label": "Мова"
+  },
+  "HomePage": {
+    "welcome_morning_label": "Добрий ранок",
+    "welcome_day_label": "Добрий день",
+    "welcome_evening_label": "Добрий вечір"
+  },
+  "PatientsPage": {
+    "new_patient_link_label": "Новий пацієнт →"
+  },
+  "PagesNavigation": {
+    "home_page": "Домашня сторінка",
+    "patients": "Пацієнти",
+    "doctors": "Лікарі",
+    "appointments": "Прийоми",
+    "specific_patient": "Пацієнт #{id}"
+  },
+  "SpecificPatientPage": {}
+}

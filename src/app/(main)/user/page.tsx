@@ -1,18 +1,20 @@
 "use client";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
+import LocaleSwitcher from "@/components/locale/LocaleSwitcher";
 import { useAuth } from "@/shared/context/UserContextProvider";
 import { Role } from "@/shared/enum/role";
 import {
   ChangePasswordRequest,
   initialChangePasswordRequestState,
 } from "@/shared/interface/user/password-change";
-import ua from "@/shared/locale/ua-locale.json";
 import { UserService } from "@/shared/service/user-service";
 import { notifySuccess } from "@/shared/toast/toast-notifiers";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import {
   Alert,
   Button,
+  Card,
   Col,
   Form,
   InputGroup,
@@ -21,6 +23,9 @@ import {
 } from "react-bootstrap";
 
 export default function UserPage() {
+  const tUser = useTranslations("User");
+  const tCommon = useTranslations("Common");
+  const tUserPage = useTranslations("UserPage");
   const [role, setRole] = useState("");
   const { hasAnyRole, userDetails } = useAuth();
   const [changePasswordRequest, setChangePasswordRequest] =
@@ -37,6 +42,8 @@ export default function UserPage() {
   const handleCloseChangePasswordModal = () => {
     setShowChangePasswordModal(false);
     setShowCurrentPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
     setChangePasswordRequest(initialChangePasswordRequestState);
     setChangePasswordValidationError(false);
     setApiError("");
@@ -45,13 +52,13 @@ export default function UserPage() {
 
   useEffect(() => {
     if (hasAnyRole([Role.Doctor])) {
-      setRole(ua.roles.DOCTOR);
+      setRole(tUser("roles.doctor"));
     } else if (hasAnyRole([Role.RECEPTIONIST])) {
-      setRole(ua.roles.RECEPTIONIST);
+      setRole(tUser("roles.receptionist"));
     } else if (hasAnyRole([Role.ADMIN])) {
-      setRole(ua.roles.ADMIN);
+      setRole(tUser("roles.admin"));
     }
-  }, [hasAnyRole]);
+  }, [hasAnyRole, tUser]);
 
   const handleChangePasswordRequest = (event: any) => {
     const { name, value } = event.target;
@@ -63,6 +70,7 @@ export default function UserPage() {
 
   const handleChangePasswordFormSubmit = async (event: any) => {
     event.preventDefault();
+    setApiError("");
     if (
       changePasswordRequest.newPassword !==
       changePasswordRequest.confirmPassword
@@ -77,7 +85,7 @@ export default function UserPage() {
       setChangePasswordLoading(true);
       const data = await UserService.changePassword(changePasswordRequest);
       handleCloseChangePasswordModal();
-      notifySuccess("Пароль від облікового запису успішно змінено!");
+      notifySuccess(tUserPage("toasts.change_password_success"));
     } catch (error: any) {
       const errorMessage = error.response.data.message;
       if (error.response && error.response.status === 400) {
@@ -86,13 +94,13 @@ export default function UserPage() {
             "The password provided does not match the real password"
           )
         ) {
-          setApiError("Поточний пароль не співпадає з реальним!");
+          setApiError(tUserPage("toasts.current_password_incorrect"));
         } else if (
           errorMessage.includes(
             "The confirmation password does not match the new password"
           )
         ) {
-          setApiError("Підтвердження паролю не співпадає з новим паролем!");
+          setApiError(tUserPage("toasts.confirm_password_incorrect"));
         }
       }
     } finally {
@@ -103,29 +111,41 @@ export default function UserPage() {
   return (
     <>
       <br></br>
-      <Row>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Логін</Form.Label>
-            <Form.Control
-              type="text"
-              readOnly
-              disabled
-              value={userDetails?.username}
-            />
-          </Form.Group>
-        </Col>
-        <Col>
-          <Form.Group className="mb-3">
-            <Form.Label>Роль</Form.Label>
-            <Form.Control type="text" readOnly disabled value={role} />
-          </Form.Group>
-        </Col>
-      </Row>
+      <Card className="mb-3">
+        <Card.Header>{tUserPage("security_label")}</Card.Header>
+        <Card.Body>
+          <Row>
+            <Col>
+              <Form.Group className="mb-3">
+                <Form.Label>{tUserPage("login_label")}</Form.Label>
+                <Form.Control
+                  type="text"
+                  readOnly
+                  disabled
+                  value={userDetails?.username}
+                />
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3">
+                <Form.Label>{tUserPage("role_label")}</Form.Label>
+                <Form.Control type="text" readOnly disabled value={role} />
+              </Form.Group>
+            </Col>
+          </Row>
 
-      <Button type="button" onClick={handleShowChangePasswordModal}>
-        Змінити пароль
-      </Button>
+          <Button type="button" onClick={handleShowChangePasswordModal}>
+            {tUserPage("change_password_button_label")}
+          </Button>
+        </Card.Body>
+      </Card>
+
+      <Card>
+        <Card.Header>{tUserPage("settings_label")}</Card.Header>
+        <Card.Body>
+          <LocaleSwitcher></LocaleSwitcher>
+        </Card.Body>
+      </Card>
 
       <Modal
         show={showChangePasswordModal}
@@ -134,7 +154,9 @@ export default function UserPage() {
         <Form onSubmit={handleChangePasswordFormSubmit}>
           <fieldset disabled={changePasswordLoading}>
             <Modal.Header closeButton>
-              <Modal.Title>Зміна паролю</Modal.Title>
+              <Modal.Title>
+                {tUserPage("change_password_dialog.dialog_label")}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {changePasswordLoading ? (
@@ -153,7 +175,9 @@ export default function UserPage() {
                   </Alert>
                 </>
               )}
-              <Form.Label>Поточний пароль</Form.Label>
+              <Form.Label>
+                {tUserPage("change_password_dialog.current_password")}
+              </Form.Label>
               <InputGroup className="mb-3">
                 <Form.Control
                   type={showCurrentPassword ? "text" : "password"}
@@ -174,7 +198,9 @@ export default function UserPage() {
                 </Button>
               </InputGroup>
 
-              <Form.Label>Новий пароль</Form.Label>
+              <Form.Label>
+                {tUserPage("change_password_dialog.new_password")}
+              </Form.Label>
               <InputGroup className="mb-3">
                 <Form.Control
                   type={showNewPassword ? "text" : "password"}
@@ -195,7 +221,9 @@ export default function UserPage() {
                   )}{" "}
                 </Button>
               </InputGroup>
-              <Form.Label>Підтвердження паролю</Form.Label>
+              <Form.Label>
+                {tUserPage("change_password_dialog.confirm_password")}
+              </Form.Label>
               <InputGroup className="mb-3" hasValidation>
                 <Form.Control
                   type={showConfirmPassword ? "text" : "password"}
@@ -217,12 +245,11 @@ export default function UserPage() {
                   )}{" "}
                 </Button>
                 <Form.Control.Feedback type="invalid">
-                  Підтвердження паролю не співпадає з новим паролем
+                  {tUserPage("toasts.confirm_password_incorrect")}
                 </Form.Control.Feedback>
               </InputGroup>
               <Form.Text id="passwordHelpBlock" muted>
-                У поле &quot;Підтвердження паролю&quot; введіть той самий пароль
-                який ви ввели у поле &quot;Новий пароль&quot;
+                {tUserPage("change_password_dialog.confirm_password_tip")}
               </Form.Text>
             </Modal.Body>
             <Modal.Footer>
@@ -230,10 +257,10 @@ export default function UserPage() {
                 variant="secondary"
                 onClick={handleCloseChangePasswordModal}
               >
-                Скасувати
+                {tCommon("action_cancel_button_label")}
               </Button>
               <Button variant="primary" type="submit">
-                Змінити пароль
+                {tUserPage("change_password_dialog.confirm_button_label")}
               </Button>
             </Modal.Footer>
           </fieldset>

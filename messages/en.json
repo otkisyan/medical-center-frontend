@@ -1,0 +1,69 @@
+{
+  "User": {
+    "roles": {
+      "doctor": "Doctor",
+      "receptionist": "Receptionist",
+      "admin": "Administrator"
+    }
+  },
+  "UserPage": {
+    "security_label": "Security",
+    "settings_label": "Settings",
+    "change_password_button_label": "Change password",
+    "login_label": "Login",
+    "role_label": "Role",
+    "change_password_dialog": {
+      "dialog_label": "Change Password",
+      "current_password": "Current Password",
+      "new_password": "New Password",
+      "confirm_password": "Confirm Password",
+      "confirm_password_tip": "In the \"Confirm password\" field, enter the same password that you entered in the \"New password\" field",
+      "confirm_button_label": "Change Password"
+    },
+    "toasts": {
+      "change_password_success": "Account password has been successfully changed!",
+      "current_password_incorrect": "The password provided does not match the real password",
+      "confirm_password_incorrect": "The confirmation password does not match the new password"
+    }
+  },
+  "Common": {
+    "action_cancel_button_label": "Cancel",
+    "action_save_button_label": "Save",
+    "search": {
+      "button_label": "Search",
+      "clear_button_label": "Clear search"
+    },
+    "action_label": "Action",
+    "personal_data": {
+      "surname": "Surname",
+      "name": "Name",
+      "middle_name": "Middle name",
+      "birth_date": "Date of birth",
+      "phone": "Phone number",
+      "messenger_contact": "Viber/Telegram contact number",
+      "address": "Home address",
+      "preferential_category": "Preferential category"
+    }
+  },
+  "LocaleSwitcher": {
+    "ua": "Українська",
+    "en": "English",
+    "language_label": "Language"
+  },
+  "HomePage": {
+    "welcome_morning_label": "Good morning",
+    "welcome_day_label": "Good afternoon",
+    "welcome_evening_label": "Good evening"
+  },
+  "PatientsPage": {
+    "new_patient_link_label": "New Patient →"
+  },
+  "PagesNavigation": {
+    "home_page": "Home Page",
+    "patients": "Patients",
+    "doctors": "Doctors",
+    "appointments": "Appointments",
+    "specific_patient": "Patient #{id}"
+  },
+  "SpecificPatientPage": {}
+}
