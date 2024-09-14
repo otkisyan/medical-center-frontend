@@ -15,8 +15,11 @@ import useFetchDoctorsCount from "@/shared/hooks/doctor/useFetchDoctorsCount";
 import { formatDateToString } from "@/shared/utils/date-utils";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function DoctorsPage() {
+  const tCommon = useTranslations("Common");
+  const tDoctorsPage = useTranslations("DoctorsPage");
   const initialParamsState = useMemo(
     () => ({
       surname: "",
@@ -62,7 +65,10 @@ export default function DoctorsPage() {
       <Form onSubmit={handleDoctorSearchFormSubmit}>
         <Row className="g-3">
           <Col sm>
-            <FloatingLabel controlId="surname" label="Прізвище">
+            <FloatingLabel
+              controlId="surname"
+              label={tCommon("personal_data.surname")}
+            >
               <Form.Control
                 type="text"
                 name="surname"
@@ -72,7 +78,10 @@ export default function DoctorsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="name" label="Ім'я">
+            <FloatingLabel
+              controlId="name"
+              label={tCommon("personal_data.name")}
+            >
               <Form.Control
                 type="text"
                 name="name"
@@ -82,7 +91,10 @@ export default function DoctorsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="middleName" label="По батькові">
+            <FloatingLabel
+              controlId="middleName"
+              label={tCommon("personal_data.middle_name")}
+            >
               <Form.Control
                 type="text"
                 name="middleName"
@@ -92,7 +104,10 @@ export default function DoctorsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="medicalSpecialty" label="Спеціальність">
+            <FloatingLabel
+              controlId="medicalSpecialty"
+              label={tCommon("personal_data.doctor.medical_specialty_short")}
+            >
               <Form.Control
                 type="text"
                 name="medicalSpecialty"
@@ -102,7 +117,7 @@ export default function DoctorsPage() {
             </FloatingLabel>
           </Col>
           <Col>
-            <FloatingLabel controlId="number" label="Кабінет">
+            <FloatingLabel controlId="number" label={tCommon("office")}>
               <Form.Control
                 type="number"
                 name="office"
@@ -114,7 +129,7 @@ export default function DoctorsPage() {
           <Col sm>
             <FloatingLabel
               controlId="birthDate"
-              label="Дата народження"
+              label={tCommon("personal_data.birth_date")}
               className="mb-3"
             >
               <Form.Control
@@ -128,7 +143,7 @@ export default function DoctorsPage() {
         </Row>
         <Stack direction="horizontal" gap={3}>
           <Link href="/doctors/new" className="link">
-            Новий лікар →
+            {tDoctorsPage("new_doctor_link_label")}
           </Link>
           <Button
             variant="link"
@@ -136,10 +151,10 @@ export default function DoctorsPage() {
             style={{ textDecoration: "none" }}
             onClick={clearSearchParams}
           >
-            Очистити пошук
+            {tCommon("search.clear_button_label")}
           </Button>
           <Button variant="primary" type="submit" className="d-grid col-3">
-            Пошук
+            {tCommon("search.button_label")}
           </Button>
         </Stack>
       </Form>
@@ -153,13 +168,13 @@ export default function DoctorsPage() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Прізвище</th>
-                <th>{`Ім'я`}</th>
-                <th>По батькові</th>
-                <th>Дата народження</th>
-                <th>Медична спеціальність</th>
-                <th>Кабінет</th>
-                <th>Дія</th>
+                <th>{tCommon("personal_data.surname")}</th>
+                <th>{tCommon("personal_data.name")}</th>
+                <th>{tCommon("personal_data.middle_name")}</th>
+                <th>{tCommon("personal_data.birth_date")}</th>
+                <th>{tCommon("personal_data.doctor.medical_specialty")}</th>
+                <th>{tCommon("office")}</th>
+                <th>{tCommon("action_label")}</th>
               </tr>
             </thead>
             <tbody>
@@ -176,7 +191,9 @@ export default function DoctorsPage() {
                   </td>
                   <td>{doctor.medicalSpecialty}</td>
                   <td>
-                    {doctor.office ? doctor.office.number : "Без кабінету"}
+                    {doctor.office
+                      ? doctor.office.number
+                      : tCommon("personal_data.doctor.no_office")}
                   </td>
                   <td>
                     <Link
@@ -247,7 +264,7 @@ export default function DoctorsPage() {
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Лікарів за заданими критеріями не знайдено
+              {tDoctorsPage("alerts.no_doctors_found")}
             </Alert>
           ) : (
             <Alert
@@ -255,7 +272,7 @@ export default function DoctorsPage() {
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Ще не додано жодного лікаря
+              {tDoctorsPage("alerts.no_doctors")}
             </Alert>
           )}
         </>

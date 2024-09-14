@@ -1,6 +1,7 @@
 "use client";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import { customReactSelectStyles } from "@/css/react-select";
+import { dayOfWeekMap } from "@/i18n/day-of-week-map";
 import { useAuth } from "@/shared/context/UserContextProvider";
 import { Role } from "@/shared/enum/role";
 import useFetchAllDoctorWorkSchedules from "@/shared/hooks/doctor/useFetchAllDoctorWorkSchedules";
@@ -23,6 +24,7 @@ import {
   formatTimeSecondsToTime,
   timeStartBiggerThanEnd,
 } from "@/shared/utils/date-utils";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -41,6 +43,10 @@ import Modal from "react-bootstrap/Modal";
 import Select from "react-select";
 
 export default function DoctorPage({ params }: { params: { id: number } }) {
+  const tCommon = useTranslations("Common");
+  const tPagesNavigation = useTranslations("PagesNavigation");
+  const tSpecificDoctorPage = useTranslations("SpecificDoctorPage");
+  const tWorkSchedule = useTranslations("WorkSchedule");
   const router = useRouter();
   const { hasAnyRole, userDetails } = useAuth();
   enum Tab {
@@ -150,12 +156,12 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
       const data = await DoctorService.updateDoctor(params.id, editedDoctor);
       setDoctor(data);
       setEditedDoctor(convertDoctorResponseToDoctorRequest(data));
-      notifySuccess("Редагування інформації про лікаря успішне!");
+      notifySuccess(tSpecificDoctorPage("toasts.doctor.edit_success"));
     } catch (error) {
       if (doctor) {
         setEditedDoctor(convertDoctorResponseToDoctorRequest(doctor));
       }
-      notifyError("При редагуванні сталася непередбачена помилка!");
+      notifyError(tSpecificDoctorPage("toasts.doctor.edit_error"));
     } finally {
       setEditingDoctor(false);
     }
@@ -165,9 +171,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
     try {
       const data = await DoctorService.deleteDoctor(params.id);
       router.push("/doctors");
-      notifySuccess("Лікар був успішно видалений!");
+      notifySuccess(tSpecificDoctorPage("toasts.doctor.delete_success"));
     } catch (error) {
-      notifyError("При видаленні лікаря сталася непередбачена помилка!");
+      notifyError(tSpecificDoctorPage("toasts.doctor.delete_error"));
     } finally {
       setShowDeleteModal(false);
     }
@@ -201,11 +207,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
         );
         console.log(updatedWorkSchedules);
         setDoctorWorkSchedules(updatedWorkSchedules);
-        notifySuccess("Графік роботи лікаря успішно оновлений");
+        notifySuccess(tSpecificDoctorPage("toasts.work_schedule.edit_success"));
       } catch (error) {
-        notifyError(
-          "При редагуванні графіку роботи лікаря сталася непердбачена помилка"
-        );
+        notifyError(tSpecificDoctorPage("toasts.work_schedule.edit_error"));
       } finally {
         setShowWorkScheduleValidationError(false);
         setEditingWorkSchedules(false);
@@ -241,35 +245,40 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
           <Breadcrumb>
             <Link href="/" passHref legacyBehavior>
               <Breadcrumb.Item className="link">
-                Домашня сторінка
+                {tPagesNavigation("home_page")}
               </Breadcrumb.Item>
             </Link>
             <Link href="/doctors" passHref legacyBehavior>
-              <Breadcrumb.Item className="link">Лікарі</Breadcrumb.Item>
+              <Breadcrumb.Item className="link">
+                {tPagesNavigation("doctors")}
+              </Breadcrumb.Item>
             </Link>
             <Breadcrumb.Item active>
-              Інформація про лікаря #{params.id}
+              {tSpecificDoctorPage("breadcrumb_active_page", {
+                id: params.id,
+              })}
             </Breadcrumb.Item>
           </Breadcrumb>
           <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
             <Modal.Header closeButton>
-              <Modal.Title>Видалення лікаря</Modal.Title>
+              <Modal.Title>
+                {tSpecificDoctorPage("doctor_delete_dialog.title")}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>Ви впевнені що хочете видалити лікаря?</p>
+              <p>{tSpecificDoctorPage("doctor_delete_dialog.text")}</p>
               <p>
-                <i>
-                  Ви не сможете відновити інформацію про лікаря після
-                  підтвердження видалення!
-                </i>
+                <i>{tSpecificDoctorPage("doctor_delete_dialog.warning")}</i>
               </p>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                Скасувати
+                {tCommon("action_cancel_button_label")}
               </Button>
               <Button variant="danger" onClick={deleteDoctor}>
-                Видалити лікаря
+                {tSpecificDoctorPage(
+                  "doctor_delete_dialog.confirm_button_label"
+                )}
               </Button>
             </Modal.Footer>
           </Modal>
@@ -281,7 +290,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                     href="#doctor"
                     onClick={() => handleTabClick(Tab.Doctor)}
                   >
-                    Лікар
+                    {tSpecificDoctorPage("doctor_card.doctor_tab_header")}
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
@@ -289,7 +298,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                     href="#work-schedules"
                     onClick={() => handleTabClick(Tab.Work_Schedules)}
                   >
-                    Графік роботи лікаря
+                    {tSpecificDoctorPage("doctor_card.workschedule_tab_header")}
                   </Nav.Link>
                 </Nav.Item>
               </Nav>
@@ -300,7 +309,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                   <fieldset disabled={!editingDoctor}>
                     <Row className="mb-3">
                       <Form.Group as={Col} controlId="formGridSurname">
-                        <Form.Label>Прізвище</Form.Label>
+                        <Form.Label>
+                          {tCommon("personal_data.surname")}
+                        </Form.Label>
                         <Form.Control
                           type="text"
                           required
@@ -310,7 +321,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         />
                       </Form.Group>
                       <Form.Group as={Col} controlId="formGridName">
-                        <Form.Label>{`Ім'я`}</Form.Label>
+                        <Form.Label>{tCommon("personal_data.name")}</Form.Label>
                         <Form.Control
                           type="text"
                           required
@@ -320,7 +331,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         />
                       </Form.Group>
                       <Form.Group as={Col} controlId="formGridMiddleName">
-                        <Form.Label>По батькові</Form.Label>
+                        <Form.Label>
+                          {tCommon("personal_data.middle_name")}
+                        </Form.Label>
                         <Form.Control
                           type="text"
                           required
@@ -331,7 +344,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                       </Form.Group>
                     </Row>
                     <Form.Group controlId="formGridBirthDate" className="mb-3">
-                      <Form.Label>Дата народження</Form.Label>
+                      <Form.Label>
+                        {tCommon("personal_data.birth_date")}
+                      </Form.Label>
                       <Form.Control
                         type="date"
                         required
@@ -347,7 +362,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                     </Form.Group>
                     <Row className="mb-3">
                       <Form.Group as={Col} controlId="formGridPhone">
-                        <Form.Label>Номер телефону</Form.Label>
+                        <Form.Label>
+                          {tCommon("personal_data.phone")}
+                        </Form.Label>
                         <Form.Control
                           required
                           type="text"
@@ -357,7 +374,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         />
                       </Form.Group>
                       <Form.Group as={Col} controlId="formGridMessengerContact">
-                        <Form.Label>Контактний номер Viber/Telegram</Form.Label>
+                        <Form.Label>
+                          {tCommon("personal_data.messenger_contact")}
+                        </Form.Label>
                         <Form.Control
                           type="text"
                           value={editedDoctor.messengerContact ?? ""}
@@ -367,7 +386,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                       </Form.Group>
                     </Row>
                     <Form.Group controlId="formGridAddress" className="mb-3">
-                      <Form.Label>Домашня адреса</Form.Label>
+                      <Form.Label>
+                        {tCommon("personal_data.address")}
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={editedDoctor.address ?? ""}
@@ -377,7 +398,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                     </Form.Group>
                     <Row className="mb-3">
                       <Form.Group as={Col} controlId="formGridMedicalSpecialty">
-                        <Form.Label>Медична спеціальність</Form.Label>
+                        <Form.Label>
+                          {tCommon("personal_data.doctor.medical_specialty")}
+                        </Form.Label>
                         <Form.Control
                           required
                           type="text"
@@ -390,7 +413,11 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         as={Col}
                         controlId="formGridQualificationCategory"
                       >
-                        <Form.Label>Кваліфікаційна категорія</Form.Label>
+                        <Form.Label>
+                          {tCommon(
+                            "personal_data.doctor.qualification_category"
+                          )}
+                        </Form.Label>
                         <Form.Control
                           type="text"
                           value={editedDoctor.qualificationCategory ?? ""}
@@ -400,7 +427,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                       </Form.Group>
                     </Row>
                     <Form.Group as={Col} controlId="formGridOffice">
-                      <Form.Label>Кабінет</Form.Label>
+                      <Form.Label>{tCommon("office")}</Form.Label>
                       <Select
                         className="basic-single mb-3"
                         classNamePrefix="select"
@@ -414,8 +441,8 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         isDisabled={!editingDoctor}
                         placeholder={
                           loadingOfficesOptions
-                            ? "Завантаження..."
-                            : "Оберіть кабінет"
+                            ? tCommon("loading")
+                            : tCommon("office_select.placeholder_label")
                         }
                         name="officeId"
                         onChange={(e) => {
@@ -424,8 +451,10 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                             officeId: e.value,
                           }));
                         }}
-                        loadingMessage={() => "Завантаження..."}
-                        noOptionsMessage={() => "Кабінетів не знайдено"}
+                        loadingMessage={() => tCommon("loading")}
+                        noOptionsMessage={() =>
+                          tCommon("office_select.no_options_message")
+                        }
                         options={officesOptions}
                         styles={customReactSelectStyles}
                       />
@@ -449,7 +478,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         hidden={!editingDoctor}
                         id="confirmEdit"
                       >
-                        Зберегти
+                        {tCommon("action_save_button_label")}
                       </Button>
                       <Button
                         variant="secondary"
@@ -458,7 +487,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         hidden={!editingDoctor}
                         onClick={handleCancelEditDoctor}
                       >
-                        Скасувати
+                        {tCommon("action_cancel_button_label")}
                       </Button>
                       <Button
                         variant="danger"
@@ -481,21 +510,24 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                     <Form onSubmit={handleEditWorkSchedulesFormSubmit}>
                       {showWorkScheduleValidationError && (
                         <Alert variant="danger">
-                          <Alert.Heading>Помилка!</Alert.Heading>
+                          <Alert.Heading>
+                            {tWorkSchedule(
+                              "alerts.time_validation_error.heading"
+                            )}
+                          </Alert.Heading>
                           <p>
-                            Час початку роботи, не може бути пізніше часу
-                            закінчення роботи.
+                            {tWorkSchedule("alerts.time_validation_error.text")}
                             <br></br>
-                            Будь ласка, перегляньте уважно графік роботи.
+                            {tWorkSchedule("alerts.time_validation_error.tip")}
                           </p>
                         </Alert>
                       )}
                       <Table responsive>
                         <thead>
                           <tr>
-                            <th>День тижня</th>
-                            <th>Час початку роботи</th>
-                            <th>Час закінчення роботи</th>
+                            <th>{tWorkSchedule("weekday")}</th>
+                            <th>{tWorkSchedule("worktime_start")}</th>
+                            <th>{tWorkSchedule("worktime_end")}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -503,10 +535,12 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                             editedDoctorWorkSchedules.map((workSchedule, i) => (
                               <tr key={i}>
                                 <td>
-                                  {
-                                    doctorWorkSchedules[i].dayOfWeekResponseDto
-                                      .name
-                                  }
+                                  {tWorkSchedule(
+                                    dayOfWeekMap[
+                                      doctorWorkSchedules[i]
+                                        .dayOfWeekResponseDto.name
+                                    ]
+                                  )}
                                 </td>
                                 <td>
                                   <Form.Group controlId={`workTimeStart${i}`}>
@@ -573,7 +607,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         hidden={!editingWorkSchedules}
                         id="confirmEdit"
                       >
-                        Зберегти
+                        {tCommon("action_save_button_label")}
                       </Button>
                       <Button
                         variant="secondary"
@@ -582,7 +616,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
                         hidden={!editingWorkSchedules}
                         onClick={handleCancelEditWorkSchedules}
                       >
-                        Скасувати
+                        {tCommon("action_cancel_button_label")}
                       </Button>
                     </Form>
                   )}
@@ -593,11 +627,10 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
         </>
       ) : (
         <Alert variant="danger">
-          <Alert.Heading>Ууупсс...</Alert.Heading>
-          <p>
-            При виконанні запиту виникла помилка або запитуваного лікаря не
-            існує
-          </p>
+          <Alert.Heading>
+            {tSpecificDoctorPage("error_alert.header")}
+          </Alert.Heading>
+          <p>{tSpecificDoctorPage("error_alert.text")}</p>
         </Alert>
       )}
     </>

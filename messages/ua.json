@@ -4,7 +4,9 @@
       "doctor": "Лікар",
       "receptionist": "Реєстратор",
       "admin": "Адміністратор"
-    }
+    },
+    "login": "Логін",
+    "password": "Пароль"
   },
   "UserPage": {
     "security_label": "Безпека",
@@ -30,6 +32,7 @@
     "action_cancel_button_label": "Скасувати",
     "action_save_button_label": "Зберегти",
     "action_label": "Дія",
+    "loading": "Завантаження...",
     "search": {
       "button_label": "Пошук",
       "clear_button_label": "Очистити пошук"
@@ -42,7 +45,19 @@
       "phone": "Номер телефону",
       "messenger_contact": "Контактний номер Viber/Telegram",
       "address": "Домашня адреса",
-      "preferential_category": "Пільгова категорія"
+      "preferential_category": "Пільгова категорія",
+      "doctor": {
+        "medical_specialty": "Медична спеціальність",
+        "medical_specialty_short": "Спеціальність",
+        "qualification_category": "Кваліфікаційна категорія",
+        "no_office": "Без кабінету"
+      }
+    },
+    "doctor": "Лікар",
+    "office": "Кабінет",
+    "office_select": {
+      "placeholder_label": "Оберіть кабінет",
+      "no_options_message": "Кабінетів не знайдено"
     }
   },
   "LocaleSwitcher": {
@@ -63,13 +78,23 @@
       "error_fetching_patients": "При виконанні запиту на пацієнтів виникла непередбачена помилка"
     }
   },
+  "DoctorsPage": {
+    "new_doctor_link_label": "Новий лікар →",
+    "alerts": {
+      "no_doctors_found": "Лікарів за заданими критеріями не знайдено",
+      "no_doctors": "Ще не додано жодного лікаря",
+      "error_fetching_doctors": "При виконанні запиту на лікарів виникла непередбачена помилка"
+    }
+  },
   "PagesNavigation": {
     "home_page": "Домашня сторінка",
     "patients": "Пацієнти",
-    "doctors": "Лікарі",
-    "appointments": "Прийоми",
     "specific_patient": "Пацієнт #{id}",
     "new_patient": "Новий пацієнт",
+    "doctors": "Лікарі",
+    "specific_doctor": "Лікар #{id}",
+    "new_doctor": "Новий лікар",
+    "appointments": "Прийоми",
     "user": "Обліковий запис"
   },
   "SpecificPatientPage": {
@@ -92,6 +117,56 @@
       "text": "При виконанні запиту виникла помилка або запитуваного пацієнта не існує"
     }
   },
+  "SpecificDoctorPage": {
+    "breadcrumb_active_page": "Інформація про лікаря #{id}",
+    "doctor_card": {
+      "doctor_tab_header": "Лікар",
+      "workschedule_tab_header": "Графік роботи"
+    },
+    "doctor_delete_dialog": {
+      "title": "Видалення лікаря",
+      "text": "Ви впевнені що хочете видалити лікаря?",
+      "warning": "Ви не сможете відновити інформацію про лікаря після підтвердження видалення!",
+      "confirm_button_label": "Видалити лікаря"
+    },
+    "toasts": {
+      "doctor": {
+        "edit_success": "Редагування інформації про лікаря успішне!",
+        "edit_error": "При редагуванні інформації про лікаря сталася непередбачена помилка!",
+        "delete_success": "Лікар був успішно видалений!",
+        "delete_error": "При видаленні лікаря сталася непередбачена помилка!"
+      },
+      "work_schedule": {
+        "edit_success": "Графік роботи лікаря успішно оновлений",
+        "edit_error": "При редагуванні графіку роботи лікаря сталася непердбачена помилка"
+      }
+    },
+    "error_alert": {
+      "header": "Ууупсс...",
+      "text": "При виконанні запиту виникла помилка або запитуваного лікаря не існує"
+    }
+  },
+  "WorkSchedule": {
+    "weekday": "День тижня",
+    "days_of_the_week": {
+      "monday": "Понеділок",
+      "tuesday": "Вівторок",
+      "wednesday": "Середа",
+      "thursday": "Четвер",
+      "friday": "П'ятниця",
+      "saturday": "Субота",
+      "sunday": "Неділя"
+    },
+    "worktime_start": "Час початку роботи",
+    "worktime_end": "Час закінчення роботи",
+    "alerts": {
+      "time_validation_error": {
+        "heading": "Помилка!",
+        "text": "Час початку роботи, не може бути пізніше часу закінчення роботи.",
+        "tip": "Будь ласка, перегляньте уважно графік роботи."
+      }
+    }
+  },
   "NewPatientPage": {
     "new_patient": {
       "card": {
@@ -102,6 +177,23 @@
     "toasts": {
       "new_patient_success": "Новий пацієнт був успішно доданий!",
       "new_patient_error": "При додаванні нового пацієнта сталася непередбачувана помилка!"
+    }
+  },
+  "NewDoctorPage": {
+    "new_doctor": {
+      "card": {
+        "header": "Інформація про нового лікаря"
+      },
+      "add_button_label": "Додати нового лікаря",
+      "success_dialog": {
+        "header_title": "Лікаря успішно зареєстровано!",
+        "warning_alert": " Тримайте у секреті! Нікому не повідомляйте ці облікові дані окрім самого лікаря!",
+        "accept_button_label": "Зрозуміло",
+        "credentials_download_tooltip": "Завантажити облікові дані"
+      }
+    },
+    "toasts": {
+      "new_doctor_error": "При додаванні нового лікаря сталася непередбачувана помилка!"
     }
   }
 }

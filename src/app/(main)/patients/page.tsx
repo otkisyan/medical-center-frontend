@@ -1,9 +1,6 @@
 "use client";
-import { Page } from "@/shared/interface/page/page-interface";
-import { PatientResponse } from "@/shared/interface/patient/patient-interface";
-import { PatientService } from "@/shared/service/patient-service";
 import { formatDateToString } from "@/shared/utils/date-utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import FloatingLabel from "react-bootstrap/FloatingLabel";

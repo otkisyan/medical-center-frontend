@@ -4,7 +4,9 @@
       "doctor": "Doctor",
       "receptionist": "Receptionist",
       "admin": "Administrator"
-    }
+    },
+    "login": "Username",
+    "password": "Password"
   },
   "UserPage": {
     "security_label": "Security",
@@ -29,6 +31,7 @@
   "Common": {
     "action_cancel_button_label": "Cancel",
     "action_save_button_label": "Save",
+    "loading": "Loading...",
     "search": {
       "button_label": "Search",
       "clear_button_label": "Clear search"
@@ -42,7 +45,19 @@
       "phone": "Phone number",
       "messenger_contact": "Viber/Telegram contact number",
       "address": "Home address",
-      "preferential_category": "Preferential category"
+      "preferential_category": "Preferential category",
+      "doctor": {
+        "medical_specialty": "Medical Specialty",
+        "medical_specialty_short": "Specialty",
+        "qualification_category": "Qualification category",
+        "no_office": "Without an office"
+      }
+    },
+    "doctor": "Doctor",
+    "office": "Office",
+    "office_select": {
+      "placeholder_label": "Choose office",
+      "no_options_message": "No offices found"
     }
   },
   "LocaleSwitcher": {
@@ -63,13 +78,23 @@
       "error_fetching_patients": "An unexpected error occurred while executing a patient query"
     }
   },
+  "DoctorsPage": {
+    "new_doctor_link_label": "New doctor →",
+    "alerts": {
+      "no_doctors_found": "No doctors were found according to the specified criteria",
+      "no_doctors": "No doctors have been added yet",
+      "error_fetching_doctors": "An unexpected error occurred while executing a doctor query"
+    }
+  },
   "PagesNavigation": {
     "home_page": "Home Page",
     "patients": "Patients",
-    "doctors": "Doctors",
-    "appointments": "Appointments",
     "specific_patient": "Patient #{id}",
     "new_patient": "New patient",
+    "doctors": "Doctors",
+    "specific_doctor": "Doctor #{id}",
+    "new_doctor": "New doctor",
+    "appointments": "Appointments",
     "user": "My Account"
   },
   "SpecificPatientPage": {
@@ -92,6 +117,56 @@
       "text": "An error occurred while executing the request or the requested patient does not exist"
     }
   },
+  "SpecificDoctorPage": {
+    "breadcrumb_active_page": "Information about doctor #{id}",
+    "doctor_card": {
+      "doctor_tab_header": "Doctor",
+      "workschedule_tab_header": "Work schedule"
+    },
+    "doctor_delete_dialog": {
+      "title": "Deleting a doctor",
+      "text": "Are you sure you want to delete a doctor?",
+      "warning": "You will not be able to restore doctor information after confirming deletion!",
+      "confirm_button_label": "Delete doctor"
+    },
+    "toasts": {
+      "doctor": {
+        "edit_success": "Editing doctor information is successful!",
+        "edit_error": "An unexpected error occurred while editing doctor information!",
+        "delete_success": "The doctor was successfully deleted!",
+        "delete_error": "An unexpected error occurred while deleting a doctor!"
+      },
+      "work_schedule": {
+        "edit_success": "The doctor's work schedule has been successfully updated",
+        "edit_error": "An unexpected error occurred while editing a doctor's work schedule"
+      }
+    },
+    "error_alert": {
+      "header": "Ooopss...",
+      "text": "An error occurred while executing the request or the requested doctor does not exist"
+    }
+  },
+  "WorkSchedule": {
+    "weekday": "Day of the week",
+    "days_of_the_week": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "worktime_start": "Start time of the work",
+    "worktime_end": "End time of the work",
+    "alerts": {
+      "time_validation_error": {
+        "heading": "Error!",
+        "text": "The start time of work cannot be later than the end time of work.",
+        "tip": "Please review the work schedule carefully."
+      }
+    }
+  },
   "NewPatientPage": {
     "new_patient": {
       "card": {
@@ -102,6 +177,23 @@
     "toasts": {
       "new_patient_success": "A new patient has been successfully added!",
       "new_patient_error": "An unexpected error occurred while adding a new patient!"
+    }
+  },
+  "NewDoctorPage": {
+    "new_doctor": {
+      "card": {
+        "header": "Information about new doctor"
+      },
+      "add_button_label": "Add new doctor",
+      "success_dialog": {
+        "header_title": "A new doctor has been successfully registered!",
+        "warning_alert": "Keep it a secret! Do not disclose these credentials to anyone except the doctor!",
+        "accept_button_label": "Understood",
+        "credentials_download_tooltip": "Download credentials"
+      }
+    },
+    "toasts": {
+      "new_doctor_error": "An unexpected error occurred while adding a new doctor!"
     }
   }
 }
