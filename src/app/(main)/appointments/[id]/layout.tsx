@@ -1,6 +1,10 @@
+import { getTranslations } from "next-intl/server";
+
 export async function generateMetadata({ params }: { params: { id: number } }) {
+  const t = await getTranslations({ namespace: "PagesNavigation" });
+
   return {
-    title: `Прийом #${params.id}`,
+    title: t("specific_appointment", { id: params.id }),
   };
 }
 export default function AppointmentLayout({

@@ -117,7 +117,7 @@ export default function DoctorsPage() {
             </FloatingLabel>
           </Col>
           <Col>
-            <FloatingLabel controlId="number" label={tCommon("office")}>
+            <FloatingLabel controlId="number" label={tCommon("office.label")}>
               <Form.Control
                 type="number"
                 name="office"
@@ -173,7 +173,7 @@ export default function DoctorsPage() {
                 <th>{tCommon("personal_data.middle_name")}</th>
                 <th>{tCommon("personal_data.birth_date")}</th>
                 <th>{tCommon("personal_data.doctor.medical_specialty")}</th>
-                <th>{tCommon("office")}</th>
+                <th>{tCommon("office.label")}</th>
                 <th>{tCommon("action_label")}</th>
               </tr>
             </thead>

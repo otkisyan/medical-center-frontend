@@ -53,8 +53,26 @@
         "no_office": "Without an office"
       }
     },
+    "date": "Date",
+    "time": "Time",
+    "patient": "Patient",
     "doctor": "Doctor",
-    "office": "Office",
+    "office": {
+      "label": "Office",
+      "name": "Office name",
+      "number": "Office number",
+      "name_short": "Name",
+      "number_short": "Number"
+    },
+    "appointment": {
+      "label": "Appointment",
+      "diagnosis": "Diagnosis",
+      "symptoms": "Symptoms",
+      "medical_recommendations": "Medical recommendations",
+      "doctor_specialty": "Doctor's specialty",
+      "time_start": "Start time",
+      "time_end": "End time"
+    },
     "office_select": {
       "placeholder_label": "Choose office",
       "no_options_message": "No offices found"
@@ -86,6 +104,13 @@
       "error_fetching_doctors": "An unexpected error occurred while executing a doctor query"
     }
   },
+  "AppointmentsPage": {
+    "alerts": {
+      "no_appointments_found": "No appointments were found according to the specified criteria",
+      "no_appointments": "No appointments have been added yet",
+      "error_fetching_appointments": "An unexpected error occurred while executing an appointment query"
+    }
+  },
   "PagesNavigation": {
     "home_page": "Home Page",
     "patients": "Patients",
@@ -95,6 +120,12 @@
     "specific_doctor": "Doctor #{id}",
     "new_doctor": "New doctor",
     "appointments": "Appointments",
+    "specific_appointment": "Appointment #{id}",
+    "offices": "Offices",
+    "specific_office": "Office #{id}",
+    "receptionists": "Receptionists",
+    "specific_receptionist": "Receptionist #{id}",
+    "timetable": "Timetable",
     "user": "My Account"
   },
   "SpecificPatientPage": {
@@ -115,6 +146,27 @@
     "error_alert": {
       "header": "Ooopss...",
       "text": "An error occurred while executing the request or the requested patient does not exist"
+    }
+  },
+  "SpecificAppointmentPage": {
+    "breadcrumb_active_page": "Information about appointment #{id}",
+    "appointment_card_header": "Appointment",
+    "reschedule_button_label": "Reschedule",
+    "appointment_delete_dialog": {
+      "title": "Deleting an appointment",
+      "text": "Are you sure you want to delete an appointment?",
+      "warning": "You will not be able to restore appointment information after confirming deletion!",
+      "confirm_button_label": "Delete appointment"
+    },
+    "toasts": {
+      "edit_success": "Editing appointment information is successful!",
+      "edit_error": "An unexpected error occurred while editing appointment information!",
+      "delete_success": "The appointment was successfully deleted!",
+      "delete_error": "An unexpected error occurred while deleting an appointemnt!"
+    },
+    "error_alert": {
+      "header": "Ooopss...",
+      "text": "An error occurred while executing the request or the requested appointment does not exist"
     }
   },
   "SpecificDoctorPage": {

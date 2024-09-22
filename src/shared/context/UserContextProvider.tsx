@@ -32,6 +32,7 @@ export const UserContextProvider = ({
       await UserService.logout();
     } catch (error) {
     } finally {
+      setUserDetails(null);
       router.push("/login?logout");
     }
   };

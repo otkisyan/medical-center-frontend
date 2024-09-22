@@ -34,6 +34,7 @@ export default function Home() {
   }, [tHomePage]);
 
   useEffect(() => {
+    console.log(userDetails);
     if (hasAnyRole([Role.Doctor])) {
       setRole(tUser("roles.doctor"));
       if (userDetails) {
@@ -63,8 +64,10 @@ export default function Home() {
           "." +
           receptionist.middleName[0]
       );
+    } else {
+      setFullName("admin");
     }
-  }, [doctor, receptionist]);
+  }, [doctor, receptionist, userDetails]);
 
   return (
     <>

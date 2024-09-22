@@ -53,8 +53,27 @@
         "no_office": "Без кабінету"
       }
     },
+    "date": "Дата",
+    "time": "Час",
+    "patient": "Пацієнт",
     "doctor": "Лікар",
-    "office": "Кабінет",
+    "office": {
+      "label": "Кабінет",
+      "name": "Назва кабінету",
+      "number": "Номер кабінету",
+      "name_short": "Назва",
+      "number_short": "Номер"
+    },
+    "appointment": {
+      "label": "Прийом",
+      "diagnosis": "Діагноз",
+      "symptoms": "Симптоми",
+      "medical_recommendations": "Медичні рекомендації",
+      "doctor_specialty": "Спеціальність лікаря",
+
+      "time_start": "Час початку",
+      "time_end": "Час закінчення"
+    },
     "office_select": {
       "placeholder_label": "Оберіть кабінет",
       "no_options_message": "Кабінетів не знайдено"
@@ -86,6 +105,13 @@
       "error_fetching_doctors": "При виконанні запиту на лікарів виникла непередбачена помилка"
     }
   },
+  "AppointmentsPage": {
+    "alerts": {
+      "no_appointments_found": "Прийомів за заданими критеріями не знайдено",
+      "no_appointments": "Ще не додано жодного прийому",
+      "error_fetching_appointments": "При виконанні запиту на прийоми виникла непередбачена помилка"
+    }
+  },
   "PagesNavigation": {
     "home_page": "Домашня сторінка",
     "patients": "Пацієнти",
@@ -95,6 +121,12 @@
     "specific_doctor": "Лікар #{id}",
     "new_doctor": "Новий лікар",
     "appointments": "Прийоми",
+    "specific_appointment": "Прийом #{id}",
+    "offices": "Кабінети",
+    "specific_office": "Кабінет #{id}",
+    "receptionists": "Реєстратори",
+    "specific_receptionist": "Реєстратор #{id}",
+    "timetable": "Розклад",
     "user": "Обліковий запис"
   },
   "SpecificPatientPage": {
@@ -115,6 +147,27 @@
     "error_alert": {
       "header": "Ууупсс...",
       "text": "При виконанні запиту виникла помилка або запитуваного пацієнта не існує"
+    }
+  },
+  "SpecificAppointmentPage": {
+    "breadcrumb_active_page": "Інформація про прийом #{id}",
+    "appointment_card_header": "Прийом",
+    "reschedule_button_label": "Перепланувати",
+    "appointment_delete_dialog": {
+      "title": "Видалення прийому",
+      "text": "Ви впевнені що хочете видалити прийом?",
+      "warning": "Ви не сможете відновити інформацію про прийом після підтвердження видалення!",
+      "confirm_button_label": "Видалити прийом"
+    },
+    "toasts": {
+      "edit_success": "Редагування інформації про прийом успішне!",
+      "edit_error": "При редагуванні інформації про прийом сталася непередбачена помилка!",
+      "delete_success": "Прийом був успішно видалений!",
+      "delete_error": "При видаленні прийому сталася непередбачена помилка!"
+    },
+    "error_alert": {
+      "header": "Ууупсс...",
+      "text": "При виконанні запиту виникла помилка або запитуваного прийому не існує"
     }
   },
   "SpecificDoctorPage": {
@@ -187,7 +240,7 @@
       "add_button_label": "Додати нового лікаря",
       "success_dialog": {
         "header_title": "Лікаря успішно зареєстровано!",
-        "warning_alert": " Тримайте у секреті! Нікому не повідомляйте ці облікові дані окрім самого лікаря!",
+        "warning_alert": "Тримайте у секреті! Нікому не повідомляйте ці облікові дані окрім самого лікаря!",
         "accept_button_label": "Зрозуміло",
         "credentials_download_tooltip": "Завантажити облікові дані"
       }

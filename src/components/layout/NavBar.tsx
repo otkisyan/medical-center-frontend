@@ -9,8 +9,11 @@ import Link from "next/link";
 import { Role } from "@/shared/enum/role";
 import React from "react";
 import { Button } from "react-bootstrap";
+import { useTranslations } from "next-intl";
 
 const NavBar = () => {
+  const tPagesNavigation = useTranslations("PagesNavigation");
+  const tCommon = useTranslations("Common");
   const { logout, hasAnyRole, isAuthenticated } = useAuth();
   const pathname = usePathname();
 
@@ -29,7 +32,7 @@ const NavBar = () => {
               active={pathname == "/patients"}
               hidden={!hasAnyRole([Role.ADMIN, Role.RECEPTIONIST, Role.Doctor])}
             >
-              Пацієнти
+              {tPagesNavigation("patients")}
             </Nav.Link>
             <Nav.Link
               as={Link}
@@ -37,19 +40,20 @@ const NavBar = () => {
               active={pathname == "/doctors"}
               hidden={!hasAnyRole([Role.ADMIN, Role.RECEPTIONIST])}
             >
-              Лікарі
+              {tPagesNavigation("doctors")}
             </Nav.Link>
-
             <NavDropdown
-              title="Прийоми"
+              title={tPagesNavigation("appointments")}
               id="navbarScrollingDropdown"
               hidden={!hasAnyRole([Role.ADMIN, Role.RECEPTIONIST, Role.Doctor])}
             >
               <NavDropdown.Item as={Link} href="/appointments">
-                Пошук
+                {tCommon("search.button_label")}
               </NavDropdown.Item>
               <Link href="/appointments/timetable" passHref legacyBehavior>
-                <NavDropdown.Item>Розклад</NavDropdown.Item>
+                <NavDropdown.Item>
+                  {tPagesNavigation("timetable")}
+                </NavDropdown.Item>
               </Link>
             </NavDropdown>
             <Nav.Link
@@ -58,7 +62,7 @@ const NavBar = () => {
               active={pathname == "/offices"}
               hidden={!hasAnyRole([Role.ADMIN, Role.RECEPTIONIST, Role.Doctor])}
             >
-              Кабінети
+              {tPagesNavigation("offices")}
             </Nav.Link>
             <Nav.Link
               as={Link}
@@ -66,7 +70,7 @@ const NavBar = () => {
               active={pathname == "/receptionists"}
               hidden={!hasAnyRole([Role.ADMIN])}
             >
-              Реєстратори
+              {tPagesNavigation("receptionists")}
             </Nav.Link>
           </Nav>
           <div className="d-flex align-items-center">
