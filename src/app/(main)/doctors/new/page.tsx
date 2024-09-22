@@ -294,7 +294,7 @@ export default function NewDoctorPage() {
               </Form.Group>
             </Row>
             <Form.Group as={Col} controlId="formGridOffice">
-              <Form.Label>{tCommon("office")}</Form.Label>
+              <Form.Label>{tCommon("office.label")}</Form.Label>
               <Select
                 className="basic-single mb-3"
                 classNamePrefix="select"

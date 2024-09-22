@@ -14,9 +14,18 @@ export default function LoginPage() {
   const [error, setError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [validated, setValidated] = useState(false);
 
   const handleLogin = async (event: any) => {
     event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+      setValidated(true);
+      setError(false);
+      return;
+    }
+    setValidated(true);
     setError(false);
     setLoading(true);
     try {
@@ -61,7 +70,7 @@ export default function LoginPage() {
         </>
       )}
       <div className="login-page mx-auto" style={{ maxWidth: "300px" }}>
-        <Form onSubmit={handleLogin}>
+        <Form noValidate onSubmit={handleLogin}>
           <fieldset disabled={loading}>
             <InputGroup className="mb-3">
               <InputGroup.Text id="basic-addon1">
@@ -73,6 +82,7 @@ export default function LoginPage() {
                 aria-label="Username"
                 aria-describedby="basic-addon1"
                 value={username}
+                isInvalid={validated && !username}
                 required
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -87,6 +97,7 @@ export default function LoginPage() {
                 placeholder="Пароль"
                 value={password}
                 required
+                isInvalid={validated && !password}
                 onChange={(e) => setPassword(e.target.value)}
               />
               <Button
@@ -101,7 +112,12 @@ export default function LoginPage() {
               </Button>
             </InputGroup>
             <div className="text-center">
-              <Button variant="primary" type="submit" className="text-center">
+              <Button
+                variant="primary"
+                type="submit"
+                className="text-center"
+                disabled={!username || !password}
+              >
                 Увійти
               </Button>
             </div>
