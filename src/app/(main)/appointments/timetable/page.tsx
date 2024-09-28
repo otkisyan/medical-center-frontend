@@ -1,7 +1,8 @@
 "use client";
+import { DoctorDisabledSelect } from "@/components/doctor/DoctorDisabledSelect";
+import { DoctorSelect } from "@/components/doctor/DoctorSelect";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import TimeTable from "@/components/timetable/TimeTable";
-import { customReactSelectStyles } from "@/css/react-select";
 import { useAuth } from "@/shared/context/UserContextProvider";
 import { Role } from "@/shared/enum/role";
 import useFetchAppointment from "@/shared/hooks/appointment/useFetchAppointment";
@@ -12,8 +13,9 @@ import useFetchPatient from "@/shared/hooks/patients/useFetchPatient";
 import { AppointmentService } from "@/shared/service/appointment-service";
 import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 import { formatDateToHtml5 } from "@/shared/utils/date-utils";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -25,10 +27,11 @@ import {
   Modal,
   Row,
 } from "react-bootstrap";
-import Select from "react-select";
 
 export default function TimeTablePage() {
-  const router = useRouter();
+  const tCommon = useTranslations("Common");
+  const tNavigation = useTranslations("PagesNavigation");
+  const tTimetablePage = useTranslations("TimetablePage");
   const searchParams = useSearchParams();
 
   const { hasAnyRole, userDetails } = useAuth();
@@ -183,7 +186,9 @@ export default function TimeTablePage() {
         timeStartInput.value >= timeEndInput.value
       ) {
         timeEndInput.setCustomValidity(
-          "Час початку прийому не може бути більше або дорівнювати часу закінчення прийому"
+          tTimetablePage(
+            "new_appointment_modal.input_validity.time_invalid_message"
+          )
         );
       } else {
         timeEndInput.setCustomValidity("");
@@ -208,20 +213,18 @@ export default function TimeTablePage() {
         handleCloseAppointmentModal();
         fetchTimeTable(doctorId, { date: formatDateToHtml5(currentDate) });
         setAppointmentTime(appointmentTimeInitialState);
-        notifySuccess("Новий прийом успішно призначено!");
+        notifySuccess(tTimetablePage("toasts.success.new_appointment"));
       } catch (error: any) {
         const errorMessage = error.response.data.message;
         if (error.response && error.response.status === 409) {
           if (errorMessage.includes("The doctor already has an appointment")) {
-            notifyError("Лікар вже має інший прийом на обраний час!");
+            notifyError(tTimetablePage("toasts.error.doctor_conflict"));
           } else if (
             errorMessage.includes("The patient already has an appointment")
           ) {
-            notifyError("Пацієнт вже має інший прийом на обраний час!");
+            notifyError(tTimetablePage("toasts.error.patient_conflict"));
           } else {
-            notifyError(
-              "Непередбачена помилка конфлікту при призначенні прийому"
-            );
+            notifyError(tTimetablePage("toasts.error.unexpected"));
           }
         } else if (error.response && error.response.status === 400) {
           if (
@@ -230,7 +233,7 @@ export default function TimeTablePage() {
               "Appointment is outside the doctor's working hours"
             )
           ) {
-            notifyError("Час прийому виходить за межі графіку роботи лікаря!");
+            notifyError(tTimetablePage("toasts.error.outside_workschedule"));
           } else if (
             errorMessage &&
             errorMessage.includes(
@@ -238,13 +241,11 @@ export default function TimeTablePage() {
             )
           ) {
             notifyError(
-              "Час початку прийому не може бути більше часу закінчення прийому"
+              tTimetablePage("toasts.error.outside_invalid_time_range")
             );
           }
         } else {
-          notifyError(
-            "При створенні нового прийому сталася непередбачена помилка!"
-          );
+          notifyError(tTimetablePage("toasts.error.unexpected"));
         }
       }
     }
@@ -267,20 +268,18 @@ export default function TimeTablePage() {
         handleCloseAppointmentModal();
         fetchTimeTable(doctorId, { date: formatDateToHtml5(currentDate) });
         setAppointmentTime(appointmentTimeInitialState);
-        notifySuccess("Прийом успішно переплановано!");
+        notifySuccess(tTimetablePage("toasts.success.reschedule_appointment"));
       } catch (error: any) {
         const errorMessage = error.response.data.message;
         if (error.response && error.response.status === 409) {
           if (errorMessage.includes("The doctor already has an appointment")) {
-            notifyError("Лікар вже має інший прийом на обраний час!");
+            notifyError(tTimetablePage("toasts.error.doctor_conflict"));
           } else if (
             errorMessage.includes("The patient already has an appointment")
           ) {
-            notifyError("Пацієнт вже має інший прийом на обраний час!");
+            notifyError(tTimetablePage("toasts.error.patient_conflict"));
           } else {
-            notifyError(
-              "Непередбачена помилка конфлікту при переплануванні прийому"
-            );
+            notifyError(tTimetablePage("toasts.error.unexpected"));
           }
         } else if (error.response && error.response.status === 400) {
           if (
@@ -289,7 +288,7 @@ export default function TimeTablePage() {
               "Appointment is outside the doctor's working hours"
             )
           ) {
-            notifyError("Час прийому виходить за межі графіку роботи лікаря!");
+            notifyError(tTimetablePage("toasts.error.outside_workschedule"));
           } else if (
             errorMessage &&
             errorMessage.includes(
@@ -297,13 +296,11 @@ export default function TimeTablePage() {
             )
           ) {
             notifyError(
-              "Час початку прийому не може бути більше часу закінчення прийому"
+              tTimetablePage("toasts.error.outside_invalid_time_range")
             );
           }
         } else {
-          notifyError(
-            "При переплануванні прийому сталася непередбачена помилка!"
-          );
+          notifyError(tTimetablePage("toasts.error.unexpected"));
         }
       }
     }
@@ -322,7 +319,9 @@ export default function TimeTablePage() {
       <br></br>
       <Modal show={showAppointmentModal} onHide={handleCloseAppointmentModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Інформація про прийом</Modal.Title>
+          <Modal.Title>
+            {tTimetablePage("new_appointment_modal.title")}
+          </Modal.Title>
         </Modal.Header>
         <Form
           onSubmit={
@@ -334,7 +333,7 @@ export default function TimeTablePage() {
           <Modal.Body>
             {patient && (
               <>
-                <Form.Label>Пацієнт</Form.Label>
+                <Form.Label>{tCommon("patient")}</Form.Label>
                 <InputGroup className="mb-3">
                   <Form.Control
                     type="text"
@@ -357,7 +356,7 @@ export default function TimeTablePage() {
             )}
             {doctorId && (
               <>
-                <Form.Label>Лікар</Form.Label>
+                <Form.Label>{tCommon("doctor")}</Form.Label>
                 {!isDoctor ? (
                   <InputGroup className="mb-3">
                     <Form.Control
@@ -393,7 +392,7 @@ export default function TimeTablePage() {
             <Row>
               <Col lg={4} sm>
                 <Form.Group>
-                  <Form.Label>Дата</Form.Label>
+                  <Form.Label>{tCommon("date")}</Form.Label>
                   <Form.Control
                     className="mb-3"
                     max="9999-12-31"
@@ -405,7 +404,7 @@ export default function TimeTablePage() {
               </Col>
               <Col sm>
                 <Form.Group>
-                  <Form.Label>Час початку</Form.Label>
+                  <Form.Label>{tCommon("appointment.time_start")}</Form.Label>
                   <Form.Control
                     required
                     className="mb-3"
@@ -418,7 +417,7 @@ export default function TimeTablePage() {
               </Col>
               <Col sm>
                 <Form.Group>
-                  <Form.Label>Час закінчення</Form.Label>
+                  <Form.Label>{tCommon("appointment.time_end")}</Form.Label>
                   <Form.Control
                     className="mb-3"
                     type="time"
@@ -433,45 +432,63 @@ export default function TimeTablePage() {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary" type="submit">
-              {appointment ? "Перепланувати прийом" : "Призначити прийом"}
+              {appointment
+                ? tTimetablePage(
+                    "new_appointment_modal.submit_button.reschedule_appointment_label"
+                  )
+                : tTimetablePage(
+                    "new_appointment_modal.submit_button.new_appointment_label"
+                  )}
             </Button>
           </Modal.Footer>
         </Form>
       </Modal>
       <Breadcrumb>
         <Link href="/" passHref legacyBehavior>
-          <Breadcrumb.Item className="link">Домашня сторінка</Breadcrumb.Item>
+          <Breadcrumb.Item className="link">
+            {tNavigation("home_page")}
+          </Breadcrumb.Item>
         </Link>
         {!appointment ? (
           <>
             {patient || patientId ? (
               <Link href="/patients" passHref legacyBehavior>
-                <Breadcrumb.Item className="link">Пацієнти</Breadcrumb.Item>
+                <Breadcrumb.Item className="link">
+                  {tNavigation("patients")}
+                </Breadcrumb.Item>
               </Link>
             ) : (
               <Link href="/appointments" passHref legacyBehavior>
-                <Breadcrumb.Item className="link">Прийоми</Breadcrumb.Item>
+                <Breadcrumb.Item className="link">
+                  {tNavigation("appointments")}
+                </Breadcrumb.Item>
               </Link>
             )}
           </>
         ) : (
           <Link href="/appointments" passHref legacyBehavior>
-            <Breadcrumb.Item className="link">Прийоми</Breadcrumb.Item>
+            <Breadcrumb.Item className="link">
+              {tNavigation("appointments")}
+            </Breadcrumb.Item>
           </Link>
         )}
         {!appointment ? (
           <>
             {patient || patientId ? (
               <Breadcrumb.Item active>
-                Призначення нового прийому
+                {tTimetablePage("breadcrumb_active_page.new_appointment")}
               </Breadcrumb.Item>
             ) : (
-              <Breadcrumb.Item active>Розклад</Breadcrumb.Item>
+              <Breadcrumb.Item active>
+                {tTimetablePage("breadcrumb_active_page.timetable")}
+              </Breadcrumb.Item>
             )}
           </>
         ) : (
           <>
-            <Breadcrumb.Item active>Перепланування прийому</Breadcrumb.Item>
+            <Breadcrumb.Item active>
+              {tTimetablePage("breadcrumb_active_page.reschedule_appointment")}
+            </Breadcrumb.Item>
             &nbsp;
             <Link
               href={`/appointments/${appointment.id}`}
@@ -486,42 +503,20 @@ export default function TimeTablePage() {
       <Row className="mb-3">
         <Col sm lg={4}>
           <Form.Group>
-            <Form.Label>Лікар</Form.Label>
+            <Form.Label>{tCommon("doctor")}</Form.Label>
             {!isDoctor ? (
-              <Select
-                className="basic-single mb-3"
-                classNamePrefix="select"
-                isLoading={loadingDoctorsOptions}
-                isSearchable={true}
-                ref={selectDoctorRef}
-                placeholder={"Оберіть лікаря"}
-                name="doctorId"
-                onChange={(e) => {
-                  setDoctorId(e.value);
-                }}
-                loadingMessage={() => "Завантаження..."}
-                noOptionsMessage={() => "Лікарів не знайдено"}
-                options={doctorsOptions}
-                defaultValue={
-                  appointment
-                    ? findDoctorOptionByValue(appointment.doctor.id)
-                    : ""
-                }
-                styles={customReactSelectStyles}
+              <DoctorSelect
+                doctorsOptions={doctorsOptions}
+                loadingDoctorsOptions={loadingDoctorsOptions}
+                selectDoctorRef={selectDoctorRef}
+                setDoctorId={setDoctorId}
+                findDoctorOptionByValue={findDoctorOptionByValue}
+                appointment={appointment}
               />
             ) : (
-              <Select
-                isDisabled
-                className="basic-single mb-3"
-                classNamePrefix="select"
-                isLoading={loadingDoctor}
-                isSearchable={true}
-                value={defaultDoctorOption}
-                placeholder={"Завантаження..."}
-                name="doctorId"
-                loadingMessage={() => "Завантаження..."}
-                noOptionsMessage={() => "Лікаря не знайдено"}
-                styles={customReactSelectStyles}
+              <DoctorDisabledSelect
+                defaultDoctorOption={defaultDoctorOption}
+                loadingDoctor={loadingDoctor}
               />
             )}
           </Form.Group>
@@ -531,13 +526,13 @@ export default function TimeTablePage() {
             {loadingPatient ? (
               <Col sm lg={3}>
                 <Form.Group>
-                  <Form.Label>Пацієнт</Form.Label>
+                  <Form.Label>{tCommon("patient")}</Form.Label>
                   <Form.Control
                     className="mb-3"
                     max="9999-12-31"
                     type="text"
                     value=""
-                    placeholder={"Завантаження..."}
+                    placeholder={tCommon("loading")}
                     disabled
                   />
                 </Form.Group>
@@ -545,7 +540,7 @@ export default function TimeTablePage() {
             ) : patient ? (
               <Col sm lg={3}>
                 <Form.Group>
-                  <Form.Label>Пацієнт</Form.Label>
+                  <Form.Label>{tCommon("patient")}</Form.Label>
                   <Form.Control
                     className="mb-3"
                     max="9999-12-31"
@@ -562,7 +557,7 @@ export default function TimeTablePage() {
         )}
         <Col sm lg={2}>
           <Form.Group>
-            <Form.Label>Дата</Form.Label>
+            <Form.Label>{tCommon("date")}</Form.Label>
             <Form.Control
               className="mb-3"
               max="9999-12-31"
@@ -581,7 +576,13 @@ export default function TimeTablePage() {
             onClick={handleShowAppointmentModal}
             hidden={!patient || !doctorId || !patientId}
           >
-            {appointment ? "Перепланувати прийом" : "Призначити прийом"}
+            {appointment
+              ? tTimetablePage(
+                  "control_bar.appointment_action_button.reschedule_appointment_label"
+                )
+              : tTimetablePage(
+                  "control_bar.appointment_action_button.new_appointment_label"
+                )}
           </Button>
         </Col>
       </Row>
@@ -598,8 +599,8 @@ export default function TimeTablePage() {
               style={{ maxWidth: "400px" }}
             >
               {isDoctor
-                ? "Ви не маєте графіку роботи на обрану дату!"
-                : "Лікар не має графіку роботи на обрану дату!"}
+                ? tTimetablePage("alerts.doctor_no_workschedule")
+                : tTimetablePage("alerts.no_workschedule")}
             </Alert>
           ) : null}
         </>

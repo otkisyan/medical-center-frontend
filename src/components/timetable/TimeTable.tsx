@@ -2,6 +2,7 @@
 import { AppointmentResponse } from "@/shared/interface/appointment/appointment-interface";
 import { TimeSlotResponse } from "@/shared/interface/time-slot/time-slot-interface";
 import { formatTimeSecondsToTime } from "@/shared/utils/date-utils";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Table } from "react-bootstrap";
 
@@ -11,12 +12,13 @@ interface TimeTableProps {
 }
 
 const TimeTable: React.FC<TimeTableProps> = ({ timeTable, appointment }) => {
+  const tTimetable = useTranslations("Timetable");
   return (
     <Table striped>
       <thead>
         <tr>
-          <th>Час</th>
-          <th>Прийом</th>
+          <th>{tTimetable("time_header")}</th>
+          <th>{tTimetable("appointment_header")}</th>
         </tr>
       </thead>
       <tbody>
@@ -31,7 +33,9 @@ const TimeTable: React.FC<TimeTableProps> = ({ timeTable, appointment }) => {
               )} - ${formatTimeSecondsToTime(timeSlot.endTime)}`}</td>
               <td>
                 {filteredAppointments.length === 0 ? (
-                  <span className="text-success">Вільно</span>
+                  <span className="text-success">
+                    {tTimetable("status_free")}
+                  </span>
                 ) : (
                   filteredAppointments.map((timeSlotAppointment) => (
                     <div key={timeSlotAppointment.id}>

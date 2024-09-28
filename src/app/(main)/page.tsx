@@ -34,7 +34,6 @@ export default function Home() {
   }, [tHomePage]);
 
   useEffect(() => {
-    console.log(userDetails);
     if (hasAnyRole([Role.Doctor])) {
       setRole(tUser("roles.doctor"));
       if (userDetails) {

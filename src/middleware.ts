@@ -74,7 +74,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-
   if (isProtectedRoute(pathname)) {
     const isAuth = await isAuthenticated(request);
     const userRoles = await getUserRoles(request);

@@ -198,6 +198,55 @@
       "text": "An error occurred while executing the request or the requested doctor does not exist"
     }
   },
+  "TimetablePage": {
+    "breadcrumb_active_page": {
+      "new_appointment": "New Appointment",
+      "reschedule_appointment": "Rescheduling the appointment",
+      "timetable": "Timetable"
+    },
+    "control_bar": {
+      "appointment_action_button": {
+        "new_appointment_label": "Make an appointment",
+        "reschedule_appointment_label": "Reschedule"
+      }
+    },
+    "new_appointment_modal": {
+      "title": "Information about the appointment",
+      "submit_button": {
+        "new_appointment_label": "Make an appointment",
+        "reschedule_appointment_label": "Reschedule an appointment"
+      },
+      "input_validity": {
+        "time_invalid_message": "The start time of the appointment cannot be greater than or equal to the end time of the appointment"
+      }
+    },
+    "alerts": {
+      "no_workschedule": "The doctor does not have a work schedule for the selected date!",
+      "doctor_no_workschedule": "You do not have a work schedule for the selected date!"
+    },
+    "toasts": {
+      "success": {
+        "new_appointment": "A new appointment has been successfully scheduled!",
+        "reschedule_appointment": "The appointment has been successfully rescheduled!"
+      },
+      "error": {
+        "doctor_conflict": "The doctor already has another appointment for the chosen time!",
+        "patient_conflict": "The patient already has another appointment at the chosen time!",
+        "unexpected": "An unexpected error occurred during the scheduling of an appointment!",
+        "invalid_time_range": "The start time of the appointment cannot be greater than or equal to the end time of the appointment",
+        "outside_workschedule": "The appointment time is outside the doctor's work schedule!"
+      }
+    }
+  },
+  "Timetable": {
+    "time_header": "Time",
+    "appointment_header": "Appointment",
+    "status_free": "Free"
+  },
+  "DoctorSelect": {
+    "placeholder": "Choose a doctor",
+    "no_options_message": "No doctors were found"
+  },
   "WorkSchedule": {
     "weekday": "Day of the week",
     "days_of_the_week": {

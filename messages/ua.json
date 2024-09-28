@@ -70,7 +70,6 @@
       "symptoms": "Симптоми",
       "medical_recommendations": "Медичні рекомендації",
       "doctor_specialty": "Спеціальність лікаря",
-
       "time_start": "Час початку",
       "time_end": "Час закінчення"
     },
@@ -198,6 +197,55 @@
       "header": "Ууупсс...",
       "text": "При виконанні запиту виникла помилка або запитуваного лікаря не існує"
     }
+  },
+  "TimetablePage": {
+    "breadcrumb_active_page": {
+      "new_appointment": "Призначення нового прийому",
+      "reschedule_appointment": "Перепланування прийому",
+      "timetable": "Розклад"
+    },
+    "control_bar": {
+      "appointment_action_button": {
+        "new_appointment_label": "Призначити прийом",
+        "reschedule_appointment_label": "Перепланувати прийом"
+      }
+    },
+    "new_appointment_modal": {
+      "title": "Інформація про прийом",
+      "submit_button": {
+        "new_appointment_label": "Призначити прийом",
+        "reschedule_appointment_label": "Перепланувати прийом"
+      },
+      "input_validity": {
+        "time_invalid_message": "Час початку прийому не може бути більше або дорівнювати часу закінчення прийому"
+      }
+    },
+    "alerts": {
+      "no_workschedule": "Лікар не має графіку роботи на обрану дату!",
+      "doctor_no_workschedule": "Ви не маєте графіку роботи на обрану дату!"
+    },
+    "toasts": {
+      "success": {
+        "new_appointment": "Новий прийом успішно призначено!",
+        "reschedule_appointment": "Прийом успішно переплановано!"
+      },
+      "error": {
+        "doctor_conflict": "Лікар вже має інший прийом на обраний час!",
+        "patient_conflict": "Пацієнт вже має інший прийом на обраний час!",
+        "unexpected": "При призначенні прийому сталася непередбачена помилка!",
+        "invalid_time_range": "Час початку прийому не може бути більше часу закінчення прийому",
+        "outside_workschedule": "Час прийому виходить за межі графіку роботи лікаря!"
+      }
+    }
+  },
+  "Timetable": {
+    "time_header": "Час",
+    "appointment_header": "Прийом",
+    "status_free": "Вільно"
+  },
+  "DoctorSelect": {
+    "placeholder": "Оберіть лікаря",
+    "no_options_message": "Лікарів не знайдено"
   },
   "WorkSchedule": {
     "weekday": "День тижня",
