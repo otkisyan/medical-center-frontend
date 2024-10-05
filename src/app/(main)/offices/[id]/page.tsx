@@ -20,8 +20,12 @@ import { Breadcrumb } from "react-bootstrap";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
 import useFetchOffice from "@/shared/hooks/office/useFetchOffice";
+import { useTranslations } from "use-intl";
 
 export default function OfficePage({ params }: { params: { id: number } }) {
+  const tCommon = useTranslations("Common");
+  const tSpecificOfficePage = useTranslations("SpecificOfficePage");
+  const tPagesNavigation = useTranslations("PagesNavigation");
   const router = useRouter();
   const { office, setOffice, loadingOffice } = useFetchOffice(params.id);
   const [editedOffice, setEditedOffice] = useState<OfficeRequest>(
@@ -39,12 +43,12 @@ export default function OfficePage({ params }: { params: { id: number } }) {
       const data = await OfficeService.updateOffice(params.id, editedOffice);
       setOffice(data);
       setEditedOffice(convertOfficeResponseToOfficeRequest(data));
-      notifySuccess("Редагування інформації про кабінет успішне!");
+      notifySuccess(tSpecificOfficePage("toasts.edit_success"));
     } catch (error) {
       if (office) {
         setEditedOffice(convertOfficeResponseToOfficeRequest(office));
       }
-      notifyError("При редагуванні сталася непередбачена помилка!");
+      notifyError(tSpecificOfficePage("toasts.edit_error"));
     } finally {
       setEditing(false);
     }
@@ -54,9 +58,9 @@ export default function OfficePage({ params }: { params: { id: number } }) {
     try {
       await OfficeService.deleteOffice(params.id);
       router.push("/offices");
-      notifySuccess("Кабінет був успішно видалений!");
+      notifySuccess(tSpecificOfficePage("toasts.delete_success"));
     } catch (error) {
-      notifyError("При видаленні кабінету сталася непередбачена помилка!");
+      notifyError(tSpecificOfficePage("toasts.delete_error"));
     } finally {
       setShowDeleteModal(false);
     }
@@ -99,45 +103,52 @@ export default function OfficePage({ params }: { params: { id: number } }) {
           <Breadcrumb>
             <Link href="/" passHref legacyBehavior>
               <Breadcrumb.Item className="link">
-                Домашня сторінка
+                {tPagesNavigation("home_page")}
               </Breadcrumb.Item>
             </Link>
             <Link href="/offices" passHref legacyBehavior>
-              <Breadcrumb.Item className="link">Кабінети</Breadcrumb.Item>
+              <Breadcrumb.Item className="link">
+                {tPagesNavigation("offices")}
+              </Breadcrumb.Item>
             </Link>
             <Breadcrumb.Item active>
-              Інформація про кабінет #{params.id}
+              {tSpecificOfficePage("breadcrumb_active_page", {
+                id: params.id,
+              })}
             </Breadcrumb.Item>
           </Breadcrumb>
           <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
             <Modal.Header closeButton>
-              <Modal.Title>Видалення кабінету</Modal.Title>
+              <Modal.Title>
+                {tSpecificOfficePage("office_delete_dialog.title")}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>Ви впевнені, що хочете видалити кабінету?</p>
+              <p>{tSpecificOfficePage("office_delete_dialog.text")}</p>
               <p>
-                <i>
-                  Ви не зможете відновити інформацію про кабінет після
-                  підтвердження видалення!
-                </i>
+                <i>{tSpecificOfficePage("office_delete_dialog.warning")}</i>
               </p>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                Скасувати
+                {tCommon("action_cancel_button_label")}
               </Button>
               <Button variant="danger" onClick={deleteOffice}>
-                Видалити кабінет
+                {tSpecificOfficePage(
+                  "office_delete_dialog.confirm_button_label"
+                )}
               </Button>
             </Modal.Footer>
           </Modal>
           <Card>
-            <Card.Header>Кабінет</Card.Header>
+            <Card.Header>
+              {tSpecificOfficePage("office_card_header")}
+            </Card.Header>
             <Card.Body>
               <Form onSubmit={handleEditFormSubmit}>
                 <fieldset disabled={!editing}>
                   <Form.Group controlId="formGridNumber" className="mb-3">
-                    <Form.Label>Номер</Form.Label>
+                    <Form.Label>{tCommon("office.number_short")}</Form.Label>
                     <Form.Control
                       type="number"
                       value={editedOffice.number.toString()}
@@ -146,7 +157,7 @@ export default function OfficePage({ params }: { params: { id: number } }) {
                     />
                   </Form.Group>
                   <Form.Group controlId="formGridName" className="mb-3">
-                    <Form.Label>Назва</Form.Label>
+                    <Form.Label>{tCommon("office.name_short")}</Form.Label>
                     <Form.Control
                       type="text"
                       value={editedOffice.name}
@@ -171,7 +182,7 @@ export default function OfficePage({ params }: { params: { id: number } }) {
                   hidden={!editing}
                   id="confirmEdit"
                 >
-                  Зберегти
+                  {tCommon("action_save_button_label")}
                 </Button>
                 <Button
                   variant="secondary"
@@ -180,7 +191,7 @@ export default function OfficePage({ params }: { params: { id: number } }) {
                   hidden={!editing}
                   onClick={handleCancelEdit}
                 >
-                  Скасувати
+                  {tCommon("action_cancel_button_label")}
                 </Button>
                 <Button
                   variant="danger"
@@ -197,11 +208,10 @@ export default function OfficePage({ params }: { params: { id: number } }) {
         </>
       ) : (
         <Alert variant="danger">
-          <Alert.Heading>Ууупсс...</Alert.Heading>
-          <p>
-            При виконанні запиту виникла помилка або запитуваного кабінету не
-            існує.
-          </p>
+          <Alert.Heading>
+            {tSpecificOfficePage("error_alert.header")}
+          </Alert.Heading>
+          <p>{tSpecificOfficePage("error_alert.text")}</p>
         </Alert>
       )}
     </>

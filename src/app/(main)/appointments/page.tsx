@@ -19,6 +19,7 @@ import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import useFetchAppointmentsCount from "@/shared/hooks/appointment/useFetchAppointmentsCount";
 import useFetchAppointments from "@/shared/hooks/appointment/useFetchAppointments";
 import { useTranslations } from "next-intl";
+import PaginationBar from "@/components/pagination/PaginationBar";
 
 export default function AppointmentsPage() {
   const tCommon = useTranslations("Common");
@@ -194,48 +195,13 @@ export default function AppointmentsPage() {
               ))}
             </tbody>
           </Table>
-          <Pagination className="d-flex justify-content-center">
-            <Pagination.First
-              onClick={() => fetchAppointments({ ...params, page: 0 })}
-              disabled={appointmentPage.first === true}
-            />
-            <Pagination.Prev
-              onClick={() =>
-                fetchAppointments({
-                  ...params,
-                  page: appointmentPage.number - 1,
-                })
-              }
-              disabled={appointmentPage.first === true}
-            />
-            {[...Array(appointmentPage.totalPages)].map((_, i) => (
-              <Pagination.Item
-                key={i}
-                active={i === appointmentPage.number}
-                onClick={() => fetchAppointments({ ...params, page: i })}
-              >
-                {i + 1}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next
-              onClick={() =>
-                fetchAppointments({
-                  ...params,
-                  page: appointmentPage.number + 1,
-                })
-              }
-              disabled={appointmentPage.last === true}
-            />
-            <Pagination.Last
-              onClick={() =>
-                fetchAppointments({
-                  ...params,
-                  page: appointmentPage.totalPages - 1,
-                })
-              }
-              disabled={appointmentPage.last === true}
-            />
-          </Pagination>
+          <PaginationBar
+            currentPage={appointmentPage.number}
+            totalPages={appointmentPage.totalPages}
+            onPageChange={(page) => fetchAppointments({ ...params, page })}
+            isFirst={appointmentPage.first}
+            isLast={appointmentPage.last}
+          />
         </>
       ) : (
         <>

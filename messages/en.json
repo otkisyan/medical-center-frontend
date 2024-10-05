@@ -104,6 +104,14 @@
       "error_fetching_doctors": "An unexpected error occurred while executing a doctor query"
     }
   },
+  "OfficesPage": {
+    "new_office_link_label": "New office →",
+    "alerts": {
+      "no_offices_found": "No offices were found according to the specified criteria",
+      "no_offices": "No offices have been added yet",
+      "error_fetching_offics": "An unexpected error occurred while executing an office query"
+    }
+  },
   "AppointmentsPage": {
     "alerts": {
       "no_appointments_found": "No appointments were found according to the specified criteria",
@@ -123,6 +131,7 @@
     "specific_appointment": "Appointment #{id}",
     "offices": "Offices",
     "specific_office": "Office #{id}",
+    "new_office": "New Office",
     "receptionists": "Receptionists",
     "specific_receptionist": "Receptionist #{id}",
     "timetable": "Timetable",
@@ -146,6 +155,26 @@
     "error_alert": {
       "header": "Ooopss...",
       "text": "An error occurred while executing the request or the requested patient does not exist"
+    }
+  },
+  "SpecificOfficePage": {
+    "breadcrumb_active_page": "Information about office #{id}",
+    "office_card_header": "Office",
+    "office_delete_dialog": {
+      "title": "Deleting an office",
+      "text": "Are you sure you want to delete an office?",
+      "warning": "You will not be able to restore office information after confirming deletion!",
+      "confirm_button_label": "Delete office"
+    },
+    "toasts": {
+      "edit_success": "Editing office information is successful!",
+      "edit_error": "An unexpected error occurred while editing office information!",
+      "delete_success": "The office was successfully deleted!",
+      "delete_error": "An unexpected error occurred while deleting an office!"
+    },
+    "error_alert": {
+      "header": "Ooopss...",
+      "text": "An error occurred while executing the request or the requested office does not exist"
     }
   },
   "SpecificAppointmentPage": {
@@ -278,6 +307,18 @@
     "toasts": {
       "new_patient_success": "A new patient has been successfully added!",
       "new_patient_error": "An unexpected error occurred while adding a new patient!"
+    }
+  },
+  "NewOfficePage": {
+    "new_office": {
+      "card": {
+        "header": "Information about new office"
+      },
+      "add_button_label": "Add new office"
+    },
+    "toasts": {
+      "new_office_success": "A new office has been successfully added!",
+      "new_office_error": "An unexpected error occurred while adding a new office!"
     }
   },
   "NewDoctorPage": {

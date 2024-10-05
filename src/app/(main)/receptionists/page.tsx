@@ -15,6 +15,7 @@ import useFetchReceptionistsCount from "@/shared/hooks/receptionist/useFetchRece
 import { formatDateToString } from "@/shared/utils/date-utils";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
+import PaginationBar from "@/components/pagination/PaginationBar";
 
 export default function ReceptionistsPage() {
   const initialParamsState = useMemo(
@@ -167,63 +168,13 @@ export default function ReceptionistsPage() {
               ))}
             </tbody>
           </Table>
-          <Pagination className="d-flex justify-content-center">
-            <Pagination.First
-              onClick={() => fetchReceptionists({ ...params, page: 0 })}
-              disabled={receptionistPage.first === true}
-            />
-            <Pagination.Prev
-              onClick={() =>
-                fetchReceptionists({
-                  ...params,
-                  page: receptionistPage.number - 1,
-                })
-              }
-              disabled={receptionistPage.first === true}
-            />
-            {[...Array(receptionistPage.totalPages)].map((_, i) => {
-              if (
-                i === 0 ||
-                i === receptionistPage.totalPages - 1 ||
-                (i >= receptionistPage.number - 2 &&
-                  i <= receptionistPage.number + 2)
-              ) {
-                return (
-                  <Pagination.Item
-                    key={i}
-                    active={i === receptionistPage.number}
-                    onClick={() => fetchReceptionists({ ...params, page: i })}
-                  >
-                    {i + 1}
-                  </Pagination.Item>
-                );
-              } else if (
-                i === receptionistPage.number - 3 ||
-                i === receptionistPage.number + 3
-              ) {
-                return <Pagination.Ellipsis key={i} disabled />;
-              }
-              return null;
-            })}
-            <Pagination.Next
-              onClick={() =>
-                fetchReceptionists({
-                  ...params,
-                  page: receptionistPage.number + 1,
-                })
-              }
-              disabled={receptionistPage.last === true}
-            />
-            <Pagination.Last
-              onClick={() =>
-                fetchReceptionists({
-                  ...params,
-                  page: receptionistPage.totalPages - 1,
-                })
-              }
-              disabled={receptionistPage.last === true}
-            />
-          </Pagination>
+          <PaginationBar
+            currentPage={receptionistPage.number}
+            totalPages={receptionistPage.totalPages}
+            onPageChange={(page) => fetchReceptionists({ ...params, page })}
+            isFirst={receptionistPage.first}
+            isLast={receptionistPage.last}
+          />
         </>
       ) : (
         <>

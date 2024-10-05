@@ -16,6 +16,7 @@ import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
 import { ButtonGroup } from "react-bootstrap";
 import { useTranslations } from "use-intl";
+import PaginationBar from "@/components/pagination/PaginationBar";
 
 export default function PatientsPage() {
   const tCommon = useTranslations("Common");
@@ -200,53 +201,13 @@ export default function PatientsPage() {
               ))}
             </tbody>
           </Table>
-          <Pagination className="d-flex justify-content-center">
-            <Pagination.First
-              onClick={() => fetchPatients({ ...params, page: 0 })}
-              disabled={patientPage.first === true}
-            />
-            <Pagination.Prev
-              onClick={() =>
-                fetchPatients({ ...params, page: patientPage.number - 1 })
-              }
-              disabled={patientPage.first === true}
-            />
-            {[...Array(patientPage.totalPages)].map((_, i) => {
-              if (
-                i === 0 ||
-                i === patientPage.totalPages - 1 ||
-                (i >= patientPage.number - 2 && i <= patientPage.number + 2)
-              ) {
-                return (
-                  <Pagination.Item
-                    key={i}
-                    active={i === patientPage.number}
-                    onClick={() => fetchPatients({ ...params, page: i })}
-                  >
-                    {i + 1}
-                  </Pagination.Item>
-                );
-              } else if (
-                i === patientPage.number - 3 ||
-                i === patientPage.number + 3
-              ) {
-                return <Pagination.Ellipsis key={i} disabled />;
-              }
-              return null;
-            })}
-            <Pagination.Next
-              onClick={() =>
-                fetchPatients({ ...params, page: patientPage.number + 1 })
-              }
-              disabled={patientPage.last === true}
-            />
-            <Pagination.Last
-              onClick={() =>
-                fetchPatients({ ...params, page: patientPage.totalPages - 1 })
-              }
-              disabled={patientPage.last === true}
-            />
-          </Pagination>
+          <PaginationBar
+            currentPage={patientPage.number}
+            totalPages={patientPage.totalPages}
+            onPageChange={(page) => fetchPatients({ ...params, page })}
+            isFirst={patientPage.first}
+            isLast={patientPage.last}
+          />
         </>
       ) : (
         <>
