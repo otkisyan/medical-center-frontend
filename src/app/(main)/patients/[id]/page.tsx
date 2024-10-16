@@ -107,7 +107,6 @@ export default function PatientPage({ params }: { params: { id: number } }) {
             </Link>
             <Link href="/patients" passHref legacyBehavior>
               <Breadcrumb.Item className="link">
-                {" "}
                 {tPagesNavigation("patients")}
               </Breadcrumb.Item>
             </Link>
@@ -170,7 +169,6 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridMiddleName">
                       <Form.Label>
-                        {" "}
                         {tCommon("personal_data.middle_name")}
                       </Form.Label>
                       <Form.Control
@@ -183,7 +181,6 @@ export default function PatientPage({ params }: { params: { id: number } }) {
                   </Row>
                   <Form.Group controlId="formGridBirthDate" className="mb-3">
                     <Form.Label>
-                      {" "}
                       {tCommon("personal_data.birth_date")}
                     </Form.Label>
                     <Form.Control

@@ -8,6 +8,7 @@ import {
 } from "@/shared/interface/receptionist/receptionist-interface";
 import { ReceptionistService } from "@/shared/service/receptionist-service";
 import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -21,6 +22,9 @@ export default function ReceptionistPage({
 }: {
   params: { id: number };
 }) {
+  const tCommon = useTranslations("Common");
+  const tPagesNavigation = useTranslations("PagesNavigation");
+  const tSpecificReceptionistPage = useTranslations("SpecificReceptionistPage");
   const router = useRouter();
   const { receptionist, setReceptionist, loadingReceptionist } =
     useFetchReceptionist(params.id);
@@ -43,14 +47,14 @@ export default function ReceptionistPage({
       setEditedReceptionist(
         convertReceptionistResponseToReceptionistRequest(data)
       );
-      notifySuccess("Редагування інформації про реєстратора успішне!");
+      notifySuccess(tSpecificReceptionistPage("toasts.edit_success"));
     } catch (error) {
       if (receptionist) {
         setEditedReceptionist(
           convertReceptionistResponseToReceptionistRequest(receptionist)
         );
       }
-      notifyError("При редагуванні сталася непередбачена помилка!");
+      notifyError(tSpecificReceptionistPage("toasts.edit_error"));
     } finally {
       setEditing(false);
     }
@@ -60,9 +64,9 @@ export default function ReceptionistPage({
     try {
       const data = await ReceptionistService.deleteReceptionist(params.id);
       router.push("/receptionists");
-      notifySuccess("Реєстратор був успішно видалений!");
+      notifySuccess(tSpecificReceptionistPage("toasts.delete_success"));
     } catch (error) {
-      notifyError("При видаленні реєстратора сталася непередбачена помилка!");
+      notifyError(tSpecificReceptionistPage("toasts.delete_error"));
     } finally {
       setShowDeleteModal(false);
     }
@@ -109,46 +113,62 @@ export default function ReceptionistPage({
           <Breadcrumb>
             <Link href="/" passHref legacyBehavior>
               <Breadcrumb.Item className="link">
-                Домашня сторінка
+                {tPagesNavigation("home_page")}
               </Breadcrumb.Item>
             </Link>
             <Link href="/receptionists" passHref legacyBehavior>
-              <Breadcrumb.Item className="link">Реєстратори</Breadcrumb.Item>
+              <Breadcrumb.Item className="link">
+                {tPagesNavigation("receptionists")}
+              </Breadcrumb.Item>
             </Link>
             <Breadcrumb.Item active>
-              Інформація про реєстратора #{params.id}
+              {tSpecificReceptionistPage("breadcrumb_active_page", {
+                id: params.id,
+              })}
             </Breadcrumb.Item>
           </Breadcrumb>
           <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
             <Modal.Header closeButton>
-              <Modal.Title>Видалення реєстратора</Modal.Title>
+              <Modal.Title>
+                {tSpecificReceptionistPage("receptionist_delete_dialog.title")}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>Ви впевнені що хочете видалити реєстратора?</p>
+              <p>
+                {tSpecificReceptionistPage("receptionist_delete_dialog.text")}
+              </p>
               <p>
                 <i>
-                  Ви не сможете відновити інформацію про реєстратора після
-                  підтвердження видалення!
+                  {tSpecificReceptionistPage(
+                    "receptionist_delete_dialog.warning"
+                  )}
                 </i>
               </p>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                Скасувати
+                {tCommon("action_cancel_button_label")}
               </Button>
               <Button variant="danger" onClick={deleteReceptionist}>
-                Видалити реєстратора
+                {tSpecificReceptionistPage(
+                  "receptionist_delete_dialog.confirm_button_label"
+                )}
               </Button>
             </Modal.Footer>
           </Modal>
           <Card>
-            <Card.Header>Реєстратор</Card.Header>
+            <Card.Header>
+              {tSpecificReceptionistPage("receptionist_card_header")}
+            </Card.Header>
             <Card.Body>
               <Form onSubmit={handleEditFormSubmit}>
                 <fieldset disabled={!editing}>
                   <Row className="mb-3">
                     <Form.Group as={Col} controlId="formGridSurname">
-                      <Form.Label>Прізвище</Form.Label>
+                      <Form.Label>
+                        {" "}
+                        {tCommon("personal_data.surname")}
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={editedReceptionist.surname ?? ""}
@@ -157,7 +177,7 @@ export default function ReceptionistPage({
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridName">
-                      <Form.Label>{`Ім'я`}</Form.Label>
+                      <Form.Label> {tCommon("personal_data.name")}</Form.Label>
                       <Form.Control
                         type="text"
                         value={editedReceptionist.name ?? ""}
@@ -166,7 +186,9 @@ export default function ReceptionistPage({
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridMiddleName">
-                      <Form.Label>По батькові</Form.Label>
+                      <Form.Label>
+                        {tCommon("personal_data.middle_name")}
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={editedReceptionist.middleName ?? ""}
@@ -176,7 +198,9 @@ export default function ReceptionistPage({
                     </Form.Group>
                   </Row>
                   <Form.Group controlId="formGridBirthDate" className="mb-3">
-                    <Form.Label>Дата народження</Form.Label>
+                    <Form.Label>
+                      {tCommon("personal_data.birth_date")}
+                    </Form.Label>
                     <Form.Control
                       type="date"
                       value={
@@ -206,7 +230,7 @@ export default function ReceptionistPage({
                   hidden={!editing}
                   id="confirmEdit"
                 >
-                  Зберегти
+                  {tCommon("action_save_button_label")}
                 </Button>
                 <Button
                   variant="secondary"
@@ -215,7 +239,7 @@ export default function ReceptionistPage({
                   hidden={!editing}
                   onClick={handleCancelEdit}
                 >
-                  Скасувати
+                  {tCommon("action_cancel_button_label")}
                 </Button>
                 <Button
                   variant="danger"
@@ -232,11 +256,10 @@ export default function ReceptionistPage({
         </>
       ) : (
         <Alert variant="danger">
-          <Alert.Heading>Ууупсс...</Alert.Heading>
-          <p>
-            При виконанні запиту виникла помилка або запитуваного реєстратора не
-            існує
-          </p>
+          <Alert.Heading>
+            {tSpecificReceptionistPage("error_alert.header")}
+          </Alert.Heading>
+          <p>{tSpecificReceptionistPage("error_alert.text")}</p>
         </Alert>
       )}
     </>

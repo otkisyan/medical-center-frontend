@@ -6,8 +6,10 @@ import { useAuth } from "@/shared/context/UserContextProvider";
 import { Alert } from "react-bootstrap";
 import { InputGroup } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -30,6 +32,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(username, password);
+      router.push("/patients");
     } catch (error) {
       setLoading(false);
       setError(true);
@@ -37,9 +40,6 @@ export default function LoginPage() {
       if (!error) {
         let loadingTimer = setTimeout(() => setLoading(false), 1000);
       }
-    }
-    if (!localStorage.getItem("access_token")) {
-      setLoading(false);
     }
   };
 

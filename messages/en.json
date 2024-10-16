@@ -112,6 +112,14 @@
       "error_fetching_offics": "An unexpected error occurred while executing an office query"
     }
   },
+  "ReceptionistsPage": {
+    "new_receptionist_link_label": "New receptionist →",
+    "alerts": {
+      "no_receptionists_found": "No receptionists were found according to the specified criteria",
+      "no_receptionists": "No receptionists have been added yet",
+      "error_fetching_receptionists": "An unexpected error occurred while executing a receptionists query"
+    }
+  },
   "AppointmentsPage": {
     "alerts": {
       "no_appointments_found": "No appointments were found according to the specified criteria",
@@ -155,6 +163,26 @@
     "error_alert": {
       "header": "Ooopss...",
       "text": "An error occurred while executing the request or the requested patient does not exist"
+    }
+  },
+  "SpecificReceptionistPage": {
+    "breadcrumb_active_page": "Information about receptionist #{id}",
+    "receptionist_card_header": "Receptionist",
+    "receptionist_delete_dialog": {
+      "title": "Deleting a receptionist",
+      "text": "Are you sure you want to delete a receptionist?",
+      "warning": "You will not be able to restore receptionist information after confirming deletion!",
+      "confirm_button_label": "Delete receptionist"
+    },
+    "toasts": {
+      "edit_success": "Editing receptionist information is successful!",
+      "edit_error": "An unexpected error occurred while editing receptionist information!",
+      "delete_success": "The receptionist was successfully deleted!",
+      "delete_error": "An unexpected error occurred while deleting a receptionist!"
+    },
+    "error_alert": {
+      "header": "Ooopss...",
+      "text": "An error occurred while executing the request or the requested receptionist does not exist"
     }
   },
   "SpecificOfficePage": {
