@@ -7,13 +7,15 @@ import {
 import { hasSufficientRole } from "@/shared/utils/auth-utils";
 import { Role } from "./shared/enum/role";
 
+const API_BASE_URL_SERVER = process.env.NEXT_PUBLIC_API_BASE_URL_SERVER;
+
 const isAuthenticated = async (request: NextRequest) => {
   const refreshToken = request.cookies.get("refreshToken");
   if (!refreshToken) {
     return false;
   }
   try {
-    const response = await fetch("http://localhost:8080/user/validate", {
+    const response = await fetch(`${API_BASE_URL_SERVER}/user/validate`, {
       method: "GET",
       cache: "no-store",
       headers: {
@@ -38,7 +40,7 @@ const getUserRoles = async (request: NextRequest) => {
     return null;
   }
   try {
-    const response = await fetch("http://localhost:8080/user/details", {
+    const response = await fetch(`${API_BASE_URL_SERVER}/user/details`, {
       method: "GET",
       cache: "no-store",
       headers: {

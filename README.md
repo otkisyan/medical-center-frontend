@@ -1,6 +1,14 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1 align="center">
+Medical Center Reception Management Frontend
+</h1>
 
-## Getting Started
+<p align="center">
+A fast and responsive user experience tailored to the needs of medical center staff. It streamlines workflows for managing patients, doctors, work schedules, doctor's offices, and appointments. Built with TypeScript, React, and Next.js, it utilizes React Bootstrap for a modern UI and next-intl for Ukrainian and English language support.
+</p>
+
+## Overview
+
+This frontend application is designed to work seamlessly with the [Medical Center API](https://github.com/otkisyan/medical-center-api)
 
 First, run the development server:
 

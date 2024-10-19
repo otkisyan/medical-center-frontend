@@ -2,12 +2,12 @@ import axios from "axios";
 
 export const axiosInstance = axios.create({
   withCredentials: true,
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL_CLIENT,
 });
 
 export const noInterceptorsAxiosInstance = axios.create({
   withCredentials: true,
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL_CLIENT,
 });
 
 axiosInstance.interceptors.request.use((config) => {
