@@ -620,6 +620,7 @@ export default function TimeTablePage() {
           currentDate={currentDate}
           onNavigate={(newDate) => setCurrentDate(newDate)}
           onSelectSlot={handleSlotSelect}
+          selectable={!!patientId}
         />
       ) : (
         <>

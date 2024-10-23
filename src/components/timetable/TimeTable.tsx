@@ -22,6 +22,7 @@ interface TimeTableProps {
   currentDate: Date;
   onNavigate: (newDate: Date) => void;
   onSelectSlot: (slotInfo: SlotInfo) => void;
+  selectable: boolean;
 }
 
 const TimeTable: React.FC<TimeTableProps> = ({
@@ -30,6 +31,7 @@ const TimeTable: React.FC<TimeTableProps> = ({
   currentDate,
   onNavigate,
   onSelectSlot,
+  selectable
 }) => {
   const locale = useLocale();
   const [conflictedEvents, setConflictedEvents] = useState<number[]>([]);
@@ -142,7 +144,7 @@ const TimeTable: React.FC<TimeTableProps> = ({
       endAccessor="end"
       style={{ height: 600 }}
       slotPropGetter={slotPropGetter}
-      selectable={timeTable ? true : false}
+      selectable={timeTable && selectable ? true : false}
       onSelectEvent={(event) => {
         window.open(`/appointments/${event.id}`, "_blank");
       }}

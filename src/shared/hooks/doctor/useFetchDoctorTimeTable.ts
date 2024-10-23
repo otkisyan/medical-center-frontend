@@ -50,7 +50,7 @@ export default function useFetchDoctorTimeTable(
       if (doctorId) {
         fetchTimeTable(doctorId, params);
       }
-    }, 3000);
+    }, 5000);
 
     return () => {
       clearInterval(interval);
