@@ -79,8 +79,8 @@
     }
   },
   "LocaleSwitcher": {
-    "ua": "Українська",
-    "en": "English",
+    "uk": "Українська",
+    "en-GB": "English",
     "language_label": "Мова"
   },
   "HomePage": {
@@ -278,7 +278,8 @@
       }
     },
     "alerts": {
-      "no_workschedule": "Лікар не має графіку роботи на обрану дату!",
+      "error_fetching_timetable": "При запиті на розклад роботи лікаря сталася непередбачена помилка",
+      "no_workschedule": "Графік роботи на обрану дату відсутній!",
       "doctor_no_workschedule": "Ви не маєте графіку роботи на обрану дату!"
     },
     "toasts": {
@@ -298,7 +299,16 @@
   "Timetable": {
     "time_header": "Час",
     "appointment_header": "Прийом",
-    "status_free": "Вільно"
+    "status_free": "Вільно",
+    "week": "Тиждень",
+    "work_week": "Робочий тиждень",
+    "day": "День",
+    "month": "Місяць",
+    "previous": "Попередній",
+    "next": "Наступний",
+    "today": "Сьогодні",
+    "agenda": "Порядок денний",
+    "showMore": "+{total} ще"
   },
   "DoctorSelect": {
     "placeholder": "Оберіть лікаря",

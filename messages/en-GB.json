@@ -79,8 +79,8 @@
     }
   },
   "LocaleSwitcher": {
-    "ua": "Українська",
-    "en": "English",
+    "uk": "Українська",
+    "en-GB": "English",
     "language_label": "Language"
   },
   "HomePage": {
@@ -278,11 +278,12 @@
       }
     },
     "alerts": {
-      "no_workschedule": "The doctor does not have a work schedule for the selected date!",
+      "no_workschedule": "There is no work schedule for the selected date!",
       "doctor_no_workschedule": "You do not have a work schedule for the selected date!"
     },
     "toasts": {
       "success": {
+        "error_fetching_timetable": "An unexpected error occurred when requesting a doctor's time table",
         "new_appointment": "A new appointment has been successfully scheduled!",
         "reschedule_appointment": "The appointment has been successfully rescheduled!"
       },
@@ -298,7 +299,16 @@
   "Timetable": {
     "time_header": "Time",
     "appointment_header": "Appointment",
-    "status_free": "Free"
+    "status_free": "Free",
+    "week": "Week",
+    "work_week": "Work Week",
+    "day": "Day",
+    "month": "Month",
+    "previous": "Back",
+    "next": "Next",
+    "today": "Today",
+    "agenda": "Agenda",
+    "showMore": "+{total} more"
   },
   "DoctorSelect": {
     "placeholder": "Choose a doctor",

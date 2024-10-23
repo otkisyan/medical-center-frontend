@@ -13,9 +13,10 @@ import useFetchPatient from "@/shared/hooks/patients/useFetchPatient";
 import { AppointmentService } from "@/shared/service/appointment-service";
 import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 import { formatDateToHtml5 } from "@/shared/utils/date-utils";
+import moment from "moment";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -29,6 +30,7 @@ import {
 } from "react-bootstrap";
 
 export default function TimeTablePage() {
+  const router = useRouter();
   const tCommon = useTranslations("Common");
   const tNavigation = useTranslations("PagesNavigation");
   const tTimetablePage = useTranslations("TimetablePage");
@@ -62,6 +64,18 @@ export default function TimeTablePage() {
   );
   const [defaultDoctorOption, setDefaultDoctorOption] = useState<any>(null);
   const selectDoctorRef = useRef<any>();
+  const [showSpinner, setShowSpinner] = useState(false);
+
+  useEffect(() => {
+    if (loadingTimeTable) {
+      const timer = setTimeout(() => {
+        setShowSpinner(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowSpinner(false);
+    }
+  }, [loadingTimeTable]);
 
   const generateDefaultDoctorOption = useCallback(() => {
     if (doctor) {
@@ -166,6 +180,16 @@ export default function TimeTablePage() {
   const handleCloseAppointmentModal = () => setShowAppointmentModal(false);
   const handleShowAppointmentModal = () => setShowAppointmentModal(true);
 
+  const handleSlotSelect = (slotInfo: { start: Date; end: Date }) => {
+    const timeStart = moment(slotInfo.start).format("HH:mm");
+    const timeEnd = moment(slotInfo.end).format("HH:mm");
+    setAppointmentTime({
+      timeStart,
+      timeEnd,
+    });
+    handleShowAppointmentModal();
+  };
+
   const handleChangeAppointmentTime = (event: any) => {
     const { name, value } = event.target;
     setAppointmentTime((prevAppointmentTime: any) => ({
@@ -269,6 +293,7 @@ export default function TimeTablePage() {
         fetchTimeTable(doctorId, { date: formatDateToHtml5(currentDate) });
         setAppointmentTime(appointmentTimeInitialState);
         notifySuccess(tTimetablePage("toasts.success.reschedule_appointment"));
+        router.push(`/appointments/${appointment.id}`);
       } catch (error: any) {
         const errorMessage = error.response.data.message;
         if (error.response && error.response.status === 409) {
@@ -586,22 +611,30 @@ export default function TimeTablePage() {
           </Button>
         </Col>
       </Row>
-      {loadingTimeTable ? (
+      {showSpinner ? (
         <SpinnerCenter />
-      ) : timeTable !== null ? (
-        <TimeTable timeTable={timeTable} appointment={appointment} />
+      ) : (doctorId && timeTable) || error?.status == 404 ? (
+        <TimeTable
+          timeTable={timeTable}
+          appointment={appointment}
+          currentDate={currentDate}
+          onNavigate={(newDate) => setCurrentDate(newDate)}
+          onSelectSlot={handleSlotSelect}
+        />
       ) : (
         <>
-          {doctorId && error ? (
-            <Alert
-              variant="danger"
-              className="text-center mx-auto"
-              style={{ maxWidth: "400px" }}
-            >
-              {isDoctor
-                ? tTimetablePage("alerts.doctor_no_workschedule")
-                : tTimetablePage("alerts.no_workschedule")}
-            </Alert>
+          {doctorId && error && !timeTable && error?.status != 404 ? (
+            <>
+              {
+                <Alert
+                  variant="danger"
+                  className="text-center mx-auto"
+                  style={{ maxWidth: "400px" }}
+                >
+                  {tTimetablePage("alerts.error_fetching_timetable")}
+                </Alert>
+              }
+            </>
           ) : null}
         </>
       )}

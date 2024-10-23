@@ -9,7 +9,7 @@ export default function useFetchDoctorTimeTable(
 ) {
   const [timeTable, setTimeTable] = useState<TimeSlotResponse[] | null>(null);
   const [loadingTimeTable, setLoadingTimeTable] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<any | null>(null);
   const params = useMemo(
     () => ({
       date: formatDateToHtml5(date),
@@ -24,11 +24,13 @@ export default function useFetchDoctorTimeTable(
       setTimeTable(data);
       setError(null);
     } catch (error: any) {
-      const errorResponseDataMessage = error.response?.data?.message;
-      if (errorResponseDataMessage) {
-        setError(errorResponseDataMessage);
+      if (error.response) {
+        setError({
+          message: error.response.message,
+          status: error.response.status,
+        });
       } else {
-        setError(error.message);
+        setError(error);
       }
       setTimeTable(null);
       console.error("Error fetching timetable:", error);
@@ -43,6 +45,16 @@ export default function useFetchDoctorTimeTable(
     } else {
       setLoadingTimeTable(false);
     }
+
+    const interval = setInterval(() => {
+      if (doctorId) {
+        fetchTimeTable(doctorId, params);
+      }
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [fetchTimeTable, doctorId, params]);
 
   return { timeTable, loadingTimeTable, fetchTimeTable, setTimeTable, error };
