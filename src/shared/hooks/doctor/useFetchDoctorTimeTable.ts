@@ -17,27 +17,38 @@ export default function useFetchDoctorTimeTable(
     [date]
   );
 
-  const fetchTimeTable = useCallback(async (id: number, params: any) => {
-    try {
-      setLoadingTimeTable(true);
-      const data = await AppointmentService.getTimeTable(id, params);
-      setTimeTable(data);
-      setError(null);
-    } catch (error: any) {
-      if (error.response) {
-        setError({
-          message: error.response.message,
-          status: error.response.status,
-        });
-      } else {
-        setError(error);
+  const fetchTimeTable = useCallback(
+    async (id: number, params: any) => {
+      let loadingTimer: NodeJS.Timeout | undefined;
+      try {
+        loadingTimer = setTimeout(() => {
+          setLoadingTimeTable(true);
+        }, 1000);
+        const data = await AppointmentService.getTimeTable(id, params);
+        if (JSON.stringify(data) !== JSON.stringify(timeTable)) {
+          setError(null);
+          setTimeTable(data);
+        }
+      } catch (error: any) {
+        if (error.response) {
+          setError({
+            message: error.response.message,
+            status: error.response.status,
+          });
+        } else {
+          setError(error);
+        }
+        setTimeTable(null);
+        console.error("Error fetching timetable:", error);
+      } finally {
+        if (loadingTimer) {
+          clearTimeout(loadingTimer);
+        }
+        setLoadingTimeTable(false);
       }
-      setTimeTable(null);
-      console.error("Error fetching timetable:", error);
-    } finally {
-      setLoadingTimeTable(false);
-    }
-  }, []);
+    },
+    [timeTable]
+  );
 
   useEffect(() => {
     if (doctorId) {
@@ -50,7 +61,7 @@ export default function useFetchDoctorTimeTable(
       if (doctorId) {
         fetchTimeTable(doctorId, params);
       }
-    }, 5000);
+    }, 3000);
 
     return () => {
       clearInterval(interval);

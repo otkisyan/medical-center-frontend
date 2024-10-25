@@ -17,7 +17,7 @@ import moment from "moment";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   Breadcrumb,
@@ -65,6 +65,8 @@ export default function TimeTablePage() {
   const [defaultDoctorOption, setDefaultDoctorOption] = useState<any>(null);
   const selectDoctorRef = useRef<any>();
   const [showSpinner, setShowSpinner] = useState(false);
+
+  const memoizedTimeTableData = useMemo(() => timeTable, [timeTable]);
 
   useEffect(() => {
     if (loadingTimeTable) {
@@ -180,15 +182,24 @@ export default function TimeTablePage() {
   const handleCloseAppointmentModal = () => setShowAppointmentModal(false);
   const handleShowAppointmentModal = () => setShowAppointmentModal(true);
 
-  const handleSlotSelect = (slotInfo: { start: Date; end: Date }) => {
-    const timeStart = moment(slotInfo.start).format("HH:mm");
-    const timeEnd = moment(slotInfo.end).format("HH:mm");
-    setAppointmentTime({
-      timeStart,
-      timeEnd,
-    });
-    handleShowAppointmentModal();
-  };
+  const handleSlotSelect = useCallback(
+    (slotInfo: { start: Date; end: Date }) => {
+      const timeStart = moment(slotInfo.start).format("HH:mm");
+      const timeEnd = moment(slotInfo.end).format("HH:mm");
+
+      setAppointmentTime({
+        timeStart,
+        timeEnd,
+      });
+
+      handleShowAppointmentModal();
+    },
+    []
+  );
+
+  const onNavigate = useCallback((newDate: Date) => {
+    setCurrentDate(newDate);
+  }, []);
 
   const handleChangeAppointmentTime = (event: any) => {
     const { name, value } = event.target;
@@ -615,10 +626,10 @@ export default function TimeTablePage() {
         <SpinnerCenter />
       ) : (doctorId && timeTable) || error?.status == 404 ? (
         <TimeTable
-          timeTable={timeTable}
+          timeTable={memoizedTimeTableData}
           appointment={appointment}
           currentDate={currentDate}
-          onNavigate={(newDate) => setCurrentDate(newDate)}
+          onNavigate={onNavigate}
           onSelectSlot={handleSlotSelect}
           selectable={!!patientId}
         />

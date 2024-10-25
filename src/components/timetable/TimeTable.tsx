@@ -31,7 +31,7 @@ const TimeTable: React.FC<TimeTableProps> = ({
   currentDate,
   onNavigate,
   onSelectSlot,
-  selectable
+  selectable,
 }) => {
   const locale = useLocale();
   const [conflictedEvents, setConflictedEvents] = useState<number[]>([]);
