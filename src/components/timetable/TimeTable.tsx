@@ -90,7 +90,8 @@ const TimeTable: React.FC<TimeTableProps> = ({
 
   const slotPropGetter = () => {
     if (!timeTable) {
-      return { style: { backgroundColor: "#de5c52", color: "white" } }; // Make all slots red if timeTable is null
+      // Make all slots red if timeTable is null
+      return { style: { backgroundColor: "#de5c52", color: "white" } };
     }
     return {};
   };

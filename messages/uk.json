@@ -57,6 +57,7 @@
     "time": "Час",
     "patient": "Пацієнт",
     "doctor": "Лікар",
+    "receptionist": "Реєстратор",
     "office": {
       "label": "Кабінет",
       "name": "Назва кабінету",
@@ -141,6 +142,7 @@
     "specific_office": "Кабінет #{id}",
     "new_office": "Новий кабінет",
     "receptionists": "Реєстратори",
+    "new_receptionist": "Новий реєстратор",
     "specific_receptionist": "Реєстратор #{id}",
     "timetable": "Розклад",
     "user": "Обліковий запис"
@@ -335,6 +337,10 @@
       }
     }
   },
+  "NotFoundPage": {
+    "page_not_found_title": "Сторінка не знайдена",
+    "home_page_link_label": "На домашню сторінку →"
+  },
   "NewPatientPage": {
     "new_patient": {
       "card": {
@@ -374,6 +380,23 @@
     },
     "toasts": {
       "new_doctor_error": "При додаванні нового лікаря сталася непередбачувана помилка!"
+    }
+  },
+  "NewReceptionistPage": {
+    "new_receptionist": {
+      "card": {
+        "header": "Інформація про нового реєстратора"
+      },
+      "add_button_label": "Додати нового реєстратора",
+      "success_dialog": {
+        "header_title": "Реєстратора успішно зареєстровано!",
+        "warning_alert": "Тримайте у секреті! Нікому не повідомляйте ці облікові дані окрім самого реєстратора!",
+        "accept_button_label": "Зрозуміло",
+        "credentials_download_tooltip": "Завантажити облікові дані"
+      }
+    },
+    "toasts": {
+      "new_receptionist_error": "При додаванні нового реєстратора сталася непередбачувана помилка!"
     }
   }
 }

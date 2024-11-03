@@ -8,6 +8,7 @@ export async function generateMetadata() {
     title: t("new_patient"),
   };
 }
+
 export default function NewPatientLayout({
   children,
 }: {

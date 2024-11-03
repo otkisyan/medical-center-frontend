@@ -1,4 +1,3 @@
-// NewReceptionistPage
 "use client";
 import {
   ReceptionistRequest,
@@ -23,8 +22,13 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { saveAs } from "file-saver";
 import { RegisterSuccessCredentials } from "@/shared/interface/user/register-success-credentials-interface";
+import { useTranslations } from "next-intl";
 
 export default function NewReceptionistPage() {
+  const tPagesNavigation = useTranslations("PagesNavigation");
+  const tCommon = useTranslations("Common");
+  const tUser = useTranslations("User");
+  const tNewReceptionistPage = useTranslations("NewReceptionistPage");
   const router = useRouter();
 
   const [receptionist, setReceptionist] = useState<ReceptionistRequest>(
@@ -71,30 +75,33 @@ export default function NewReceptionistPage() {
       setReceptionist(initialReceptionistRequestState);
       handleShowReceptionistModal();
     } catch (error) {
-      notifyError(
-        "При додаванні нового реєстратора сталася непередбачувана помилка!"
-      );
+      notifyError(tNewReceptionistPage("toasts.new_receptionist_error"));
     }
   };
 
   const renderDownloadTooltip = (props: any) => (
     <Tooltip id="button-tooltip" {...props}>
-      Завантажити облікові дані
+      {tNewReceptionistPage(
+        "new_receptionist.success_dialog.credentials_download_tooltip"
+      )}
     </Tooltip>
   );
 
   const downloadReceptionistUserCredentials = () => {
     if (receptionistCredentials) {
       let data = {
-        Реєстратор: receptionistCredentials.fullName,
-        Логін: receptionistCredentials.userCredentials.username,
-        Пароль: receptionistCredentials.userCredentials.password,
+        [tCommon("receptionist")]: receptionistCredentials.fullName,
+        [tUser("login")]: receptionistCredentials.userCredentials.username,
+        [tUser("password")]: receptionistCredentials.userCredentials.password,
       };
       const jsonReceptionistCredentials = JSON.stringify(data, null, 4);
       let blob = new Blob([jsonReceptionistCredentials], {
         type: "text/plain;charset=utf-8",
       });
-      saveAs(blob, `Реєстратор - ${receptionistCredentials.fullName}`);
+      saveAs(
+        blob,
+        `${tCommon("receptionist")} - ${receptionistCredentials.fullName}`
+      );
     }
   };
 
@@ -103,12 +110,14 @@ export default function NewReceptionistPage() {
       <br></br>
       <Breadcrumb>
         <Breadcrumb.Item href="/" className="link">
-          Домашня сторінка
+          {tPagesNavigation("home_page")}
         </Breadcrumb.Item>
         <Breadcrumb.Item href="/receptionists" className="link">
-          Реєстратор
+          {tPagesNavigation("receptionists")}
         </Breadcrumb.Item>
-        <Breadcrumb.Item active>Новий реєстратор</Breadcrumb.Item>
+        <Breadcrumb.Item active>
+          {tPagesNavigation("new_receptionist")}
+        </Breadcrumb.Item>
       </Breadcrumb>
       <Card>
         {receptionistCredentials && (
@@ -119,11 +128,15 @@ export default function NewReceptionistPage() {
             keyboard={false}
           >
             <Modal.Header closeButton>
-              <Modal.Title>Реєстратора успішно зареєстровано!</Modal.Title>
+              <Modal.Title>
+                {tNewReceptionistPage(
+                  "new_receptionist.success_dialog.header_title"
+                )}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form.Group className="mb-3" controlId="receptionistResponse">
-                <Form.Label>Реєстратор</Form.Label>
+                <Form.Label>{tCommon("receptionist")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={receptionistCredentials.fullName}
@@ -134,7 +147,7 @@ export default function NewReceptionistPage() {
                 className="mb-3"
                 controlId="receptionistResponseLogin"
               >
-                <Form.Label>Логін</Form.Label>
+                <Form.Label>{tUser("login")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={receptionistCredentials.userCredentials.username}
@@ -145,7 +158,7 @@ export default function NewReceptionistPage() {
                 className="mb-3"
                 controlId="receptionistResponseLogin"
               >
-                <Form.Label>Пароль</Form.Label>
+                <Form.Label>{tUser("password")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={receptionistCredentials.userCredentials.password}
@@ -153,8 +166,9 @@ export default function NewReceptionistPage() {
                 />
               </Form.Group>
               <Alert variant="danger">
-                Тримайте у секреті! Нікому не повідомляйте ці облікові дані
-                окрім самого реєстратора!
+                {tNewReceptionistPage(
+                  "new_receptionist.success_dialog.warning_alert"
+                )}
               </Alert>
             </Modal.Body>
             <Modal.Footer>
@@ -176,17 +190,21 @@ export default function NewReceptionistPage() {
                   router.push(`/receptionists/${receptionistCredentials?.id}`);
                 }}
               >
-                Зрозуміло
+                {tNewReceptionistPage(
+                  "new_receptionist.success_dialog.accept_button_label"
+                )}
               </Button>
             </Modal.Footer>
           </Modal>
         )}
-        <Card.Header>Інформація про нового реєстратора</Card.Header>
+        <Card.Header>
+          {tNewReceptionistPage("new_receptionist.card.header")}
+        </Card.Header>
         <Card.Body>
           <Form onSubmit={handleNewReceptionistFormSubmit}>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridSurname">
-                <Form.Label>Прізвище</Form.Label>
+                <Form.Label>{tCommon("personal_data.surname")}</Form.Label>
                 <Form.Control
                   type="text"
                   required
@@ -196,7 +214,7 @@ export default function NewReceptionistPage() {
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridName">
-                <Form.Label>{`Ім'я`}</Form.Label>
+                <Form.Label>{tCommon("personal_data.name")}</Form.Label>
                 <Form.Control
                   type="text"
                   required
@@ -206,7 +224,7 @@ export default function NewReceptionistPage() {
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridMiddleName">
-                <Form.Label>По батькові</Form.Label>
+                <Form.Label>{tCommon("personal_data.middle_name")}</Form.Label>
                 <Form.Control
                   type="text"
                   required
@@ -217,7 +235,7 @@ export default function NewReceptionistPage() {
               </Form.Group>
             </Row>
             <Form.Group controlId="formGridBirthDate" className="mb-3">
-              <Form.Label>Дата народження</Form.Label>
+              <Form.Label>{tCommon("personal_data.birth_date")}</Form.Label>
               <Form.Control
                 type="date"
                 required
@@ -236,7 +254,7 @@ export default function NewReceptionistPage() {
               type="submit"
               id="confirmAddNewReceptionist"
             >
-              Додати нового реєстратора
+              {tNewReceptionistPage("new_receptionist.add_button_label")}
             </Button>
           </Form>
         </Card.Body>

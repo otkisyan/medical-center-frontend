@@ -57,6 +57,7 @@
     "time": "Time",
     "patient": "Patient",
     "doctor": "Doctor",
+    "receptionist": "Receptionist",
     "office": {
       "label": "Office",
       "name": "Office name",
@@ -141,6 +142,7 @@
     "specific_office": "Office #{id}",
     "new_office": "New Office",
     "receptionists": "Receptionists",
+    "new_receptionist": "New Receptionist",
     "specific_receptionist": "Receptionist #{id}",
     "timetable": "Timetable",
     "user": "My Account"
@@ -335,6 +337,10 @@
       }
     }
   },
+  "NotFoundPage": {
+    "page_not_found_title": "Page not found",
+    "home_page_link_label": "To the home page →"
+  },
   "NewPatientPage": {
     "new_patient": {
       "card": {
@@ -374,6 +380,23 @@
     },
     "toasts": {
       "new_doctor_error": "An unexpected error occurred while adding a new doctor!"
+    }
+  },
+  "NewReceptionistPage": {
+    "new_receptionist": {
+      "card": {
+        "header": "Information about new receptionist"
+      },
+      "add_button_label": "Add new receptionist",
+      "success_dialog": {
+        "header_title": "A new receptionist has been successfully registered!",
+        "warning_alert": "Keep it a secret! Do not disclose these credentials to anyone except the receptionist!",
+        "accept_button_label": "Understood",
+        "credentials_download_tooltip": "Download credentials"
+      }
+    },
+    "toasts": {
+      "new_receptionist_error": "An unexpected error occurred while adding a new receptionist!"
     }
   }
 }

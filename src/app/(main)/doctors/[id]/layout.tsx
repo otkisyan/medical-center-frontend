@@ -7,6 +7,7 @@ export async function generateMetadata({ params }: { params: { id: number } }) {
     title: t("specific_doctor", { id: params.id }),
   };
 }
+
 export default function DoctorLayout({
   children,
 }: {

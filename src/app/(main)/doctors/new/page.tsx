@@ -95,15 +95,15 @@ export default function NewDoctorPage() {
   const downloadDoctorUserCredentials = () => {
     if (doctorCredentials) {
       let data = {
-        Лікар: doctorCredentials.fullName,
-        Логін: doctorCredentials.userCredentials.username,
-        Пароль: doctorCredentials.userCredentials.password,
+        [tCommon("doctor")]: doctorCredentials.fullName,
+        [tUser("login")]: doctorCredentials.userCredentials.username,
+        [tUser("password")]: doctorCredentials.userCredentials.password,
       };
       const jsonDoctorCredentials = JSON.stringify(data, null, 4);
       let blob = new Blob([jsonDoctorCredentials], {
         type: "text/plain;charset=utf-8",
       });
-      saveAs(blob, `Лікар - ${doctorCredentials.fullName}`);
+      saveAs(blob, `${tCommon("doctor")} - ${doctorCredentials.fullName}`);
     }
   };
 
@@ -118,7 +118,6 @@ export default function NewDoctorPage() {
           {tPagesNavigation("doctors")}
         </Breadcrumb.Item>
         <Breadcrumb.Item active>
-          {" "}
           {tPagesNavigation("new_doctor")}
         </Breadcrumb.Item>
       </Breadcrumb>

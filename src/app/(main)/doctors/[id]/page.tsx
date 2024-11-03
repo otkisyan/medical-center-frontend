@@ -189,7 +189,9 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
         const updatedWorkSchedule =
           await WorkScheduleService.updateWorkSchedule(id, editedWorkSchedule);
         updatedWorkSchedules.push(updatedWorkSchedule);
-      } catch (error) {}
+      } catch (error) {
+        throw error;
+      }
     }
 
     return updatedWorkSchedules;
@@ -205,7 +207,6 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
         const updatedWorkSchedules = await updateAllWorkSchedules(
           editedDoctorWorkSchedules
         );
-        console.log(updatedWorkSchedules);
         setDoctorWorkSchedules(updatedWorkSchedules);
         notifySuccess(tSpecificDoctorPage("toasts.work_schedule.edit_success"));
       } catch (error) {
