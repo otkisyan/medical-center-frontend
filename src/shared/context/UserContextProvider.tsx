@@ -80,6 +80,7 @@ export const UserContextProvider = ({
     localStorage.removeItem("access_token");
     try {
       const res = await UserService.loginUser(username, password);
+
       if (res) {
         const accessToken = res?.data.accessToken;
         let decodedToken = undefined;

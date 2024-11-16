@@ -7,13 +7,15 @@ import { Alert } from "react-bootstrap";
 import { InputGroup } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
+  const tLoginPage = useTranslations("LoginPage");
   const router = useRouter();
   const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [validated, setValidated] = useState(false);
@@ -24,18 +26,26 @@ export default function LoginPage() {
     if (form.checkValidity() === false) {
       event.stopPropagation();
       setValidated(true);
-      setError(false);
+      setError(null);
       return;
     }
     setValidated(true);
-    setError(false);
+    setError(null);
     setLoading(true);
     try {
       await login(username, password);
-      router.push("/patients");
-    } catch (error) {
+      router.push("/");
+    } catch (error: any) {
+      if (error.response && error.response.status == 401) {
+        setError(tLoginPage("alerts.error.invalid_credentials"));
+      }
+      if (
+        (error.response && error.response.status !== 401) ||
+        !error.response
+      ) {
+        setError(tLoginPage("alerts.error.unexpected"));
+      }
       setLoading(false);
-      setError(true);
     } finally {
       if (!error) {
         let loadingTimer = setTimeout(() => setLoading(false), 1000);
@@ -46,7 +56,7 @@ export default function LoginPage() {
   return (
     <>
       <br></br>
-      <h1 className="text-center">Авторизація</h1>
+      <h1 className="text-center">{tLoginPage("title")}</h1>
       <br></br>
       {loading ? (
         <>
@@ -59,14 +69,16 @@ export default function LoginPage() {
         </>
       ) : (
         <>
-          <Alert
-            variant={"danger"}
-            hidden={!error}
-            className="text-center mx-auto"
-            style={{ maxWidth: "400px" }}
-          >
-            Неправильний логін або пароль!
-          </Alert>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Alert
+              variant={"danger"}
+              hidden={!error}
+              className="text-center mx-auto"
+              style={{ display: "inline-block" }}
+            >
+              {error}
+            </Alert>
+          </div>
         </>
       )}
       <div className="login-page mx-auto" style={{ maxWidth: "300px" }}>
@@ -78,7 +90,7 @@ export default function LoginPage() {
               </InputGroup.Text>
               <Form.Control
                 type="text"
-                placeholder="Логін"
+                placeholder={tLoginPage("username")}
                 aria-label="Username"
                 aria-describedby="basic-addon1"
                 value={username}
@@ -94,7 +106,7 @@ export default function LoginPage() {
               </InputGroup.Text>
               <Form.Control
                 type={showPassword ? "text" : "password"}
-                placeholder="Пароль"
+                placeholder={tLoginPage("password")}
                 value={password}
                 required
                 isInvalid={validated && !password}
@@ -118,7 +130,7 @@ export default function LoginPage() {
                 className="text-center"
                 disabled={!username || !password}
               >
-                Увійти
+                {tLoginPage("login_submit_button_label")}
               </Button>
             </div>
           </fieldset>

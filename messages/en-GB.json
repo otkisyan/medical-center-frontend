@@ -398,5 +398,17 @@
     "toasts": {
       "new_receptionist_error": "An unexpected error occurred while adding a new receptionist!"
     }
+  },
+  "LoginPage": {
+    "title": "Log In",
+    "username": "Username",
+    "password": "Password",
+    "login_submit_button_label": "Log In",
+    "alerts": {
+      "error": {
+        "invalid_credentials": "Wrong login or password!",
+        "unexpected": "An unexpected error occurred while trying to log in!"
+      }
+    }
   }
 }

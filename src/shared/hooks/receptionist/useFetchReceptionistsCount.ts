@@ -10,7 +10,7 @@ const useFetchReceptionistsCount = () => {
     try {
       setLoadingReceptionistsCount(true);
       const count = await ReceptionistService.countReceptionists();
-      setReceptionistsCount(0);
+      setReceptionistsCount(count);
     } catch (error) {
       console.error("Error fetching receptionists count:", error);
     } finally {

@@ -398,5 +398,17 @@
     "toasts": {
       "new_receptionist_error": "При додаванні нового реєстратора сталася непередбачувана помилка!"
     }
+  },
+  "LoginPage": {
+    "title": "Авторизація",
+    "username": "Логін",
+    "password": "Пароль",
+    "login_submit_button_label": "Увійти",
+    "alerts": {
+      "error": {
+        "invalid_credentials": "Неправильний логін або пароль!",
+        "unexpected": "При спробі авторизації сталася непередбачувана помилка!"
+      }
+    }
   }
 }
