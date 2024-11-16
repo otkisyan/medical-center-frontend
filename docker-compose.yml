@@ -1,0 +1,17 @@
+networks:
+  medical-center-network:
+    name: medical-center-network
+    external: true
+
+services:
+  medical-center-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NEXT_PUBLIC_API_BASE_URL_CLIENT: $NEXT_PUBLIC_API_BASE_URL_CLIENT
+      NEXT_PUBLIC_API_BASE_URL_SERVER: $NEXT_PUBLIC_API_BASE_URL_SERVER
+    ports:
+      - "3001:3001"
+    networks:
+      - medical-center-network

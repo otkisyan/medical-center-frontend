@@ -1,0 +1,417 @@
+{
+  "User": {
+    "roles": {
+      "doctor": "Лікар",
+      "receptionist": "Реєстратор",
+      "admin": "Адміністратор"
+    },
+    "login": "Логін",
+    "password": "Пароль"
+  },
+  "UserPage": {
+    "security_label": "Безпека",
+    "settings_label": "Налаштування",
+    "change_password_button_label": "Змінити пароль",
+    "login_label": "Логін",
+    "role_label": "Роль",
+    "change_password_dialog": {
+      "dialog_label": "Зміна паролю",
+      "current_password": "Поточний пароль",
+      "new_password": "Новий пароль",
+      "confirm_password": "Підтвердження паролю",
+      "confirm_password_tip": "У поле \"Підтвердження паролю\" введіть той самий пароль який ви ввели у поле \"Новий пароль\"",
+      "confirm_button_label": "Змінити пароль"
+    },
+    "toasts": {
+      "change_password_success": "Пароль від облікового запису успішно змінено!",
+      "current_password_incorrect": "Поточний пароль не співпадає з реальним!",
+      "confirm_password_incorrect": "Підтвердження паролю не співпадає з новим паролем!"
+    }
+  },
+  "Common": {
+    "action_cancel_button_label": "Скасувати",
+    "action_save_button_label": "Зберегти",
+    "action_label": "Дія",
+    "loading": "Завантаження...",
+    "search": {
+      "button_label": "Пошук",
+      "clear_button_label": "Очистити пошук"
+    },
+    "personal_data": {
+      "surname": "Прізвище",
+      "name": "Ім'я",
+      "middle_name": "По батькові",
+      "birth_date": "Дата народження",
+      "phone": "Номер телефону",
+      "messenger_contact": "Контактний номер Viber/Telegram",
+      "address": "Домашня адреса",
+      "preferential_category": "Пільгова категорія",
+      "doctor": {
+        "medical_specialty": "Медична спеціальність",
+        "medical_specialty_short": "Спеціальність",
+        "qualification_category": "Кваліфікаційна категорія",
+        "no_office": "Без кабінету"
+      }
+    },
+    "date": "Дата",
+    "time": "Час",
+    "patient": "Пацієнт",
+    "doctor": "Лікар",
+    "receptionist": "Реєстратор",
+    "office": {
+      "label": "Кабінет",
+      "name": "Назва кабінету",
+      "number": "Номер кабінету",
+      "name_short": "Назва",
+      "number_short": "Номер"
+    },
+    "appointment": {
+      "label": "Прийом",
+      "diagnosis": "Діагноз",
+      "symptoms": "Симптоми",
+      "medical_recommendations": "Медичні рекомендації",
+      "doctor_specialty": "Спеціальність лікаря",
+      "time_start": "Час початку",
+      "time_end": "Час закінчення"
+    },
+    "office_select": {
+      "placeholder_label": "Оберіть кабінет",
+      "no_options_message": "Кабінетів не знайдено"
+    }
+  },
+  "LocaleSwitcher": {
+    "uk": "Українська",
+    "en-GB": "English",
+    "language_label": "Мова"
+  },
+  "HomePage": {
+    "welcome_morning_label": "Добрий ранок",
+    "welcome_day_label": "Добрий день",
+    "welcome_evening_label": "Добрий вечір"
+  },
+  "PatientsPage": {
+    "new_patient_link_label": "Новий пацієнт →",
+    "alerts": {
+      "no_patients_found": "Пацієнтів за заданими критеріями не знайдено",
+      "no_patients": "Ще не додано жодного пацієнта",
+      "error_fetching_patients": "При виконанні запиту на пацієнтів виникла непередбачена помилка"
+    }
+  },
+  "DoctorsPage": {
+    "new_doctor_link_label": "Новий лікар →",
+    "alerts": {
+      "no_doctors_found": "Лікарів за заданими критеріями не знайдено",
+      "no_doctors": "Ще не додано жодного лікаря",
+      "error_fetching_doctors": "При виконанні запиту на лікарів виникла непередбачена помилка"
+    }
+  },
+  "OfficesPage": {
+    "new_office_link_label": "Новий кабінет →",
+    "alerts": {
+      "no_offices_found": "Кабінетів за заданими критеріями не знайдено",
+      "no_offices": "Ще не додано жодного кабінету",
+      "error_fetching_offics": "При виконанні запиту на кабінети виникла непередбачена помилка"
+    }
+  },
+  "ReceptionistsPage": {
+    "new_receptionist_link_label": "Новий реєстратор →",
+    "alerts": {
+      "no_receptionists_found": "Реєстраторів за заданими критеріями не знайдено",
+      "no_receptionists": "Ще не додано жодного реєстратора",
+      "error_fetching_receptionists": "При виконанні запиту на реєстраторів виникла непередбачена помилка"
+    }
+  },
+  "AppointmentsPage": {
+    "alerts": {
+      "no_appointments_found": "Прийомів за заданими критеріями не знайдено",
+      "no_appointments": "Ще не додано жодного прийому",
+      "error_fetching_appointments": "При виконанні запиту на прийоми виникла непередбачена помилка"
+    }
+  },
+  "PagesNavigation": {
+    "home_page": "Домашня сторінка",
+    "patients": "Пацієнти",
+    "specific_patient": "Пацієнт #{id}",
+    "new_patient": "Новий пацієнт",
+    "doctors": "Лікарі",
+    "specific_doctor": "Лікар #{id}",
+    "new_doctor": "Новий лікар",
+    "appointments": "Прийоми",
+    "specific_appointment": "Прийом #{id}",
+    "offices": "Кабінети",
+    "specific_office": "Кабінет #{id}",
+    "new_office": "Новий кабінет",
+    "receptionists": "Реєстратори",
+    "new_receptionist": "Новий реєстратор",
+    "specific_receptionist": "Реєстратор #{id}",
+    "timetable": "Розклад",
+    "user": "Обліковий запис"
+  },
+  "SpecificPatientPage": {
+    "breadcrumb_active_page": "Інформація про пацієнта #{id}",
+    "patient_card_header": "Пацієнт",
+    "patient_delete_dialog": {
+      "title": "Видалення пацієнта",
+      "text": "Ви впевнені що хочете видалити пацієнта?",
+      "warning": "Ви не сможете відновити інформацію про пацієнта після підтвердження видалення!",
+      "confirm_button_label": "Видалити пацієнта"
+    },
+    "toasts": {
+      "edit_success": "Редагування інформації про пацієнта успішне!",
+      "edit_error": "При редагуванні інформації про пацієнта сталася непередбачена помилка!",
+      "delete_success": "Пацієнт був успішно видалений!",
+      "delete_error": "При видаленні пацієнта сталася непередбачена помилка!"
+    },
+    "error_alert": {
+      "header": "Ууупсс...",
+      "text": "При виконанні запиту виникла помилка або запитуваного пацієнта не існує"
+    }
+  },
+  "SpecificReceptionistPage": {
+    "breadcrumb_active_page": "Інформація про реєстратора #{id}",
+    "receptionist_card_header": "Реєстратор",
+    "receptionist_delete_dialog": {
+      "title": "Видалення реєстратора",
+      "text": "Ви впевнені що хочете видалити реєстратора?",
+      "warning": "Ви не сможете відновити інформацію про реєстратора після підтвердження видалення!",
+      "confirm_button_label": "Видалити реєстратора"
+    },
+    "toasts": {
+      "edit_success": "Редагування інформації про реєстратора успішне!",
+      "edit_error": "При редагуванні інформації про реєстратора сталася непередбачена помилка!",
+      "delete_success": "Реєстратор був успішно видалений!",
+      "delete_error": "При видаленні реєстратора сталася непередбачена помилка!"
+    },
+    "error_alert": {
+      "header": "Ууупсс...",
+      "text": "При виконанні запиту виникла помилка або запитуваного реєстратора не існує"
+    }
+  },
+  "SpecificOfficePage": {
+    "breadcrumb_active_page": "Інформація про кабінет #{id}",
+    "office_card_header": "Кабінет",
+    "office_delete_dialog": {
+      "title": "Видалення кабінету",
+      "text": "Ви впевнені що хочете видалити кабінет?",
+      "warning": "Ви не сможете відновити інформацію про кабінет після підтвердження видалення!",
+      "confirm_button_label": "Видалити кабінет"
+    },
+    "toasts": {
+      "edit_success": "Редагування інформації про кабінет успішне!",
+      "edit_error": "При редагуванні інформації про кабінет сталася непередбачена помилка!",
+      "delete_success": "Кабінет був успішно видалений!",
+      "delete_error": "При видаленні кабінету сталася непередбачена помилка!"
+    },
+    "error_alert": {
+      "header": "Ууупсс...",
+      "text": "При виконанні запиту виникла помилка або запитуваного кабінету не існує"
+    }
+  },
+  "SpecificAppointmentPage": {
+    "breadcrumb_active_page": "Інформація про прийом #{id}",
+    "appointment_card_header": "Прийом",
+    "reschedule_button_label": "Перепланувати",
+    "appointment_delete_dialog": {
+      "title": "Видалення прийому",
+      "text": "Ви впевнені що хочете видалити прийом?",
+      "warning": "Ви не сможете відновити інформацію про прийом після підтвердження видалення!",
+      "confirm_button_label": "Видалити прийом"
+    },
+    "toasts": {
+      "edit_success": "Редагування інформації про прийом успішне!",
+      "edit_error": "При редагуванні інформації про прийом сталася непередбачена помилка!",
+      "delete_success": "Прийом був успішно видалений!",
+      "delete_error": "При видаленні прийому сталася непередбачена помилка!"
+    },
+    "error_alert": {
+      "header": "Ууупсс...",
+      "text": "При виконанні запиту виникла помилка або запитуваного прийому не існує"
+    }
+  },
+  "SpecificDoctorPage": {
+    "breadcrumb_active_page": "Інформація про лікаря #{id}",
+    "doctor_card": {
+      "doctor_tab_header": "Лікар",
+      "workschedule_tab_header": "Графік роботи"
+    },
+    "doctor_delete_dialog": {
+      "title": "Видалення лікаря",
+      "text": "Ви впевнені що хочете видалити лікаря?",
+      "warning": "Ви не сможете відновити інформацію про лікаря після підтвердження видалення!",
+      "confirm_button_label": "Видалити лікаря"
+    },
+    "toasts": {
+      "doctor": {
+        "edit_success": "Редагування інформації про лікаря успішне!",
+        "edit_error": "При редагуванні інформації про лікаря сталася непередбачена помилка!",
+        "delete_success": "Лікар був успішно видалений!",
+        "delete_error": "При видаленні лікаря сталася непередбачена помилка!"
+      },
+      "work_schedule": {
+        "edit_success": "Графік роботи лікаря успішно оновлений",
+        "edit_error": "При редагуванні графіку роботи лікаря сталася непердбачена помилка"
+      }
+    },
+    "error_alert": {
+      "header": "Ууупсс...",
+      "text": "При виконанні запиту виникла помилка або запитуваного лікаря не існує"
+    }
+  },
+  "TimetablePage": {
+    "breadcrumb_active_page": {
+      "new_appointment": "Призначення нового прийому",
+      "reschedule_appointment": "Перепланування прийому",
+      "timetable": "Розклад"
+    },
+    "control_bar": {
+      "appointment_action_button": {
+        "new_appointment_label": "Призначити прийом",
+        "reschedule_appointment_label": "Перепланувати прийом"
+      }
+    },
+    "new_appointment_modal": {
+      "title": "Інформація про прийом",
+      "submit_button": {
+        "new_appointment_label": "Призначити прийом",
+        "reschedule_appointment_label": "Перепланувати прийом"
+      },
+      "input_validity": {
+        "time_invalid_message": "Час початку прийому не може бути більше або дорівнювати часу закінчення прийому"
+      }
+    },
+    "alerts": {
+      "error_fetching_timetable": "При запиті на розклад роботи лікаря сталася непередбачена помилка",
+      "no_workschedule": "Графік роботи на обрану дату відсутній!",
+      "doctor_no_workschedule": "Ви не маєте графіку роботи на обрану дату!"
+    },
+    "toasts": {
+      "success": {
+        "new_appointment": "Новий прийом успішно призначено!",
+        "reschedule_appointment": "Прийом успішно переплановано!"
+      },
+      "error": {
+        "doctor_conflict": "Лікар вже має інший прийом на обраний час!",
+        "patient_conflict": "Пацієнт вже має інший прийом на обраний час!",
+        "unexpected": "При призначенні прийому сталася непередбачена помилка!",
+        "invalid_time_range": "Час початку прийому не може бути більше часу закінчення прийому",
+        "outside_workschedule": "Час прийому виходить за межі графіку роботи лікаря!"
+      }
+    }
+  },
+  "Timetable": {
+    "time_header": "Час",
+    "appointment_header": "Прийом",
+    "status_free": "Вільно",
+    "week": "Тиждень",
+    "work_week": "Робочий тиждень",
+    "day": "День",
+    "month": "Місяць",
+    "previous": "Попередній",
+    "next": "Наступний",
+    "today": "Сьогодні",
+    "agenda": "Порядок денний",
+    "showMore": "+{total} ще"
+  },
+  "DoctorSelect": {
+    "placeholder": "Оберіть лікаря",
+    "no_options_message": "Лікарів не знайдено"
+  },
+  "WorkSchedule": {
+    "weekday": "День тижня",
+    "days_of_the_week": {
+      "monday": "Понеділок",
+      "tuesday": "Вівторок",
+      "wednesday": "Середа",
+      "thursday": "Четвер",
+      "friday": "П'ятниця",
+      "saturday": "Субота",
+      "sunday": "Неділя"
+    },
+    "worktime_start": "Час початку роботи",
+    "worktime_end": "Час закінчення роботи",
+    "alerts": {
+      "time_validation_error": {
+        "heading": "Помилка!",
+        "text": "Час початку роботи, не може бути пізніше часу закінчення роботи.",
+        "tip": "Будь ласка, перегляньте уважно графік роботи."
+      }
+    }
+  },
+  "NotFoundPage": {
+    "page_not_found_title": "Сторінка не знайдена",
+    "home_page_link_label": "На домашню сторінку →"
+  },
+  "NewPatientPage": {
+    "new_patient": {
+      "card": {
+        "header": "Інформація про нового пацієнта"
+      },
+      "add_button_label": "Додати нового пацієнта"
+    },
+    "toasts": {
+      "new_patient_success": "Новий пацієнт був успішно доданий!",
+      "new_patient_error": "При додаванні нового пацієнта сталася непередбачувана помилка!"
+    }
+  },
+  "NewOfficePage": {
+    "new_office": {
+      "card": {
+        "header": "Інформація про новий кабінет"
+      },
+      "add_button_label": "Додати новий кабінет"
+    },
+    "toasts": {
+      "new_office_success": "Новий кабінет був успішно доданий!",
+      "new_office_error": "При додаванні нового кабінету сталася непередбачувана помилка!"
+    }
+  },
+  "NewDoctorPage": {
+    "new_doctor": {
+      "card": {
+        "header": "Інформація про нового лікаря"
+      },
+      "add_button_label": "Додати нового лікаря",
+      "success_dialog": {
+        "header_title": "Лікаря успішно зареєстровано!",
+        "warning_alert": "Тримайте у секреті! Нікому не повідомляйте ці облікові дані окрім самого лікаря!",
+        "accept_button_label": "Зрозуміло",
+        "credentials_download_tooltip": "Завантажити облікові дані"
+      }
+    },
+    "toasts": {
+      "new_doctor_error": "При додаванні нового лікаря сталася непередбачувана помилка!"
+    }
+  },
+  "NewReceptionistPage": {
+    "new_receptionist": {
+      "card": {
+        "header": "Інформація про нового реєстратора"
+      },
+      "add_button_label": "Додати нового реєстратора",
+      "success_dialog": {
+        "header_title": "Реєстратора успішно зареєстровано!",
+        "warning_alert": "Тримайте у секреті! Нікому не повідомляйте ці облікові дані окрім самого реєстратора!",
+        "accept_button_label": "Зрозуміло",
+        "credentials_download_tooltip": "Завантажити облікові дані"
+      }
+    },
+    "toasts": {
+      "new_receptionist_error": "При додаванні нового реєстратора сталася непередбачувана помилка!"
+    }
+  },
+  "LoginPage": {
+    "title": "Авторизація",
+    "username": "Логін",
+    "password": "Пароль",
+    "login_submit_button_label": "Увійти",
+    "alerts": {
+      "error": {
+        "invalid_credentials": "Неправильний логін або пароль!",
+        "unexpected": "При спробі авторизації сталася непередбачувана помилка!"
+      }
+    }
+  },
+  "ContextLoading": {
+    "loading_notice": "Зачекайте, завантаження може тривати довше ніж звичайно..."
+  }
+}

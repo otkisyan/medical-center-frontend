@@ -1,0 +1,417 @@
+{
+  "User": {
+    "roles": {
+      "doctor": "Doctor",
+      "receptionist": "Receptionist",
+      "admin": "Administrator"
+    },
+    "login": "Username",
+    "password": "Password"
+  },
+  "UserPage": {
+    "security_label": "Security",
+    "settings_label": "Settings",
+    "change_password_button_label": "Change password",
+    "login_label": "Login",
+    "role_label": "Role",
+    "change_password_dialog": {
+      "dialog_label": "Change Password",
+      "current_password": "Current Password",
+      "new_password": "New Password",
+      "confirm_password": "Confirm Password",
+      "confirm_password_tip": "In the \"Confirm password\" field, enter the same password that you entered in the \"New password\" field",
+      "confirm_button_label": "Change Password"
+    },
+    "toasts": {
+      "change_password_success": "Account password has been successfully changed!",
+      "current_password_incorrect": "The password provided does not match the real password",
+      "confirm_password_incorrect": "The confirmation password does not match the new password"
+    }
+  },
+  "Common": {
+    "action_cancel_button_label": "Cancel",
+    "action_save_button_label": "Save",
+    "loading": "Loading...",
+    "search": {
+      "button_label": "Search",
+      "clear_button_label": "Clear search"
+    },
+    "action_label": "Action",
+    "personal_data": {
+      "surname": "Surname",
+      "name": "Name",
+      "middle_name": "Middle name",
+      "birth_date": "Date of birth",
+      "phone": "Phone number",
+      "messenger_contact": "Viber/Telegram contact number",
+      "address": "Home address",
+      "preferential_category": "Preferential category",
+      "doctor": {
+        "medical_specialty": "Medical Specialty",
+        "medical_specialty_short": "Specialty",
+        "qualification_category": "Qualification category",
+        "no_office": "Without an office"
+      }
+    },
+    "date": "Date",
+    "time": "Time",
+    "patient": "Patient",
+    "doctor": "Doctor",
+    "receptionist": "Receptionist",
+    "office": {
+      "label": "Office",
+      "name": "Office name",
+      "number": "Office number",
+      "name_short": "Name",
+      "number_short": "Number"
+    },
+    "appointment": {
+      "label": "Appointment",
+      "diagnosis": "Diagnosis",
+      "symptoms": "Symptoms",
+      "medical_recommendations": "Medical recommendations",
+      "doctor_specialty": "Doctor's specialty",
+      "time_start": "Start time",
+      "time_end": "End time"
+    },
+    "office_select": {
+      "placeholder_label": "Choose office",
+      "no_options_message": "No offices found"
+    }
+  },
+  "LocaleSwitcher": {
+    "uk": "Українська",
+    "en-GB": "English",
+    "language_label": "Language"
+  },
+  "HomePage": {
+    "welcome_morning_label": "Good morning",
+    "welcome_day_label": "Good afternoon",
+    "welcome_evening_label": "Good evening"
+  },
+  "PatientsPage": {
+    "new_patient_link_label": "New Patient →",
+    "alerts": {
+      "no_patients_found": "No patients were found according to the specified criteria",
+      "no_patients": "No patients have been added yet",
+      "error_fetching_patients": "An unexpected error occurred while executing a patient query"
+    }
+  },
+  "DoctorsPage": {
+    "new_doctor_link_label": "New doctor →",
+    "alerts": {
+      "no_doctors_found": "No doctors were found according to the specified criteria",
+      "no_doctors": "No doctors have been added yet",
+      "error_fetching_doctors": "An unexpected error occurred while executing a doctor query"
+    }
+  },
+  "OfficesPage": {
+    "new_office_link_label": "New office →",
+    "alerts": {
+      "no_offices_found": "No offices were found according to the specified criteria",
+      "no_offices": "No offices have been added yet",
+      "error_fetching_offics": "An unexpected error occurred while executing an office query"
+    }
+  },
+  "ReceptionistsPage": {
+    "new_receptionist_link_label": "New receptionist →",
+    "alerts": {
+      "no_receptionists_found": "No receptionists were found according to the specified criteria",
+      "no_receptionists": "No receptionists have been added yet",
+      "error_fetching_receptionists": "An unexpected error occurred while executing a receptionists query"
+    }
+  },
+  "AppointmentsPage": {
+    "alerts": {
+      "no_appointments_found": "No appointments were found according to the specified criteria",
+      "no_appointments": "No appointments have been added yet",
+      "error_fetching_appointments": "An unexpected error occurred while executing an appointment query"
+    }
+  },
+  "PagesNavigation": {
+    "home_page": "Home Page",
+    "patients": "Patients",
+    "specific_patient": "Patient #{id}",
+    "new_patient": "New patient",
+    "doctors": "Doctors",
+    "specific_doctor": "Doctor #{id}",
+    "new_doctor": "New doctor",
+    "appointments": "Appointments",
+    "specific_appointment": "Appointment #{id}",
+    "offices": "Offices",
+    "specific_office": "Office #{id}",
+    "new_office": "New Office",
+    "receptionists": "Receptionists",
+    "new_receptionist": "New Receptionist",
+    "specific_receptionist": "Receptionist #{id}",
+    "timetable": "Timetable",
+    "user": "My Account"
+  },
+  "SpecificPatientPage": {
+    "breadcrumb_active_page": "Information about patient #{id}",
+    "patient_card_header": "Patient",
+    "patient_delete_dialog": {
+      "title": "Deleting a patient",
+      "text": "Are you sure you want to delete a patient?",
+      "warning": "You will not be able to restore patient information after confirming deletion!",
+      "confirm_button_label": "Delete patient"
+    },
+    "toasts": {
+      "edit_success": "Editing patient information is successful!",
+      "edit_error": "An unexpected error occurred while editing patient information!",
+      "delete_success": "The patient was successfully deleted!",
+      "delete_error": "An unexpected error occurred while deleting a patient!"
+    },
+    "error_alert": {
+      "header": "Ooopss...",
+      "text": "An error occurred while executing the request or the requested patient does not exist"
+    }
+  },
+  "SpecificReceptionistPage": {
+    "breadcrumb_active_page": "Information about receptionist #{id}",
+    "receptionist_card_header": "Receptionist",
+    "receptionist_delete_dialog": {
+      "title": "Deleting a receptionist",
+      "text": "Are you sure you want to delete a receptionist?",
+      "warning": "You will not be able to restore receptionist information after confirming deletion!",
+      "confirm_button_label": "Delete receptionist"
+    },
+    "toasts": {
+      "edit_success": "Editing receptionist information is successful!",
+      "edit_error": "An unexpected error occurred while editing receptionist information!",
+      "delete_success": "The receptionist was successfully deleted!",
+      "delete_error": "An unexpected error occurred while deleting a receptionist!"
+    },
+    "error_alert": {
+      "header": "Ooopss...",
+      "text": "An error occurred while executing the request or the requested receptionist does not exist"
+    }
+  },
+  "SpecificOfficePage": {
+    "breadcrumb_active_page": "Information about office #{id}",
+    "office_card_header": "Office",
+    "office_delete_dialog": {
+      "title": "Deleting an office",
+      "text": "Are you sure you want to delete an office?",
+      "warning": "You will not be able to restore office information after confirming deletion!",
+      "confirm_button_label": "Delete office"
+    },
+    "toasts": {
+      "edit_success": "Editing office information is successful!",
+      "edit_error": "An unexpected error occurred while editing office information!",
+      "delete_success": "The office was successfully deleted!",
+      "delete_error": "An unexpected error occurred while deleting an office!"
+    },
+    "error_alert": {
+      "header": "Ooopss...",
+      "text": "An error occurred while executing the request or the requested office does not exist"
+    }
+  },
+  "SpecificAppointmentPage": {
+    "breadcrumb_active_page": "Information about appointment #{id}",
+    "appointment_card_header": "Appointment",
+    "reschedule_button_label": "Reschedule",
+    "appointment_delete_dialog": {
+      "title": "Deleting an appointment",
+      "text": "Are you sure you want to delete an appointment?",
+      "warning": "You will not be able to restore appointment information after confirming deletion!",
+      "confirm_button_label": "Delete appointment"
+    },
+    "toasts": {
+      "edit_success": "Editing appointment information is successful!",
+      "edit_error": "An unexpected error occurred while editing appointment information!",
+      "delete_success": "The appointment was successfully deleted!",
+      "delete_error": "An unexpected error occurred while deleting an appointemnt!"
+    },
+    "error_alert": {
+      "header": "Ooopss...",
+      "text": "An error occurred while executing the request or the requested appointment does not exist"
+    }
+  },
+  "SpecificDoctorPage": {
+    "breadcrumb_active_page": "Information about doctor #{id}",
+    "doctor_card": {
+      "doctor_tab_header": "Doctor",
+      "workschedule_tab_header": "Work schedule"
+    },
+    "doctor_delete_dialog": {
+      "title": "Deleting a doctor",
+      "text": "Are you sure you want to delete a doctor?",
+      "warning": "You will not be able to restore doctor information after confirming deletion!",
+      "confirm_button_label": "Delete doctor"
+    },
+    "toasts": {
+      "doctor": {
+        "edit_success": "Editing doctor information is successful!",
+        "edit_error": "An unexpected error occurred while editing doctor information!",
+        "delete_success": "The doctor was successfully deleted!",
+        "delete_error": "An unexpected error occurred while deleting a doctor!"
+      },
+      "work_schedule": {
+        "edit_success": "The doctor's work schedule has been successfully updated",
+        "edit_error": "An unexpected error occurred while editing a doctor's work schedule"
+      }
+    },
+    "error_alert": {
+      "header": "Ooopss...",
+      "text": "An error occurred while executing the request or the requested doctor does not exist"
+    }
+  },
+  "TimetablePage": {
+    "breadcrumb_active_page": {
+      "new_appointment": "New Appointment",
+      "reschedule_appointment": "Rescheduling the appointment",
+      "timetable": "Timetable"
+    },
+    "control_bar": {
+      "appointment_action_button": {
+        "new_appointment_label": "Make an appointment",
+        "reschedule_appointment_label": "Reschedule"
+      }
+    },
+    "new_appointment_modal": {
+      "title": "Information about the appointment",
+      "submit_button": {
+        "new_appointment_label": "Make an appointment",
+        "reschedule_appointment_label": "Reschedule an appointment"
+      },
+      "input_validity": {
+        "time_invalid_message": "The start time of the appointment cannot be greater than or equal to the end time of the appointment"
+      }
+    },
+    "alerts": {
+      "no_workschedule": "There is no work schedule for the selected date!",
+      "doctor_no_workschedule": "You do not have a work schedule for the selected date!"
+    },
+    "toasts": {
+      "success": {
+        "error_fetching_timetable": "An unexpected error occurred when requesting a doctor's time table",
+        "new_appointment": "A new appointment has been successfully scheduled!",
+        "reschedule_appointment": "The appointment has been successfully rescheduled!"
+      },
+      "error": {
+        "doctor_conflict": "The doctor already has another appointment for the chosen time!",
+        "patient_conflict": "The patient already has another appointment at the chosen time!",
+        "unexpected": "An unexpected error occurred during the scheduling of an appointment!",
+        "invalid_time_range": "The start time of the appointment cannot be greater than or equal to the end time of the appointment",
+        "outside_workschedule": "The appointment time is outside the doctor's work schedule!"
+      }
+    }
+  },
+  "Timetable": {
+    "time_header": "Time",
+    "appointment_header": "Appointment",
+    "status_free": "Free",
+    "week": "Week",
+    "work_week": "Work Week",
+    "day": "Day",
+    "month": "Month",
+    "previous": "Back",
+    "next": "Next",
+    "today": "Today",
+    "agenda": "Agenda",
+    "showMore": "+{total} more"
+  },
+  "DoctorSelect": {
+    "placeholder": "Choose a doctor",
+    "no_options_message": "No doctors were found"
+  },
+  "WorkSchedule": {
+    "weekday": "Day of the week",
+    "days_of_the_week": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "worktime_start": "Start time of the work",
+    "worktime_end": "End time of the work",
+    "alerts": {
+      "time_validation_error": {
+        "heading": "Error!",
+        "text": "The start time of work cannot be later than the end time of work.",
+        "tip": "Please review the work schedule carefully."
+      }
+    }
+  },
+  "NotFoundPage": {
+    "page_not_found_title": "Page not found",
+    "home_page_link_label": "To the home page →"
+  },
+  "NewPatientPage": {
+    "new_patient": {
+      "card": {
+        "header": "Information about new patient"
+      },
+      "add_button_label": "Add new patient"
+    },
+    "toasts": {
+      "new_patient_success": "A new patient has been successfully added!",
+      "new_patient_error": "An unexpected error occurred while adding a new patient!"
+    }
+  },
+  "NewOfficePage": {
+    "new_office": {
+      "card": {
+        "header": "Information about new office"
+      },
+      "add_button_label": "Add new office"
+    },
+    "toasts": {
+      "new_office_success": "A new office has been successfully added!",
+      "new_office_error": "An unexpected error occurred while adding a new office!"
+    }
+  },
+  "NewDoctorPage": {
+    "new_doctor": {
+      "card": {
+        "header": "Information about new doctor"
+      },
+      "add_button_label": "Add new doctor",
+      "success_dialog": {
+        "header_title": "A new doctor has been successfully registered!",
+        "warning_alert": "Keep it a secret! Do not disclose these credentials to anyone except the doctor!",
+        "accept_button_label": "Understood",
+        "credentials_download_tooltip": "Download credentials"
+      }
+    },
+    "toasts": {
+      "new_doctor_error": "An unexpected error occurred while adding a new doctor!"
+    }
+  },
+  "NewReceptionistPage": {
+    "new_receptionist": {
+      "card": {
+        "header": "Information about new receptionist"
+      },
+      "add_button_label": "Add new receptionist",
+      "success_dialog": {
+        "header_title": "A new receptionist has been successfully registered!",
+        "warning_alert": "Keep it a secret! Do not disclose these credentials to anyone except the receptionist!",
+        "accept_button_label": "Understood",
+        "credentials_download_tooltip": "Download credentials"
+      }
+    },
+    "toasts": {
+      "new_receptionist_error": "An unexpected error occurred while adding a new receptionist!"
+    }
+  },
+  "LoginPage": {
+    "title": "Log In",
+    "username": "Username",
+    "password": "Password",
+    "login_submit_button_label": "Log In",
+    "alerts": {
+      "error": {
+        "invalid_credentials": "Wrong login or password!",
+        "unexpected": "An unexpected error occurred while trying to log in!"
+      }
+    }
+  },
+  "ContextLoading": {
+    "loading_notice": "Please wait, it may take longer than usual to load..."
+  }
+}

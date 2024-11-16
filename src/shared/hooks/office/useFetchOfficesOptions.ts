@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { OfficeService } from "../../service/office-service";
 import { OfficeResponse } from "../../interface/office/office-interface";
+import { useTranslations } from "next-intl";
 
 const useFetchOfficesOptions = () => {
+  const tCommon = useTranslations("Common");
   const initialOfficesOptions = useMemo(
-    () => [{ value: "", label: "Без кабінету" }],
-    []
+    () => [{ value: "", label: tCommon("personal_data.doctor.no_office") }],
+    [tCommon]
   );
 
   const [loadingOfficesOptions, setLoadingOffices] = useState(false);

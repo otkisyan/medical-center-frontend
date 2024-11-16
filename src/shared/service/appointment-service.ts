@@ -58,6 +58,7 @@ export const AppointmentService = {
       `/appointments/${id}`,
       updatedAppointment
     );
+
     return data;
   },
 

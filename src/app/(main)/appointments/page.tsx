@@ -18,8 +18,12 @@ import { ButtonGroup } from "react-bootstrap";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import useFetchAppointmentsCount from "@/shared/hooks/appointment/useFetchAppointmentsCount";
 import useFetchAppointments from "@/shared/hooks/appointment/useFetchAppointments";
+import { useTranslations } from "next-intl";
+import PaginationBar from "@/components/pagination/PaginationBar";
 
 export default function AppointmentsPage() {
+  const tCommon = useTranslations("Common");
+  const tAppointmentsPage = useTranslations("AppointmentsPage");
   const initialParamsState = useMemo(
     () => ({
       patient: "",
@@ -65,7 +69,7 @@ export default function AppointmentsPage() {
       <Form onSubmit={handleAppointmentSearchFormSubmit}>
         <Row className="g-3 mb-3">
           <Col sm>
-            <FloatingLabel controlId="patient" label="Пацієнт">
+            <FloatingLabel controlId="patient" label={tCommon("patient")}>
               <Form.Control
                 type="text"
                 name="patient"
@@ -75,7 +79,7 @@ export default function AppointmentsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="doctor" label="Лікар">
+            <FloatingLabel controlId="doctor" label={tCommon("doctor")}>
               <Form.Control
                 type="text"
                 name="doctor"
@@ -85,7 +89,7 @@ export default function AppointmentsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="date" label="Дата">
+            <FloatingLabel controlId="date" label={tCommon("date")}>
               <Form.Control
                 type="date"
                 name="date"
@@ -96,7 +100,10 @@ export default function AppointmentsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="timeStart" label="Час початку">
+            <FloatingLabel
+              controlId="timeStart"
+              label={tCommon("appointment.time_start")}
+            >
               <Form.Control
                 type="time"
                 name="timeStart"
@@ -113,10 +120,10 @@ export default function AppointmentsPage() {
             style={{ textDecoration: "none" }}
             onClick={clearSearchParams}
           >
-            Очистити пошук
+            {tCommon("search.clear_button_label")}
           </Button>
           <Button variant="primary" type="submit" className="d-grid col-3">
-            Пошук
+            {tCommon("search.button_label")}
           </Button>
         </Stack>
       </Form>
@@ -130,13 +137,13 @@ export default function AppointmentsPage() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Пацієнт</th>
-                <th>Лікар</th>
-                <th>Спеціальність лікаря</th>
-                <th>Дата</th>
-                <th>Час</th>
-                <th>Кабінет</th>
-                <th>Дія</th>
+                <th>{tCommon("patient")}</th>
+                <th>{tCommon("doctor")}</th>
+                <th>{tCommon("appointment.doctor_specialty")}</th>
+                <th>{tCommon("date")}</th>
+                <th>{tCommon("time")}</th>
+                <th>{tCommon("office.label")}</th>
+                <th>{tCommon("action_label")}</th>
               </tr>
             </thead>
             <tbody>
@@ -188,48 +195,13 @@ export default function AppointmentsPage() {
               ))}
             </tbody>
           </Table>
-          <Pagination className="d-flex justify-content-center">
-            <Pagination.First
-              onClick={() => fetchAppointments({ ...params, page: 0 })}
-              disabled={appointmentPage.first === true}
-            />
-            <Pagination.Prev
-              onClick={() =>
-                fetchAppointments({
-                  ...params,
-                  page: appointmentPage.number - 1,
-                })
-              }
-              disabled={appointmentPage.first === true}
-            />
-            {[...Array(appointmentPage.totalPages)].map((_, i) => (
-              <Pagination.Item
-                key={i}
-                active={i === appointmentPage.number}
-                onClick={() => fetchAppointments({ ...params, page: i })}
-              >
-                {i + 1}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next
-              onClick={() =>
-                fetchAppointments({
-                  ...params,
-                  page: appointmentPage.number + 1,
-                })
-              }
-              disabled={appointmentPage.last === true}
-            />
-            <Pagination.Last
-              onClick={() =>
-                fetchAppointments({
-                  ...params,
-                  page: appointmentPage.totalPages - 1,
-                })
-              }
-              disabled={appointmentPage.last === true}
-            />
-          </Pagination>
+          <PaginationBar
+            currentPage={appointmentPage.number}
+            totalPages={appointmentPage.totalPages}
+            onPageChange={(page) => fetchAppointments({ ...params, page })}
+            isFirst={appointmentPage.first}
+            isLast={appointmentPage.last}
+          />
         </>
       ) : (
         <>
@@ -239,7 +211,7 @@ export default function AppointmentsPage() {
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Прийомів за заданими критеріями не знайдено
+              {tAppointmentsPage("alerts.no_appointments_found")}
             </Alert>
           ) : (
             <Alert
@@ -247,7 +219,7 @@ export default function AppointmentsPage() {
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Ще не додано жодного прийому
+              {tAppointmentsPage("alerts.no_appointments")}
             </Alert>
           )}
         </>

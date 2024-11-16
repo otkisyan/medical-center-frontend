@@ -7,14 +7,18 @@ import {
 } from "@/shared/interface/office/office-interface";
 import { OfficeService } from "@/shared/service/office-service";
 import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Breadcrumb } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 
 export default function NewOfficePage() {
+  const tCommon = useTranslations("Common");
+  const tPagesNavigation = useTranslations("PagesNavigation");
+  const tNewOfficePage = useTranslations("NewOfficePage");
   const router = useRouter();
 
   const [office, setOffice] = useState<OfficeRequest>(
@@ -38,11 +42,9 @@ export default function NewOfficePage() {
     try {
       const data = await OfficeService.addOffice(office);
       router.push(`/offices/${data.id}`);
-      notifySuccess("Новий кабінет був успішно доданий!");
+      notifySuccess(tNewOfficePage("toasts.new_office_success"));
     } catch (error) {
-      notifyError(
-        "При додаванні нового кабінету сталася непередбачувана помилка!"
-      );
+      notifyError(tNewOfficePage("toasts.new_office_error"));
     }
   };
 
@@ -51,19 +53,21 @@ export default function NewOfficePage() {
       <br></br>
       <Breadcrumb>
         <Breadcrumb.Item href="/" className="link">
-          Домашня сторінка
+          {tPagesNavigation("home_page")}
         </Breadcrumb.Item>
         <Breadcrumb.Item href="/offices" className="link">
-          Кабінети
+          {tPagesNavigation("offices")}
         </Breadcrumb.Item>
-        <Breadcrumb.Item active>Новий кабінет</Breadcrumb.Item>
+        <Breadcrumb.Item active>
+          {tPagesNavigation("new_office")}
+        </Breadcrumb.Item>
       </Breadcrumb>
       <Card>
-        <Card.Header>Інформація про новий кабінет</Card.Header>
+        <Card.Header>{tNewOfficePage("new_office.card.header")}</Card.Header>
         <Card.Body>
           <Form onSubmit={handleNewOfficeFormSubmit}>
             <Form.Group controlId="formGridNumber" className="mb-3">
-              <Form.Label>Номер</Form.Label>
+              <Form.Label>{tCommon("office.number_short")}</Form.Label>
               <Form.Control
                 type="number"
                 value={office.number.toString()}
@@ -73,7 +77,7 @@ export default function NewOfficePage() {
               />
             </Form.Group>
             <Form.Group controlId="formGridName" className="mb-3">
-              <Form.Label>Назва</Form.Label>
+              <Form.Label>{tCommon("office.name_short")}</Form.Label>
               <Form.Control
                 type="text"
                 value={office.name}
@@ -83,7 +87,7 @@ export default function NewOfficePage() {
               />
             </Form.Group>
             <Button variant="primary" type="submit" id="confirmAddNewOffice">
-              Додати новий кабінет
+              {tNewOfficePage("new_office.add_button_label")}
             </Button>
           </Form>
         </Card.Body>

@@ -22,8 +22,13 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { saveAs } from "file-saver";
 import { RegisterSuccessCredentials } from "@/shared/interface/user/register-success-credentials-interface";
+import { useTranslations } from "next-intl";
 
 export default function NewDoctorPage() {
+  const tCommon = useTranslations("Common");
+  const tPagesNavigation = useTranslations("PagesNavigation");
+  const tNewDoctorPage = useTranslations("NewDoctorPage");
+  const tUser = useTranslations("User");
   const router = useRouter();
 
   const [doctor, setDoctor] = useState<DoctorRequest>(
@@ -77,30 +82,28 @@ export default function NewDoctorPage() {
       setDoctor(initialDoctorRequestState);
       handleShowDoctorModal();
     } catch (error) {
-      notifyError(
-        "При додаванні нового лікаря сталася непередбачувана помилка!"
-      );
+      notifyError(tNewDoctorPage("toasts.new_doctor_error"));
     }
   };
 
   const renderDownloadTooltip = (props: any) => (
     <Tooltip id="button-tooltip" {...props}>
-      Завантажити облікові дані
+      {tNewDoctorPage("new_doctor.success_dialog.credentials_download_tooltip")}
     </Tooltip>
   );
 
   const downloadDoctorUserCredentials = () => {
     if (doctorCredentials) {
       let data = {
-        Лікар: doctorCredentials.fullName,
-        Логін: doctorCredentials.userCredentials.username,
-        Пароль: doctorCredentials.userCredentials.password,
+        [tCommon("doctor")]: doctorCredentials.fullName,
+        [tUser("login")]: doctorCredentials.userCredentials.username,
+        [tUser("password")]: doctorCredentials.userCredentials.password,
       };
       const jsonDoctorCredentials = JSON.stringify(data, null, 4);
       let blob = new Blob([jsonDoctorCredentials], {
         type: "text/plain;charset=utf-8",
       });
-      saveAs(blob, `Лікар - ${doctorCredentials.fullName}`);
+      saveAs(blob, `${tCommon("doctor")} - ${doctorCredentials.fullName}`);
     }
   };
 
@@ -109,12 +112,14 @@ export default function NewDoctorPage() {
       <br></br>
       <Breadcrumb>
         <Breadcrumb.Item href="/" className="link">
-          Домашня сторінка
+          {tPagesNavigation("home_page")}
         </Breadcrumb.Item>
         <Breadcrumb.Item href="/doctors" className="link">
-          Лікар
+          {tPagesNavigation("doctors")}
         </Breadcrumb.Item>
-        <Breadcrumb.Item active>Новий лікар</Breadcrumb.Item>
+        <Breadcrumb.Item active>
+          {tPagesNavigation("new_doctor")}
+        </Breadcrumb.Item>
       </Breadcrumb>
       <Card>
         {doctorCredentials && (
@@ -125,11 +130,13 @@ export default function NewDoctorPage() {
             keyboard={false}
           >
             <Modal.Header closeButton>
-              <Modal.Title>Лікаря успішно зареєстровано!</Modal.Title>
+              <Modal.Title>
+                {tNewDoctorPage("new_doctor.success_dialog.header_title")}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form.Group className="mb-3" controlId="doctorResponse">
-                <Form.Label>Лікар</Form.Label>
+                <Form.Label>{tCommon("doctor")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={doctorCredentials.fullName}
@@ -137,7 +144,7 @@ export default function NewDoctorPage() {
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="doctorResponseLogin">
-                <Form.Label>Логін</Form.Label>
+                <Form.Label>{tUser("login")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={doctorCredentials.userCredentials.username}
@@ -145,7 +152,7 @@ export default function NewDoctorPage() {
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="doctorResponseLogin">
-                <Form.Label>Пароль</Form.Label>
+                <Form.Label>{tUser("password")}</Form.Label>
                 <Form.Control
                   type="text"
                   value={doctorCredentials.userCredentials.password}
@@ -153,8 +160,7 @@ export default function NewDoctorPage() {
                 />
               </Form.Group>
               <Alert variant="danger">
-                Тримайте у секреті! Нікому не повідомляйте ці облікові дані
-                окрім самого лікаря!
+                {tNewDoctorPage("new_doctor.success_dialog.warning_alert")}
               </Alert>
             </Modal.Body>
             <Modal.Footer>
@@ -176,17 +182,19 @@ export default function NewDoctorPage() {
                   router.push(`/doctors/${doctorCredentials?.id}`);
                 }}
               >
-                Зрозуміло
+                {tNewDoctorPage(
+                  "new_doctor.success_dialog.accept_button_label"
+                )}
               </Button>
             </Modal.Footer>
           </Modal>
         )}
-        <Card.Header>Інформація про нового лікаря</Card.Header>
+        <Card.Header>{tNewDoctorPage("new_doctor.card.header")}</Card.Header>
         <Card.Body>
           <Form onSubmit={handleNewDoctorFormSubmit}>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridSurname">
-                <Form.Label>Прізвище</Form.Label>
+                <Form.Label>{tCommon("personal_data.surname")}</Form.Label>
                 <Form.Control
                   type="text"
                   required
@@ -196,7 +204,7 @@ export default function NewDoctorPage() {
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridName">
-                <Form.Label>{`Ім'я`}</Form.Label>
+                <Form.Label>{tCommon("personal_data.name")}</Form.Label>
                 <Form.Control
                   type="text"
                   required
@@ -206,7 +214,7 @@ export default function NewDoctorPage() {
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridMiddleName">
-                <Form.Label>По батькові</Form.Label>
+                <Form.Label>{tCommon("personal_data.middle_name")}</Form.Label>
                 <Form.Control
                   type="text"
                   required
@@ -217,7 +225,7 @@ export default function NewDoctorPage() {
               </Form.Group>
             </Row>
             <Form.Group controlId="formGridBirthDate" className="mb-3">
-              <Form.Label>Дата народження</Form.Label>
+              <Form.Label>{tCommon("personal_data.birth_date")}</Form.Label>
               <Form.Control
                 type="date"
                 required
@@ -229,7 +237,7 @@ export default function NewDoctorPage() {
             </Form.Group>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridPhone">
-                <Form.Label>Номер телефону</Form.Label>
+                <Form.Label>{tCommon("personal_data.phone")}</Form.Label>
                 <Form.Control
                   required
                   type="text"
@@ -239,7 +247,9 @@ export default function NewDoctorPage() {
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridMessengerContact">
-                <Form.Label>Контактний номер Viber/Telegram</Form.Label>
+                <Form.Label>
+                  {tCommon("personal_data.messenger_contact")}
+                </Form.Label>
                 <Form.Control
                   type="text"
                   value={doctor.messengerContact ?? ""}
@@ -249,7 +259,7 @@ export default function NewDoctorPage() {
               </Form.Group>
             </Row>
             <Form.Group controlId="formGridAddress" className="mb-3">
-              <Form.Label>Домашня адреса</Form.Label>
+              <Form.Label>{tCommon("personal_data.address")}</Form.Label>
               <Form.Control
                 type="text"
                 value={doctor.address ?? ""}
@@ -259,7 +269,9 @@ export default function NewDoctorPage() {
             </Form.Group>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridMedicalSpecialty">
-                <Form.Label>Медична спеціальність</Form.Label>
+                <Form.Label>
+                  {tCommon("personal_data.doctor.medical_specialty")}
+                </Form.Label>
                 <Form.Control
                   required
                   type="text"
@@ -269,7 +281,9 @@ export default function NewDoctorPage() {
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridQualificationCategory">
-                <Form.Label>Кваліфікаційна категорія</Form.Label>
+                <Form.Label>
+                  {tCommon("personal_data.doctor.qualification_category")}
+                </Form.Label>
                 <Form.Control
                   type="text"
                   value={doctor.qualificationCategory ?? ""}
@@ -279,13 +293,17 @@ export default function NewDoctorPage() {
               </Form.Group>
             </Row>
             <Form.Group as={Col} controlId="formGridOffice">
-              <Form.Label>Кабінет</Form.Label>
+              <Form.Label>{tCommon("office.label")}</Form.Label>
               <Select
                 className="basic-single mb-3"
                 classNamePrefix="select"
                 isLoading={loadingOfficesOptions}
                 isSearchable={true}
-                placeholder={"Оберіть кабінет"}
+                placeholder={
+                  loadingOfficesOptions
+                    ? tCommon("loading")
+                    : tCommon("office_select.placeholder_label")
+                }
                 name="officeId"
                 onChange={(e) => {
                   setDoctor((prevDoctor) => ({
@@ -293,14 +311,16 @@ export default function NewDoctorPage() {
                     officeId: e.value,
                   }));
                 }}
-                loadingMessage={() => "Завантаження..."}
-                noOptionsMessage={() => "Кабінетів не знайдено"}
+                loadingMessage={() => tCommon("loading")}
+                noOptionsMessage={() =>
+                  tCommon("office_select.no_options_message")
+                }
                 options={officesOptions}
                 styles={customReactSelectStyles}
               />
             </Form.Group>
             <Button variant="primary" type="submit" id="confirmAddNewDoctor">
-              Додати нового лікаря
+              {tNewDoctorPage("new_doctor.add_button_label")}
             </Button>
           </Form>
         </Card.Body>

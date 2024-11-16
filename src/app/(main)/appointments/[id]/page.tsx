@@ -19,6 +19,8 @@ import { AppointmentService } from "@/shared/service/appointment-service";
 import { ConsultationService } from "@/shared/service/consultation-service";
 import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
 import { formatTimeSecondsToTime } from "@/shared/utils/date-utils";
+import { error } from "console";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -39,6 +41,9 @@ export default function AppointmentPage({
 }: {
   params: { id: number };
 }) {
+  const tCommon = useTranslations("Common");
+  const tPagesNavigation = useTranslations("PagesNavigation");
+  const tSpecificAppointmentPage = useTranslations("SpecificAppointmentPage");
   const router = useRouter();
   const { hasAnyRole, userDetails } = useAuth();
   const { appointment, setAppointment, loadingAppointment, fetchAppointment } =
@@ -91,14 +96,14 @@ export default function AppointmentPage({
       setEditedConsultation(
         convertConsultationResponseToConsultationRequest(data)
       );
-      notifySuccess("Редагування інформації про прийом успішне!");
+      notifySuccess(tSpecificAppointmentPage("toasts.edit_success"));
     } catch (error) {
       if (consultation) {
         setEditedConsultation(
           convertConsultationResponseToConsultationRequest(consultation)
         );
       }
-      notifyError("При редагуванні сталася непередбачена помилка!");
+      notifyError(tSpecificAppointmentPage("toasts.edit_error"));
     } finally {
       setEditing(false);
     }
@@ -107,10 +112,10 @@ export default function AppointmentPage({
   const deleteAppointment = async () => {
     try {
       const data = await AppointmentService.deleteAppointment(params.id);
-      notifySuccess("Прийом було успішно видалено!");
+      notifySuccess(tSpecificAppointmentPage("toasts.delete_success"));
       router.push("/appointments");
     } catch (error) {
-      notifyError("При видаленні прийома сталася непередбачена помилка!");
+      notifyError(tSpecificAppointmentPage("toasts.delete_error"));
     } finally {
       setShowDeleteModal(false);
     }
@@ -162,42 +167,56 @@ export default function AppointmentPage({
           <Breadcrumb>
             <Link href="/" passHref legacyBehavior>
               <Breadcrumb.Item className="link">
-                Домашня сторінка
+                {tPagesNavigation("home_page")}
               </Breadcrumb.Item>
             </Link>
             <Link href="/appointments" passHref legacyBehavior>
-              <Breadcrumb.Item className="link">Прийоми</Breadcrumb.Item>
+              <Breadcrumb.Item className="link">
+                {" "}
+                {tPagesNavigation("appointments")}
+              </Breadcrumb.Item>
             </Link>
             <Breadcrumb.Item active>
-              Інформація про прийом #{params.id}
+              {tSpecificAppointmentPage("breadcrumb_active_page", {
+                id: params.id,
+              })}
             </Breadcrumb.Item>
           </Breadcrumb>
           <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
             <Modal.Header closeButton>
-              <Modal.Title>Видалення прийому</Modal.Title>
+              <Modal.Title>
+                {tSpecificAppointmentPage("appointment_delete_dialog.title")}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>Ви впевнені що хочете видалити прийом?</p>
+              <p>
+                {tSpecificAppointmentPage("appointment_delete_dialog.text")}
+              </p>
               <p>
                 <i>
-                  Ви не сможете відновити інформацію про прийом після
-                  підтвердження видалення!
+                  {tSpecificAppointmentPage(
+                    "appointment_delete_dialog.warning"
+                  )}
                 </i>
               </p>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                Скасувати
+                {tCommon("action_cancel_button_label")}
               </Button>
               <Button variant="danger" onClick={deleteAppointment}>
-                Видалити прийом
+                {tSpecificAppointmentPage(
+                  "appointment_delete_dialog.confirm_button_label"
+                )}
               </Button>
             </Modal.Footer>
           </Modal>
           <Card>
-            <Card.Header>Прийом</Card.Header>
+            <Card.Header>
+              {tSpecificAppointmentPage("appointment_card_header")}
+            </Card.Header>
             <Card.Body>
-              <Form.Label>Пацієнт</Form.Label>
+              <Form.Label>{tCommon("patient")}</Form.Label>
               <InputGroup className="mb-3">
                 <Form.Control
                   value={
@@ -220,7 +239,7 @@ export default function AppointmentPage({
                   </Button>
                 </Link>
               </InputGroup>
-              <Form.Label>Лікар</Form.Label>
+              <Form.Label>{tCommon("doctor")}</Form.Label>
               <InputGroup className="mb-3">
                 <Form.Control
                   value={
@@ -245,12 +264,26 @@ export default function AppointmentPage({
                   </Link>
                 )}
               </InputGroup>
+              <Form.Group controlId="formGridDiagnosis" className="mb-3">
+                <Form.Label>
+                  {tCommon("appointment.doctor_specialty")}
+                </Form.Label>
+                <Form.Control
+                  disabled
+                  type="text"
+                  value={appointment.doctor.medicalSpecialty}
+                  name="diagnosis"
+                  onChange={handleChangeConsultation}
+                />
+              </Form.Group>
 
               <Form onSubmit={handleEditFormSubmit}>
                 {hasAnyRole([Role.ADMIN, Role.Doctor]) && (
                   <fieldset disabled={!editing}>
                     <Form.Group controlId="formGridDiagnosis" className="mb-3">
-                      <Form.Label>Діагноз</Form.Label>
+                      <Form.Label>
+                        {tCommon("appointment.diagnosis")}
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         value={editedConsultation?.diagnosis ?? ""}
@@ -259,7 +292,10 @@ export default function AppointmentPage({
                       />
                     </Form.Group>
                     <Form.Group controlId="formGridSymptoms" className="mb-3">
-                      <Form.Label>Симптоми</Form.Label>
+                      <Form.Label>
+                        {" "}
+                        {tCommon("appointment.symptoms")}
+                      </Form.Label>
                       <Form.Control
                         as="textarea"
                         type="text"
@@ -273,7 +309,10 @@ export default function AppointmentPage({
                       controlId="formGridMedicalRecommendations"
                       className="mb-3"
                     >
-                      <Form.Label>Медичні рекомендації</Form.Label>
+                      <Form.Label>
+                        {" "}
+                        {tCommon("appointment.medical_recommendations")}
+                      </Form.Label>
                       <Form.Control
                         as="textarea"
                         ref={medicalRecommendationsRef}
@@ -288,7 +327,7 @@ export default function AppointmentPage({
                 <fieldset disabled>
                   <Row className="mb-3">
                     <Form.Group as={Col} controlId="formGridDate">
-                      <Form.Label>Дата</Form.Label>
+                      <Form.Label> {tCommon("date")}</Form.Label>
                       <Form.Control
                         readOnly
                         type="date"
@@ -297,7 +336,10 @@ export default function AppointmentPage({
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridTimeStart">
-                      <Form.Label>Час початку</Form.Label>
+                      <Form.Label>
+                        {" "}
+                        {tCommon("appointment.time_start")}
+                      </Form.Label>
                       <Form.Control
                         readOnly
                         type="time"
@@ -310,7 +352,7 @@ export default function AppointmentPage({
                       />
                     </Form.Group>
                     <Form.Group as={Col} controlId="formGridTimeEnd">
-                      <Form.Label>Час закінчення</Form.Label>
+                      <Form.Label>{tCommon("appointment.time_end")}</Form.Label>
                       <Form.Control
                         readOnly
                         type="time"
@@ -341,7 +383,7 @@ export default function AppointmentPage({
                         className="me-2"
                         hidden={editing}
                       >
-                        Перепланувати
+                        {tSpecificAppointmentPage("reschedule_button_label")}
                       </Button>
                     </Link>
                   </>
@@ -364,7 +406,7 @@ export default function AppointmentPage({
                       hidden={!editing}
                       id="confirmEdit"
                     >
-                      Зберегти
+                      {tCommon("action_save_button_label")}
                     </Button>
                     <Button
                       variant="secondary"
@@ -373,33 +415,33 @@ export default function AppointmentPage({
                       hidden={!editing}
                       onClick={handleCancelEdit}
                     >
-                      Скасувати
+                      {tCommon("action_cancel_button_label")}
                     </Button>
                   </>
                 )}
-                {userDetails?.id === appointment.doctor.id ||
-                  (hasAnyRole([Role.ADMIN, Role.RECEPTIONIST]) && (
-                    <Button
-                      variant="danger"
-                      type="button"
-                      hidden={editing}
-                      id="deleteButton"
-                      onClick={handleShowDeleteModal}
-                    >
-                      <i className="bi bi-trash"></i>
-                    </Button>
-                  ))}
+                {(userDetails?.id === appointment.doctor.id ||
+                  hasAnyRole([Role.ADMIN, Role.RECEPTIONIST])) && (
+                  <Button
+                    variant="danger"
+                    type="button"
+                    hidden={editing}
+                    id="deleteButton"
+                    onClick={handleShowDeleteModal}
+                  >
+                    <i className="bi bi-trash"></i>
+                  </Button>
+                )}
               </Form>
             </Card.Body>
           </Card>
         </>
       ) : (
         <Alert variant="danger">
-          <Alert.Heading>Ууупсс...</Alert.Heading>
-          <p>
-            При виконанні запиту виникла помилка або запитуваного прийому не
-            існує
-          </p>
+          <Alert.Heading>
+            {" "}
+            {tSpecificAppointmentPage("error_alert.header")}
+          </Alert.Heading>
+          <p>{tSpecificAppointmentPage("error_alert.text")}</p>
         </Alert>
       )}
     </>

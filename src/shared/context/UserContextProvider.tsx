@@ -32,6 +32,8 @@ export const UserContextProvider = ({
       await UserService.logout();
     } catch (error) {
     } finally {
+      localStorage.removeItem("access_token");
+      setUserDetails(null);
       router.push("/login?logout");
     }
   };
@@ -78,6 +80,7 @@ export const UserContextProvider = ({
     localStorage.removeItem("access_token");
     try {
       const res = await UserService.loginUser(username, password);
+
       if (res) {
         const accessToken = res?.data.accessToken;
         let decodedToken = undefined;
@@ -88,7 +91,6 @@ export const UserContextProvider = ({
         }
         if (decodedToken) {
           localStorage.setItem("access_token", accessToken);
-          router.push("/");
         }
       }
     } catch (error) {

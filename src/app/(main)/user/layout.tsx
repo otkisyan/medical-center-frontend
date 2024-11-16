@@ -1,8 +1,13 @@
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Обліковий запис",
-};
+export async function generateMetadata() {
+  const t = await getTranslations({ namespace: "PagesNavigation" });
+
+  return {
+    title: t("user"),
+  };
+}
 
 export default function UserLayout({
   children,

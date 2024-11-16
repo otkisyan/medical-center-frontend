@@ -1,9 +1,11 @@
 "use client";
 
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
+import PaginationBar from "@/components/pagination/PaginationBar";
 import useFetchOffices from "@/shared/hooks/office/useFetchOffices";
 import useFetchOfficesCount from "@/shared/hooks/office/useFetchOfficesCount";
 import { OfficeResponse } from "@/shared/interface/office/office-interface";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -20,6 +22,8 @@ import {
 } from "react-bootstrap";
 
 export default function OfficesPage() {
+  const tCommon = useTranslations("Common");
+  const tOfficesPage = useTranslations("OfficesPage");
   const initialParamsState = useMemo(
     () => ({
       number: "",
@@ -60,9 +64,9 @@ export default function OfficesPage() {
       <Form onSubmit={handleOfficeSearchFormSubmit}>
         <Row className="g-3 mb-3">
           <Col sm>
-            <FloatingLabel controlId="number" label="Номер кабінету">
+            <FloatingLabel controlId="number" label={tCommon("office.number")}>
               <Form.Control
-                type="text"
+                type="number"
                 name="number"
                 value={params.number}
                 onChange={handleSearchFormInput}
@@ -70,7 +74,7 @@ export default function OfficesPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="name" label="Назва кабінету">
+            <FloatingLabel controlId="name" label={tCommon("office.name")}>
               <Form.Control
                 type="text"
                 name="name"
@@ -82,7 +86,7 @@ export default function OfficesPage() {
         </Row>
         <Stack direction="horizontal" gap={3}>
           <Link href="/offices/new" className="link">
-            Новий кабінет →
+            {tOfficesPage("new_office_link_label")}
           </Link>
           <Button
             variant="link"
@@ -90,10 +94,10 @@ export default function OfficesPage() {
             style={{ textDecoration: "none" }}
             onClick={clearSearchParams}
           >
-            Очистити пошук
+            {tCommon("search.clear_button_label")}
           </Button>
           <Button variant="primary" type="submit" className="d-grid col-3">
-            Пошук
+            {tCommon("search.button_label")}
           </Button>
         </Stack>
       </Form>
@@ -106,9 +110,9 @@ export default function OfficesPage() {
           <Table striped responsive>
             <thead>
               <tr>
-                <th>Номер кабінету</th>
-                <th>Назва</th>
-                <th>Дія</th>
+                <th>{tCommon("office.number_short")}</th>
+                <th>{tCommon("office.name_short")}</th>
+                <th>{tCommon("action_label")}</th>
               </tr>
             </thead>
             <tbody>
@@ -131,53 +135,13 @@ export default function OfficesPage() {
               ))}
             </tbody>
           </Table>
-          <Pagination className="d-flex justify-content-center">
-            <Pagination.First
-              onClick={() => fetchOffices({ ...params, page: 0 })}
-              disabled={officePage.first === true}
-            />
-            <Pagination.Prev
-              onClick={() =>
-                fetchOffices({ ...params, page: officePage.number - 1 })
-              }
-              disabled={officePage.first === true}
-            />
-            {[...Array(officePage.totalPages)].map((_, i) => {
-              if (
-                i === 0 ||
-                i === officePage.totalPages - 1 ||
-                (i >= officePage.number - 2 && i <= officePage.number + 2)
-              ) {
-                return (
-                  <Pagination.Item
-                    key={i}
-                    active={i === officePage.number}
-                    onClick={() => fetchOffices({ ...params, page: i })}
-                  >
-                    {i + 1}
-                  </Pagination.Item>
-                );
-              } else if (
-                i === officePage.number - 3 ||
-                i === officePage.number + 3
-              ) {
-                return <Pagination.Ellipsis key={i} disabled />;
-              }
-              return null;
-            })}
-            <Pagination.Next
-              onClick={() =>
-                fetchOffices({ ...params, page: officePage.number + 1 })
-              }
-              disabled={officePage.last === true}
-            />
-            <Pagination.Last
-              onClick={() =>
-                fetchOffices({ ...params, page: officePage.totalPages - 1 })
-              }
-              disabled={officePage.last === true}
-            />
-          </Pagination>
+          <PaginationBar
+            currentPage={officePage.number}
+            totalPages={officePage.totalPages}
+            onPageChange={(page) => fetchOffices({ ...params, page })}
+            isFirst={officePage.first}
+            isLast={officePage.last}
+          />
         </>
       ) : (
         <>
@@ -187,7 +151,7 @@ export default function OfficesPage() {
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Кабінетів за заданими критеріями не знайдено
+              {tOfficesPage("alerts.no_offices_found")}
             </Alert>
           ) : (
             <Alert
@@ -195,7 +159,7 @@ export default function OfficesPage() {
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Ще не додано жодного кабінету
+              {tOfficesPage("alerts.no_offices")}
             </Alert>
           )}
         </>

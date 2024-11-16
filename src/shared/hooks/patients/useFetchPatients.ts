@@ -18,18 +18,19 @@ export default function useFetchPatients() {
     initialPatientsPageState
   );
   const [loadingPatients, setLoadingPatients] = useState(true);
-
+  const [error, setError] = useState<any | null>(null);
   const fetchPatients = useCallback(async (params: any) => {
     try {
       setLoadingPatients(true);
       const data = await PatientService.findAllPatients(params);
       setPatientPage(data);
     } catch (error) {
+      setError(error);
       console.error("Error fetching patient data:", error);
     } finally {
       setLoadingPatients(false);
     }
   }, []);
 
-  return { patientPage, loadingPatients, fetchPatients };
+  return { patientPage, loadingPatients, fetchPatients, error };
 }

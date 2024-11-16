@@ -1,19 +1,20 @@
-import type { Metadata } from "next";
 import "@/css/styles.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { UserContextProvider } from "@/shared/context/UserContextProvider";
 import Wrapper from "@/components/layout/Wrapper";
 import NavBar from "@/components/layout/NavBar";
-import ToastContainerInstance from "@/components/toast/ToastContainerInstance";
-import { Suspense } from "react";
+import {getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Домашня сторінка",
-};
+export async function generateMetadata() {
+  const t = await getTranslations({ namespace: "PagesNavigation" });
 
-export default function MainLayout({
+  return {
+    title: t("home_page"),
+  };
+}
+
+export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;

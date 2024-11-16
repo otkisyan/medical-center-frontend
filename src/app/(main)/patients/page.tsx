@@ -1,9 +1,6 @@
 "use client";
-import { Page } from "@/shared/interface/page/page-interface";
-import { PatientResponse } from "@/shared/interface/patient/patient-interface";
-import { PatientService } from "@/shared/service/patient-service";
 import { formatDateToString } from "@/shared/utils/date-utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
@@ -18,8 +15,12 @@ import useFetchPatientsCount from "@/shared/hooks/patients/useFetchPatientsCount
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
 import { ButtonGroup } from "react-bootstrap";
+import { useTranslations } from "use-intl";
+import PaginationBar from "@/components/pagination/PaginationBar";
 
 export default function PatientsPage() {
+  const tCommon = useTranslations("Common");
+  const tPatientsPage = useTranslations("PatientsPage");
   const initialParamsState = useMemo(
     () => ({
       surname: "",
@@ -32,8 +33,17 @@ export default function PatientsPage() {
   );
 
   const [params, setParams] = useState(initialParamsState);
-  const { patientsCount, loadingPatientsCount } = useFetchPatientsCount();
-  const { patientPage, loadingPatients, fetchPatients } = useFetchPatients();
+  const {
+    patientsCount,
+    loadingPatientsCount,
+    error: errorLoadingPatientsCount,
+  } = useFetchPatientsCount();
+  const {
+    patientPage,
+    loadingPatients,
+    fetchPatients,
+    error: errorLoadingPatients,
+  } = useFetchPatients();
 
   const clearSearchParams = async () => {
     await fetchPatients(initialParamsState);
@@ -63,7 +73,10 @@ export default function PatientsPage() {
       <Form onSubmit={handlePatientSearchFormSubmit}>
         <Row className="g-3">
           <Col sm>
-            <FloatingLabel controlId="surname" label="Прізвище">
+            <FloatingLabel
+              controlId="surname"
+              label={tCommon("personal_data.surname")}
+            >
               <Form.Control
                 type="text"
                 name="surname"
@@ -73,7 +86,10 @@ export default function PatientsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="name" label="Ім'я">
+            <FloatingLabel
+              controlId="name"
+              label={tCommon("personal_data.name")}
+            >
               <Form.Control
                 type="text"
                 name="name"
@@ -83,7 +99,10 @@ export default function PatientsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="middleName" label="По батькові">
+            <FloatingLabel
+              controlId="middleName"
+              label={tCommon("personal_data.middle_name")}
+            >
               <Form.Control
                 type="text"
                 name="middleName"
@@ -95,7 +114,7 @@ export default function PatientsPage() {
           <Col>
             <FloatingLabel
               controlId="birthDate"
-              label="Дата народження"
+              label={tCommon("personal_data.birth_date")}
               className="mb-3"
             >
               <Form.Control
@@ -109,7 +128,7 @@ export default function PatientsPage() {
         </Row>
         <Stack direction="horizontal" gap={3}>
           <Link href="/patients/new" className="link">
-            Новий пацієнт →
+            {tPatientsPage("new_patient_link_label")}
           </Link>
           <Button
             variant="link"
@@ -117,10 +136,10 @@ export default function PatientsPage() {
             style={{ textDecoration: "none" }}
             onClick={clearSearchParams}
           >
-            Очистити пошук
+            {tCommon("search.clear_button_label")}
           </Button>
           <Button variant="primary" type="submit" className="d-grid col-3">
-            Пошук
+            {tCommon("search.button_label")}
           </Button>
         </Stack>
       </Form>
@@ -136,11 +155,11 @@ export default function PatientsPage() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Прізвище</th>
-                <th>{`Ім'я`}</th>
-                <th>По батькові</th>
-                <th>Дата народження</th>
-                <th>Дія</th>
+                <th>{tCommon("personal_data.surname")}</th>
+                <th>{tCommon("personal_data.name")}</th>
+                <th>{tCommon("personal_data.middle_name")}</th>
+                <th>{tCommon("personal_data.birth_date")}</th>
+                <th>{tCommon("action_label")}</th>
               </tr>
             </thead>
             <tbody>
@@ -182,63 +201,31 @@ export default function PatientsPage() {
               ))}
             </tbody>
           </Table>
-          <Pagination className="d-flex justify-content-center">
-            <Pagination.First
-              onClick={() => fetchPatients({ ...params, page: 0 })}
-              disabled={patientPage.first === true}
-            />
-            <Pagination.Prev
-              onClick={() =>
-                fetchPatients({ ...params, page: patientPage.number - 1 })
-              }
-              disabled={patientPage.first === true}
-            />
-            {[...Array(patientPage.totalPages)].map((_, i) => {
-              if (
-                i === 0 ||
-                i === patientPage.totalPages - 1 ||
-                (i >= patientPage.number - 2 && i <= patientPage.number + 2)
-              ) {
-                return (
-                  <Pagination.Item
-                    key={i}
-                    active={i === patientPage.number}
-                    onClick={() => fetchPatients({ ...params, page: i })}
-                  >
-                    {i + 1}
-                  </Pagination.Item>
-                );
-              } else if (
-                i === patientPage.number - 3 ||
-                i === patientPage.number + 3
-              ) {
-                return <Pagination.Ellipsis key={i} disabled />;
-              }
-              return null;
-            })}
-            <Pagination.Next
-              onClick={() =>
-                fetchPatients({ ...params, page: patientPage.number + 1 })
-              }
-              disabled={patientPage.last === true}
-            />
-            <Pagination.Last
-              onClick={() =>
-                fetchPatients({ ...params, page: patientPage.totalPages - 1 })
-              }
-              disabled={patientPage.last === true}
-            />
-          </Pagination>
+          <PaginationBar
+            currentPage={patientPage.number}
+            totalPages={patientPage.totalPages}
+            onPageChange={(page) => fetchPatients({ ...params, page })}
+            isFirst={patientPage.first}
+            isLast={patientPage.last}
+          />
         </>
       ) : (
         <>
-          {patientsCount > 0 ? (
+          {errorLoadingPatients || errorLoadingPatientsCount ? (
             <Alert
               variant={"danger"}
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Пацієнтів за заданими критеріями не знайдено
+              {tPatientsPage("alerts.error_fetching_patients")}
+            </Alert>
+          ) : patientsCount > 0 ? (
+            <Alert
+              variant={"danger"}
+              className="text-center mx-auto"
+              style={{ maxWidth: "400px" }}
+            >
+              {tPatientsPage("alerts.no_patients_found")}
             </Alert>
           ) : (
             <Alert
@@ -246,7 +233,7 @@ export default function PatientsPage() {
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Ще не додано жодного пацієнта
+              {tPatientsPage("alerts.no_patients")}
             </Alert>
           )}
         </>

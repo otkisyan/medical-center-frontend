@@ -8,9 +8,11 @@ import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
 import useFetchReceptionist from "@/shared/hooks/receptionist/useFetchReceptionist";
 import { formatDateToStringWithTime } from "@/shared/utils/date-utils";
 import { useEffect, useState } from "react";
-import ua from "@/shared/locale/ua-locale.json";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
+  const tHomePage = useTranslations("HomePage");
+  const tUser = useTranslations("User");
   const { hasAnyRole, userDetails } = useAuth();
   const [greeting, setGreeting] = useState("");
   const [role, setRole] = useState("");
@@ -23,30 +25,30 @@ export default function Home() {
   useEffect(() => {
     const currentHour = new Date().getHours();
     if (currentHour < 13) {
-      setGreeting("Добрий ранок");
+      setGreeting(tHomePage("welcome_morning_label"));
     } else if (currentHour < 18) {
-      setGreeting("Добрий день");
+      setGreeting(tHomePage("welcome_day_label"));
     } else {
-      setGreeting("Добрий вечір");
+      setGreeting(tHomePage("welcome_evening_label"));
     }
-  }, []);
+  }, [tHomePage]);
 
   useEffect(() => {
     if (hasAnyRole([Role.Doctor])) {
-      setRole(ua.roles.DOCTOR);
+      setRole(tUser("roles.doctor"));
       if (userDetails) {
         fetchDoctor(userDetails.id);
       }
     } else if (hasAnyRole([Role.RECEPTIONIST])) {
-      setRole(ua.roles.RECEPTIONIST);
+      setRole(tUser("roles.receptionist"));
       if (userDetails) {
         fetchReceptionist(userDetails.id);
       }
     } else if (hasAnyRole([Role.ADMIN])) {
-      setRole(ua.roles.ADMIN);
+      setRole(tUser("roles.admin"));
       setFullName("admin");
     }
-  }, [hasAnyRole, userDetails, fetchDoctor, fetchReceptionist]);
+  }, [hasAnyRole, userDetails, fetchDoctor, fetchReceptionist, tUser]);
 
   useEffect(() => {
     if (doctor) {
@@ -61,8 +63,10 @@ export default function Home() {
           "." +
           receptionist.middleName[0]
       );
+    } else {
+      setFullName("admin");
     }
-  }, [doctor, receptionist]);
+  }, [doctor, receptionist, userDetails]);
 
   return (
     <>

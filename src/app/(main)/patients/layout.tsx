@@ -1,8 +1,12 @@
-import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Пацієнти",
-};
+export async function generateMetadata() {
+  const t = await getTranslations({ namespace: "PagesNavigation" });
+
+  return {
+    title: t("patients"),
+  };
+}
 
 export default function PatientsLayout({
   children,

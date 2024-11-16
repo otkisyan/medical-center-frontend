@@ -15,7 +15,6 @@ export default function useFetchAppointmentConsultation() {
       setConsultation(data);
     } catch (error) {
       console.error("Error fetching appointment consultation:", error);
-      throw error;
     } finally {
       setLoadingConsultation(false);
     }
@@ -26,6 +25,6 @@ export default function useFetchAppointmentConsultation() {
     loadingConsultation,
     fetchAppointmentConsultation,
     setConsultation,
-    setLoadingConsultation
+    setLoadingConsultation,
   };
 }

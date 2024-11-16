@@ -5,7 +5,6 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
-import Pagination from "react-bootstrap/Pagination";
 import Row from "react-bootstrap/Row";
 import Stack from "react-bootstrap/Stack";
 import Table from "react-bootstrap/Table";
@@ -15,8 +14,12 @@ import useFetchReceptionistsCount from "@/shared/hooks/receptionist/useFetchRece
 import { formatDateToString } from "@/shared/utils/date-utils";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
+import PaginationBar from "@/components/pagination/PaginationBar";
+import { useTranslations } from "next-intl";
 
 export default function ReceptionistsPage() {
+  const tCommon = useTranslations("Common");
+  const tReceptionistsPage = useTranslations("ReceptionistsPage");
   const initialParamsState = useMemo(
     () => ({
       surname: "",
@@ -62,7 +65,10 @@ export default function ReceptionistsPage() {
       <Form onSubmit={handleReceptionistSearchFormSubmit}>
         <Row className="g-3">
           <Col sm>
-            <FloatingLabel controlId="surname" label="Прізвище">
+            <FloatingLabel
+              controlId="surname"
+              label={tCommon("personal_data.surname")}
+            >
               <Form.Control
                 type="text"
                 name="surname"
@@ -72,7 +78,10 @@ export default function ReceptionistsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="name" label="Ім'я">
+            <FloatingLabel
+              controlId="name"
+              label={tCommon("personal_data.name")}
+            >
               <Form.Control
                 type="text"
                 name="name"
@@ -82,7 +91,10 @@ export default function ReceptionistsPage() {
             </FloatingLabel>
           </Col>
           <Col sm>
-            <FloatingLabel controlId="middleName" label="По батькові">
+            <FloatingLabel
+              controlId="middleName"
+              label={tCommon("personal_data.middle_name")}
+            >
               <Form.Control
                 type="text"
                 name="middleName"
@@ -94,7 +106,7 @@ export default function ReceptionistsPage() {
           <Col>
             <FloatingLabel
               controlId="birthDate"
-              label="Дата народження"
+              label={tCommon("personal_data.birth_date")}
               className="mb-3"
             >
               <Form.Control
@@ -108,7 +120,7 @@ export default function ReceptionistsPage() {
         </Row>
         <Stack direction="horizontal" gap={3}>
           <Link href="/receptionists/new" className="link">
-            Новий реєстратор →
+            {tReceptionistsPage("new_receptionist_link_label")}
           </Link>
           <Button
             variant="link"
@@ -116,10 +128,10 @@ export default function ReceptionistsPage() {
             style={{ textDecoration: "none" }}
             onClick={clearSearchParams}
           >
-            Очистити пошук
+            {tCommon("search.clear_button_label")}
           </Button>
           <Button variant="primary" type="submit" className="d-grid col-3">
-            Пошук
+            {tCommon("search.button_label")}
           </Button>
         </Stack>
       </Form>
@@ -133,11 +145,11 @@ export default function ReceptionistsPage() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Прізвище</th>
-                <th>{`Ім'я`}</th>
-                <th>По батькові</th>
-                <th>Дата народження</th>
-                <th>Дія</th>
+                <th>{tCommon("personal_data.surname")}</th>
+                <th>{tCommon("personal_data.name")}</th>
+                <th>{tCommon("personal_data.middle_name")}</th>
+                <th>{tCommon("personal_data.birth_date")}</th>
+                <th>{tCommon("action_label")}</th>
               </tr>
             </thead>
             <tbody>
@@ -167,63 +179,13 @@ export default function ReceptionistsPage() {
               ))}
             </tbody>
           </Table>
-          <Pagination className="d-flex justify-content-center">
-            <Pagination.First
-              onClick={() => fetchReceptionists({ ...params, page: 0 })}
-              disabled={receptionistPage.first === true}
-            />
-            <Pagination.Prev
-              onClick={() =>
-                fetchReceptionists({
-                  ...params,
-                  page: receptionistPage.number - 1,
-                })
-              }
-              disabled={receptionistPage.first === true}
-            />
-            {[...Array(receptionistPage.totalPages)].map((_, i) => {
-              if (
-                i === 0 ||
-                i === receptionistPage.totalPages - 1 ||
-                (i >= receptionistPage.number - 2 &&
-                  i <= receptionistPage.number + 2)
-              ) {
-                return (
-                  <Pagination.Item
-                    key={i}
-                    active={i === receptionistPage.number}
-                    onClick={() => fetchReceptionists({ ...params, page: i })}
-                  >
-                    {i + 1}
-                  </Pagination.Item>
-                );
-              } else if (
-                i === receptionistPage.number - 3 ||
-                i === receptionistPage.number + 3
-              ) {
-                return <Pagination.Ellipsis key={i} disabled />;
-              }
-              return null;
-            })}
-            <Pagination.Next
-              onClick={() =>
-                fetchReceptionists({
-                  ...params,
-                  page: receptionistPage.number + 1,
-                })
-              }
-              disabled={receptionistPage.last === true}
-            />
-            <Pagination.Last
-              onClick={() =>
-                fetchReceptionists({
-                  ...params,
-                  page: receptionistPage.totalPages - 1,
-                })
-              }
-              disabled={receptionistPage.last === true}
-            />
-          </Pagination>
+          <PaginationBar
+            currentPage={receptionistPage.number}
+            totalPages={receptionistPage.totalPages}
+            onPageChange={(page) => fetchReceptionists({ ...params, page })}
+            isFirst={receptionistPage.first}
+            isLast={receptionistPage.last}
+          />
         </>
       ) : (
         <>
@@ -233,7 +195,7 @@ export default function ReceptionistsPage() {
               className="text-center mx-auto"
               style={{ maxWidth: "450px" }}
             >
-              Реєстраторів за заданими критеріями не знайдено
+              {tReceptionistsPage("alerts.no_receptionists_found")}
             </Alert>
           ) : (
             <Alert
@@ -241,7 +203,7 @@ export default function ReceptionistsPage() {
               className="text-center mx-auto"
               style={{ maxWidth: "400px" }}
             >
-              Ще не додано жодного реєстратора
+              {tReceptionistsPage("alerts.no_receptionists")}
             </Alert>
           )}
         </>

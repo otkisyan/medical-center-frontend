@@ -15,7 +15,6 @@ export default function useFetchAppointment() {
       setAppointment(data);
     } catch (error) {
       console.error("Error fetching appointment:", error);
-      throw error;
     } finally {
       setLoadingAppointment(false);
     }
