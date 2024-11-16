@@ -6,39 +6,41 @@ Medical Center Reception Management Frontend
 A fast and responsive user experience tailored to the needs of medical center staff. It streamlines workflows for managing patients, doctors, work schedules, doctor's offices, and appointments. Built with TypeScript, React, and Next.js, it utilizes React Bootstrap for a modern UI and next-intl for Ukrainian and English language support.
 </p>
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Important Endpoints](#important-endpoints)
+
 ## Overview
 
 This frontend application is designed to work seamlessly with the [Medical Center API](https://github.com/otkisyan/medical-center-api)
 
-First, run the development server:
+## Getting Started
+
+### Prerequisites
+
+- Docker and Docker Compose
+
+### Installation
+
+**Before you start:** Change the values of the environment variables in the `.env` file to customize them to your needs, or leave them unchanged.
+
+1. Clone the repo
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+> git clone https://github.com/otkisyan/medical-center-frontend.git
+> cd medical-center-frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run the Application
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+> docker-compose up -d
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Important Endpoints:
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- http://localhost:3001 - Application

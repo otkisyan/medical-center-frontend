@@ -1,9 +1,10 @@
 import { Col, Container, ProgressBar, Row } from "react-bootstrap";
-import SpinnerCenter from "./spinner/SpinnerCenter";
 import Wrapper from "../layout/Wrapper";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function ContextLoading() {
+  const tContextLoading = useTranslations("ContextLoading");
   return (
     <Container className="d-flex align-items-center justify-content-center min-vh-100">
       <Row>
@@ -23,7 +24,7 @@ export default function ContextLoading() {
               style={{ marginTop: "40px" }}
             />
             <p className="text-center mx-auto" style={{ marginTop: "20px" }}>
-              Зачекайте, завантаження може тривати довше ніж звичайно...
+              {tContextLoading("loading_notice")}
             </p>
           </Wrapper>
         </Col>

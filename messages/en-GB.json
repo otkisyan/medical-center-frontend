@@ -410,5 +410,8 @@
         "unexpected": "An unexpected error occurred while trying to log in!"
       }
     }
+  },
+  "ContextLoading": {
+    "loading_notice": "Please wait, it may take longer than usual to load..."
   }
 }
