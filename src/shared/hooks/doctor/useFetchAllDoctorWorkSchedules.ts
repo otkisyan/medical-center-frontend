@@ -2,14 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 import { WorkScheduleResponse } from "../../interface/work-schedule/work-schedule-interface";
 import { DoctorService } from "../../service/doctor-service";
 
-const useFetchAllDoctorWorkSchedules = (doctorId: number) => {
+const useFetchAllDoctorWorkSchedules = (doctorId: number | null) => {
   const [doctorWorkSchedules, setDoctorWorkSchedules] = useState<
     WorkScheduleResponse[]
   >([]);
   const [loadingDoctorWorkSchedules, setLoadingDoctorWorkSchedules] =
     useState(true);
 
-  const fetchAllDoctorWorkSchedules = useCallback(async () => {
+  const fetchAllDoctorWorkSchedules = useCallback(async (doctorId: number) => {
     let allWorkSchedules: WorkScheduleResponse[] = [];
     let requestParams = {
       page: 0,
@@ -29,13 +29,13 @@ const useFetchAllDoctorWorkSchedules = (doctorId: number) => {
     } catch (error) {
       console.error("Error fetching work schedules:", error);
     }
-  }, [doctorId]);
+  }, []);
 
-  useEffect(() => {
-    const fetchDoctorWorkSchedules = async () => {
+  const fetchDoctorWorkSchedules = useCallback(
+    async (doctorId: number) => {
       try {
         setLoadingDoctorWorkSchedules(true);
-        const workSchedules = await fetchAllDoctorWorkSchedules();
+        const workSchedules = await fetchAllDoctorWorkSchedules(doctorId);
         if (workSchedules) {
           setDoctorWorkSchedules(workSchedules);
         }
@@ -44,15 +44,23 @@ const useFetchAllDoctorWorkSchedules = (doctorId: number) => {
       } finally {
         setLoadingDoctorWorkSchedules(false);
       }
-    };
+    },
+    [fetchAllDoctorWorkSchedules]
+  );
 
-    fetchDoctorWorkSchedules();
-  }, [fetchAllDoctorWorkSchedules]);
+  useEffect(() => {
+    if (doctorId) {
+      fetchDoctorWorkSchedules(doctorId);
+    } else {
+      setLoadingDoctorWorkSchedules(false);
+    }
+  }, [fetchAllDoctorWorkSchedules, doctorId, fetchDoctorWorkSchedules]);
 
   return {
     doctorWorkSchedules,
     loadingDoctorWorkSchedules,
     setDoctorWorkSchedules,
+    fetchDoctorWorkSchedules
   };
 };
 

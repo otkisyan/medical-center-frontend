@@ -1,8 +1,17 @@
 "use client";
+import DoctorCard from "@/components/doctor/DoctorCard";
+import DoctorReadonlyForm from "@/components/doctor/DoctorReadonlyForm";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import LocaleSwitcher from "@/components/locale/LocaleSwitcher";
+import ReceptionistCard from "@/components/receptionist/ReceptionistCard";
+import ReceptionistReadonlyForm from "@/components/receptionist/ReceptionistReadonlyForm";
+import WorkScheduleReadonlyForm from "@/components/workschedule/WorkScheduleReadonlyForm";
 import { useAuth } from "@/shared/context/UserContextProvider";
 import { Role } from "@/shared/enum/role";
+import useFetchAllDoctorWorkSchedules from "@/shared/hooks/doctor/useFetchAllDoctorWorkSchedules";
+import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
+import useFetchOfficesOptions from "@/shared/hooks/office/useFetchOfficesOptions";
+import useFetchReceptionist from "@/shared/hooks/receptionist/useFetchReceptionist";
 import {
   ChangePasswordRequest,
   initialChangePasswordRequestState,
@@ -38,6 +47,24 @@ export default function UserPage() {
   const [changePasswordValidationError, setChangePasswordValidationError] =
     useState(false);
   const [apiError, setApiError] = useState("");
+  const { doctor, fetchDoctor, loadingDoctor } = useFetchDoctor(null);
+  const [loadingUserInfo, setLoadingUserInfo] = useState(true);
+  const { receptionist, fetchReceptionist, loadingReceptionist } =
+    useFetchReceptionist(null);
+  const {
+    loadingOfficesOptions,
+    officesOptions,
+    defaultOfficeOption,
+    findOfficeOptionByValue,
+    fetchOffices,
+  } = useFetchOfficesOptions(hasAnyRole([Role.Doctor]));
+
+  const {
+    doctorWorkSchedules,
+    loadingDoctorWorkSchedules,
+    setDoctorWorkSchedules,
+    fetchDoctorWorkSchedules,
+  } = useFetchAllDoctorWorkSchedules(null);
 
   const handleCloseChangePasswordModal = () => {
     setShowChangePasswordModal(false);
@@ -53,12 +80,28 @@ export default function UserPage() {
   useEffect(() => {
     if (hasAnyRole([Role.Doctor])) {
       setRole(tUser("roles.doctor"));
+      if (userDetails) {
+        fetchDoctor(userDetails.id);
+        fetchDoctorWorkSchedules(userDetails.id);
+      }
     } else if (hasAnyRole([Role.RECEPTIONIST])) {
       setRole(tUser("roles.receptionist"));
+      if (userDetails) {
+        fetchReceptionist(userDetails.id);
+      }
     } else if (hasAnyRole([Role.ADMIN])) {
       setRole(tUser("roles.admin"));
     }
-  }, [hasAnyRole, tUser]);
+  }, [
+    hasAnyRole,
+    tUser,
+    fetchDoctor,
+    fetchReceptionist,
+    userDetails,
+    fetchDoctorWorkSchedules,
+    loadingUserInfo,
+    setLoadingUserInfo,
+  ]);
 
   const handleChangePasswordRequest = (event: any) => {
     const { name, value } = event.target;
@@ -111,41 +154,83 @@ export default function UserPage() {
   return (
     <>
       <br></br>
-      <Card className="mb-3">
-        <Card.Header>{tUserPage("security_label")}</Card.Header>
-        <Card.Body>
-          <Row>
-            <Col>
-              <Form.Group className="mb-3">
-                <Form.Label>{tUserPage("login_label")}</Form.Label>
-                <Form.Control
-                  type="text"
-                  readOnly
-                  disabled
-                  value={userDetails?.username}
-                />
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group className="mb-3">
-                <Form.Label>{tUserPage("role_label")}</Form.Label>
-                <Form.Control type="text" readOnly disabled value={role} />
-              </Form.Group>
-            </Col>
-          </Row>
+      {loadingDoctor || loadingReceptionist ? (
+        <>
+          <SpinnerCenter></SpinnerCenter>
+          <br></br>
+        </>
+      ) : doctor ? (
+        <div className="mb-3">
+          <DoctorCard
+            loadingDoctorWorkSchedules={loadingDoctorWorkSchedules}
+            doctorForm={
+              <DoctorReadonlyForm
+                doctor={doctor}
+                officesOptions={officesOptions}
+                findOfficeOptionByValue={findOfficeOptionByValue}
+                loadingOfficesOptions={loadingOfficesOptions}
+              />
+            }
+            workScheduleForm={
+              <WorkScheduleReadonlyForm
+                doctorWorkSchedules={doctorWorkSchedules}
+              />
+            }
+          ></DoctorCard>
+        </div>
+      ) : receptionist ? (
+        <>
+          <div className="mb-3">
+            <ReceptionistCard
+              receptionistForm={
+                <ReceptionistReadonlyForm receptionist={receptionist} />
+              }
+            ></ReceptionistCard>
+          </div>
+        </>
+      ) : (
+        <> </>
+      )}
 
-          <Button type="button" onClick={handleShowChangePasswordModal}>
-            {tUserPage("change_password_button_label")}
-          </Button>
-        </Card.Body>
-      </Card>
+      {!loadingDoctor && !loadingReceptionist && (
+        <>
+          <Card className="mb-3">
+            <Card.Header>{tUserPage("security_label")}</Card.Header>
+            <Card.Body>
+              <Row>
+                <Col>
+                  <Form.Group className="mb-3">
+                    <Form.Label>{tUserPage("login_label")}</Form.Label>
+                    <Form.Control
+                      type="text"
+                      readOnly
+                      disabled
+                      value={userDetails?.username}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col>
+                  <Form.Group className="mb-3">
+                    <Form.Label>{tUserPage("role_label")}</Form.Label>
+                    <Form.Control type="text" readOnly disabled value={role} />
+                  </Form.Group>
+                </Col>
+              </Row>
 
-      <Card>
-        <Card.Header>{tUserPage("settings_label")}</Card.Header>
-        <Card.Body>
-          <LocaleSwitcher></LocaleSwitcher>
-        </Card.Body>
-      </Card>
+              <Button type="button" onClick={handleShowChangePasswordModal}>
+                {tUserPage("change_password_button_label")}
+              </Button>
+            </Card.Body>
+          </Card>
+
+          <Card>
+            <Card.Header>{tUserPage("settings_label")}</Card.Header>
+            <Card.Body>
+              <LocaleSwitcher></LocaleSwitcher>
+            </Card.Body>
+          </Card>
+        </>
+      )}
 
       <Modal
         show={showChangePasswordModal}
@@ -266,6 +351,7 @@ export default function UserPage() {
           </fieldset>
         </Form>
       </Modal>
+      <br></br>
     </>
   );
 }

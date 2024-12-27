@@ -1,16 +1,13 @@
 "use client";
 import { AppointmentResponse } from "@/shared/interface/appointment/appointment-interface";
 import { TimeSlotResponse } from "@/shared/interface/time-slot/time-slot-interface";
-import { formatTimeSecondsToTime } from "@/shared/utils/date-utils";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { Table } from "react-bootstrap";
 import { Calendar, momentLocalizer, SlotInfo } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment/locale/en-GB";
 import "moment/locale/uk";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocale } from "next-intl";
 import { notifyError } from "@/shared/toast/toast-notifiers";
 

@@ -3,7 +3,7 @@ import { OfficeService } from "../../service/office-service";
 import { OfficeResponse } from "../../interface/office/office-interface";
 import { useTranslations } from "next-intl";
 
-const useFetchOfficesOptions = () => {
+const useFetchOfficesOptions = (enabled: boolean = true) => {
   const tCommon = useTranslations("Common");
   const initialOfficesOptions = useMemo(
     () => [{ value: "", label: tCommon("personal_data.doctor.no_office") }],
@@ -61,14 +61,19 @@ const useFetchOfficesOptions = () => {
   }, [initialOfficesOptions]);
 
   useEffect(() => {
-    fetchOffices();
-  }, [fetchOffices]);
+    if (enabled) {
+      fetchOffices();
+    } else {
+      setLoadingOffices(false);
+    }
+  }, [fetchOffices, enabled]);
 
   return {
     loadingOfficesOptions,
     officesOptions,
     defaultOfficeOption,
     findOfficeOptionByValue,
+    fetchOffices,
   };
 };
 

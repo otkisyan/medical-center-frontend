@@ -1,9 +1,9 @@
 "use client";
+import DoctorCard from "@/components/doctor/DoctorCard";
+import DoctorUpdateForm from "@/components/doctor/DoctorUpdateForm";
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
-import { customReactSelectStyles } from "@/css/react-select";
-import { dayOfWeekMap } from "@/i18n/day-of-week-map";
-import { useAuth } from "@/shared/context/UserContextProvider";
-import { Role } from "@/shared/enum/role";
+import { WorkScheduleField } from "@/components/workschedule/WorkScheduleField";
+import WorkScheduleUpdateForm from "@/components/workschedule/WorkScheduleUpdateForm";
 import useFetchAllDoctorWorkSchedules from "@/shared/hooks/doctor/useFetchAllDoctorWorkSchedules";
 import useFetchDoctor from "@/shared/hooks/doctor/useFetchDoctor";
 import useFetchOfficesOptions from "@/shared/hooks/office/useFetchOfficesOptions";
@@ -20,40 +20,19 @@ import {
 import { DoctorService } from "@/shared/service/doctor-service";
 import { WorkScheduleService } from "@/shared/service/work-schedule-service";
 import { notifyError, notifySuccess } from "@/shared/toast/toast-notifiers";
-import {
-  formatTimeSecondsToTime,
-  timeStartBiggerThanEnd,
-} from "@/shared/utils/date-utils";
+import { timeStartBiggerThanEnd } from "@/shared/utils/date-utils";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  Alert,
-  Breadcrumb,
-  Button,
-  Card,
-  Nav,
-  Row,
-  Table,
-} from "react-bootstrap";
-import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
+import { Alert, Breadcrumb, Button, Card, Nav } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
-import Select from "react-select";
 
 export default function DoctorPage({ params }: { params: { id: number } }) {
   const tCommon = useTranslations("Common");
   const tPagesNavigation = useTranslations("PagesNavigation");
   const tSpecificDoctorPage = useTranslations("SpecificDoctorPage");
-  const tWorkSchedule = useTranslations("WorkSchedule");
   const router = useRouter();
-  const { hasAnyRole, userDetails } = useAuth();
-  enum Tab {
-    Doctor,
-    Work_Schedules,
-  }
-  const [activeTab, setActiveTab] = useState<Tab>(Tab.Doctor);
   const { doctor, loadingDoctor, setDoctor } = useFetchDoctor(params.id);
   const {
     loadingOfficesOptions,
@@ -85,10 +64,6 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
   const handleShowDeleteModal = () => setShowDeleteModal(true);
 
-  const handleTabClick = (tab: Tab) => {
-    setActiveTab(tab);
-  };
-
   const handleChangeDoctor = (event: any) => {
     const { name, value } = event.target;
     setEditedDoctor((prevEditedDoctor) => ({
@@ -97,7 +72,6 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
     }));
   };
 
-  type WorkScheduleField = "workTimeStart" | "workTimeEnd";
   const handleWorkScheduleChange = (
     index: number,
     field: WorkScheduleField,
@@ -283,348 +257,45 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
               </Button>
             </Modal.Footer>
           </Modal>
-          <Card>
-            <Card.Header>
-              <Nav variant="tabs" defaultActiveKey="#doctor">
-                <Nav.Item>
-                  <Nav.Link
-                    href="#doctor"
-                    onClick={() => handleTabClick(Tab.Doctor)}
-                  >
-                    {tSpecificDoctorPage("doctor_card.doctor_tab_header")}
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link
-                    href="#work-schedules"
-                    onClick={() => handleTabClick(Tab.Work_Schedules)}
-                  >
-                    {tSpecificDoctorPage("doctor_card.workschedule_tab_header")}
-                  </Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </Card.Header>
-            <Card.Body>
-              {activeTab === Tab.Doctor && (
-                <Form onSubmit={handleEditDoctorFormSubmit}>
-                  <fieldset disabled={!editingDoctor}>
-                    <Row className="mb-3">
-                      <Form.Group as={Col} controlId="formGridSurname">
-                        <Form.Label>
-                          {tCommon("personal_data.surname")}
-                        </Form.Label>
-                        <Form.Control
-                          type="text"
-                          required
-                          value={editedDoctor.surname ?? ""}
-                          name="surname"
-                          onChange={handleChangeDoctor}
-                        />
-                      </Form.Group>
-                      <Form.Group as={Col} controlId="formGridName">
-                        <Form.Label>{tCommon("personal_data.name")}</Form.Label>
-                        <Form.Control
-                          type="text"
-                          required
-                          value={editedDoctor.name ?? ""}
-                          name="name"
-                          onChange={handleChangeDoctor}
-                        />
-                      </Form.Group>
-                      <Form.Group as={Col} controlId="formGridMiddleName">
-                        <Form.Label>
-                          {tCommon("personal_data.middle_name")}
-                        </Form.Label>
-                        <Form.Control
-                          type="text"
-                          required
-                          value={editedDoctor.middleName ?? ""}
-                          name="middleName"
-                          onChange={handleChangeDoctor}
-                        />
-                      </Form.Group>
-                    </Row>
-                    <Form.Group controlId="formGridBirthDate" className="mb-3">
-                      <Form.Label>
-                        {tCommon("personal_data.birth_date")}
-                      </Form.Label>
-                      <Form.Control
-                        type="date"
-                        required
-                        value={
-                          editedDoctor.birthDate
-                            ? editedDoctor.birthDate.toString()
-                            : ""
-                        }
-                        name="birthDate"
-                        max="9999-12-31"
-                        onChange={handleChangeDoctor}
-                      />
-                    </Form.Group>
-                    <Row className="mb-3">
-                      <Form.Group as={Col} controlId="formGridPhone">
-                        <Form.Label>
-                          {tCommon("personal_data.phone")}
-                        </Form.Label>
-                        <Form.Control
-                          required
-                          type="text"
-                          value={editedDoctor.phone ?? ""}
-                          onChange={handleChangeDoctor}
-                          name="phone"
-                        />
-                      </Form.Group>
-                      <Form.Group as={Col} controlId="formGridMessengerContact">
-                        <Form.Label>
-                          {tCommon("personal_data.messenger_contact")}
-                        </Form.Label>
-                        <Form.Control
-                          type="text"
-                          value={editedDoctor.messengerContact ?? ""}
-                          name="messengerContact"
-                          onChange={handleChangeDoctor}
-                        />
-                      </Form.Group>
-                    </Row>
-                    <Form.Group controlId="formGridAddress" className="mb-3">
-                      <Form.Label>
-                        {tCommon("personal_data.address")}
-                      </Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={editedDoctor.address ?? ""}
-                        name="address"
-                        onChange={handleChangeDoctor}
-                      />
-                    </Form.Group>
-                    <Row className="mb-3">
-                      <Form.Group as={Col} controlId="formGridMedicalSpecialty">
-                        <Form.Label>
-                          {tCommon("personal_data.doctor.medical_specialty")}
-                        </Form.Label>
-                        <Form.Control
-                          required
-                          type="text"
-                          value={editedDoctor.medicalSpecialty ?? ""}
-                          name="medicalSpecialty"
-                          onChange={handleChangeDoctor}
-                        />
-                      </Form.Group>
-                      <Form.Group
-                        as={Col}
-                        controlId="formGridQualificationCategory"
-                      >
-                        <Form.Label>
-                          {tCommon(
-                            "personal_data.doctor.qualification_category"
-                          )}
-                        </Form.Label>
-                        <Form.Control
-                          type="text"
-                          value={editedDoctor.qualificationCategory ?? ""}
-                          name="qualificationCategory"
-                          onChange={handleChangeDoctor}
-                        />
-                      </Form.Group>
-                    </Row>
-                    <Form.Group as={Col} controlId="formGridOffice">
-                      <Form.Label>{tCommon("office.label")}</Form.Label>
-                      <Select
-                        className="basic-single mb-3"
-                        classNamePrefix="select"
-                        isLoading={loadingOfficesOptions}
-                        isSearchable={true}
-                        value={
-                          editedDoctor.officeId
-                            ? findOfficeOptionByValue(editedDoctor.officeId)
-                            : findOfficeOptionByValue("")
-                        }
-                        isDisabled={!editingDoctor}
-                        placeholder={
-                          loadingOfficesOptions
-                            ? tCommon("loading")
-                            : tCommon("office_select.placeholder_label")
-                        }
-                        name="officeId"
-                        onChange={(e) => {
-                          setEditedDoctor((prevEditedDoctor) => ({
-                            ...prevEditedDoctor,
-                            officeId: e.value,
-                          }));
-                        }}
-                        loadingMessage={() => tCommon("loading")}
-                        noOptionsMessage={() =>
-                          tCommon("office_select.no_options_message")
-                        }
-                        options={officesOptions}
-                        styles={customReactSelectStyles}
-                      />
-                    </Form.Group>
-                  </fieldset>
-                  {hasAnyRole([Role.ADMIN]) && (
-                    <>
-                      <Button
-                        variant="primary"
-                        type="button"
-                        className="me-2"
-                        hidden={editingDoctor}
-                        onClick={handleEditDoctor}
-                      >
-                        <i className="bi bi-pencil-square" id="editButton"></i>
-                      </Button>
-                      <Button
-                        variant="primary"
-                        type="submit"
-                        className="me-2"
-                        hidden={!editingDoctor}
-                        id="confirmEdit"
-                      >
-                        {tCommon("action_save_button_label")}
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        type="button"
-                        id="cancelButton"
-                        hidden={!editingDoctor}
-                        onClick={handleCancelEditDoctor}
-                      >
-                        {tCommon("action_cancel_button_label")}
-                      </Button>
-                      <Button
-                        variant="danger"
-                        type="button"
-                        hidden={editingDoctor}
-                        id="deleteButton"
-                        onClick={handleShowDeleteModal}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </Button>
-                    </>
-                  )}
-                </Form>
-              )}
-              {activeTab === Tab.Work_Schedules && (
-                <>
-                  {loadingDoctorWorkSchedules ? (
-                    <SpinnerCenter></SpinnerCenter>
-                  ) : (
-                    <Form onSubmit={handleEditWorkSchedulesFormSubmit}>
-                      {showWorkScheduleValidationError && (
-                        <Alert variant="danger">
-                          <Alert.Heading>
-                            {tWorkSchedule(
-                              "alerts.time_validation_error.heading"
-                            )}
-                          </Alert.Heading>
-                          <p>
-                            {tWorkSchedule("alerts.time_validation_error.text")}
-                            <br></br>
-                            {tWorkSchedule("alerts.time_validation_error.tip")}
-                          </p>
-                        </Alert>
-                      )}
-                      <Table responsive>
-                        <thead>
-                          <tr>
-                            <th>{tWorkSchedule("weekday")}</th>
-                            <th>{tWorkSchedule("worktime_start")}</th>
-                            <th>{tWorkSchedule("worktime_end")}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {editedDoctorWorkSchedules !== null &&
-                            editedDoctorWorkSchedules.map((workSchedule, i) => (
-                              <tr key={i}>
-                                <td>
-                                  {tWorkSchedule(
-                                    dayOfWeekMap[
-                                      doctorWorkSchedules[i]
-                                        .dayOfWeekResponseDto.name
-                                    ]
-                                  )}
-                                </td>
-                                <td>
-                                  <Form.Group controlId={`workTimeStart${i}`}>
-                                    <Form.Control
-                                      disabled={!editingWorkSchedules}
-                                      type="time"
-                                      value={
-                                        workSchedule.workTimeStart
-                                          ? formatTimeSecondsToTime(
-                                              workSchedule.workTimeStart
-                                            )
-                                          : ""
-                                      }
-                                      onChange={(e) => {
-                                        handleWorkScheduleChange(
-                                          i,
-                                          "workTimeStart",
-                                          e.target.value
-                                        );
-                                      }}
-                                    />
-                                  </Form.Group>
-                                  <br></br>
-                                </td>
-                                <td>
-                                  <Form.Group controlId={`workTimeEnd${i}`}>
-                                    <Form.Control
-                                      disabled={!editingWorkSchedules}
-                                      type="time"
-                                      value={
-                                        workSchedule.workTimeEnd
-                                          ? formatTimeSecondsToTime(
-                                              workSchedule.workTimeEnd
-                                            )
-                                          : ""
-                                      }
-                                      onChange={(e) => {
-                                        handleWorkScheduleChange(
-                                          i,
-                                          "workTimeEnd",
-                                          e.target.value
-                                        );
-                                      }}
-                                    />
-                                  </Form.Group>
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </Table>
-                      <Button
-                        variant="primary"
-                        type="button"
-                        className="me-2"
-                        hidden={editingWorkSchedules}
-                        onClick={handleEditWorkSchedules}
-                      >
-                        <i className="bi bi-pencil-square" id="editButton"></i>
-                      </Button>
-                      <Button
-                        variant="primary"
-                        type="submit"
-                        className="me-2"
-                        hidden={!editingWorkSchedules}
-                        id="confirmEdit"
-                      >
-                        {tCommon("action_save_button_label")}
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        type="button"
-                        id="cancelButton"
-                        hidden={!editingWorkSchedules}
-                        onClick={handleCancelEditWorkSchedules}
-                      >
-                        {tCommon("action_cancel_button_label")}
-                      </Button>
-                    </Form>
-                  )}
-                </>
-              )}
-            </Card.Body>
-          </Card>
+          <DoctorCard
+            loadingDoctorWorkSchedules={loadingDoctorWorkSchedules}
+            doctorForm={
+              <DoctorUpdateForm
+                editedDoctor={editedDoctor}
+                handleChangeDoctor={handleChangeDoctor}
+                handleEditDoctorFormSubmit={handleEditDoctorFormSubmit}
+                handleEditDoctor={handleEditDoctor}
+                handleCancelEditDoctor={handleCancelEditDoctor}
+                handleShowDeleteModal={handleShowDeleteModal}
+                loadingOfficesOptions={loadingOfficesOptions}
+                editingDoctor={editingDoctor}
+                officesOptions={officesOptions}
+                findOfficeOptionByValue={findOfficeOptionByValue}
+                handleChangeDoctorOffice={(e) => {
+                  setEditedDoctor((prevEditedDoctor) => ({
+                    ...prevEditedDoctor,
+                    officeId: e.value,
+                  }));
+                }}
+              />
+            }
+            workScheduleForm={
+              <WorkScheduleUpdateForm
+                showWorkScheduleValidationError={
+                  showWorkScheduleValidationError
+                }
+                editedDoctorWorkSchedules={editedDoctorWorkSchedules}
+                handleWorkScheduleChange={handleWorkScheduleChange}
+                doctorWorkSchedules={doctorWorkSchedules}
+                editingWorkSchedules={editingWorkSchedules}
+                handleEditWorkSchedules={handleEditWorkSchedules}
+                handleEditWorkSchedulesFormSubmit={
+                  handleEditWorkSchedulesFormSubmit
+                }
+                handleCancelEditWorkSchedules={handleCancelEditWorkSchedules}
+              />
+            }
+          ></DoctorCard>
         </>
       ) : (
         <Alert variant="danger">
