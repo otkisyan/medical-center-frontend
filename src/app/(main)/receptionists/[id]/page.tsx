@@ -14,9 +14,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Alert, Breadcrumb, Button, Card, Row } from "react-bootstrap";
-import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
+import { Alert, Breadcrumb, Button } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 
 export default function ReceptionistPage({
@@ -64,7 +62,7 @@ export default function ReceptionistPage({
 
   const deleteReceptionist = async () => {
     try {
-      const data = await ReceptionistService.deleteReceptionist(params.id);
+      await ReceptionistService.deleteReceptionist(params.id);
       router.push("/receptionists");
       notifySuccess(tSpecificReceptionistPage("toasts.delete_success"));
     } catch (error) {
@@ -165,7 +163,7 @@ export default function ReceptionistPage({
                 editedReceptionist={editedReceptionist}
                 handleChangeReceptionist={handleChangeReceptionist}
                 handleEditFormSubmit={handleEditFormSubmit}
-                handleEdit={handleEdit}
+                onClickEdit={handleEdit}
                 handleCancelEdit={handleCancelEdit}
                 handleShowDeleteModal={handleShowDeleteModal}
                 editing={editing}

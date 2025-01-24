@@ -60,7 +60,7 @@ const useFetchAllDoctorWorkSchedules = (doctorId: number | null) => {
     doctorWorkSchedules,
     loadingDoctorWorkSchedules,
     setDoctorWorkSchedules,
-    fetchDoctorWorkSchedules
+    fetchDoctorWorkSchedules,
   };
 };
 

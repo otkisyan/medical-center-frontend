@@ -1,10 +1,10 @@
-import { ReceptionistRequest } from "@/shared/interface/receptionist/receptionist-interface";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { PatientRequest } from "@/shared/interface/patient/patient-interface";
 import { useTranslations } from "next-intl";
+import { Button, Col, Form, Row } from "react-bootstrap";
 
-interface ReceptionistUpdateFormProps {
-  editedReceptionist: ReceptionistRequest;
-  handleChangeReceptionist: (e: React.ChangeEvent<HTMLInputElement>) => void;
+interface PatientUpdateFormProps {
+  editedPatient: PatientRequest;
+  handleChangePatient: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleEditFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onClickEdit: () => void;
   handleCancelEdit: () => void;
@@ -12,9 +12,9 @@ interface ReceptionistUpdateFormProps {
   editing: boolean;
 }
 
-const ReceptionistUpdateForm: React.FC<ReceptionistUpdateFormProps> = ({
-  editedReceptionist,
-  handleChangeReceptionist,
+const PatientUpdateForm: React.FC<PatientUpdateFormProps> = ({
+  editedPatient,
+  handleChangePatient,
   handleEditFormSubmit,
   onClickEdit,
   handleCancelEdit,
@@ -31,27 +31,27 @@ const ReceptionistUpdateForm: React.FC<ReceptionistUpdateFormProps> = ({
             <Form.Label>{tCommon("personal_data.surname")}</Form.Label>
             <Form.Control
               type="text"
-              value={editedReceptionist.surname ?? ""}
+              value={editedPatient.surname ?? ""}
               name="surname"
-              onChange={handleChangeReceptionist}
+              onChange={handleChangePatient}
             />
           </Form.Group>
           <Form.Group as={Col} controlId="formGridName">
             <Form.Label>{tCommon("personal_data.name")}</Form.Label>
             <Form.Control
               type="text"
-              value={editedReceptionist.name ?? ""}
+              value={editedPatient.name ?? ""}
               name="name"
-              onChange={handleChangeReceptionist}
+              onChange={handleChangePatient}
             />
           </Form.Group>
           <Form.Group as={Col} controlId="formGridMiddleName">
             <Form.Label>{tCommon("personal_data.middle_name")}</Form.Label>
             <Form.Control
               type="text"
-              value={editedReceptionist.middleName ?? ""}
+              value={editedPatient.middleName ?? ""}
               name="middleName"
-              onChange={handleChangeReceptionist}
+              onChange={handleChangePatient}
             />
           </Form.Group>
         </Row>
@@ -60,13 +60,55 @@ const ReceptionistUpdateForm: React.FC<ReceptionistUpdateFormProps> = ({
           <Form.Control
             type="date"
             value={
-              editedReceptionist.birthDate
-                ? editedReceptionist.birthDate.toString()
-                : ""
+              editedPatient.birthDate ? editedPatient.birthDate.toString() : ""
             }
             name="birthDate"
             max="9999-12-31"
-            onChange={handleChangeReceptionist}
+            onChange={handleChangePatient}
+          />
+        </Form.Group>
+        <Row className="mb-3">
+          <Form.Group as={Col} controlId="formGridPhone">
+            <Form.Label> {tCommon("personal_data.phone")}</Form.Label>
+            <Form.Control
+              type="text"
+              value={editedPatient.phone ?? ""}
+              onChange={handleChangePatient}
+              name="phone"
+            />
+          </Form.Group>
+          <Form.Group as={Col} controlId="formGridMessengerContact">
+            <Form.Label>
+              {" "}
+              {tCommon("personal_data.messenger_contact")}
+            </Form.Label>
+            <Form.Control
+              type="text"
+              value={editedPatient.messengerContact ?? ""}
+              name="messengerContact"
+              onChange={handleChangePatient}
+            />
+          </Form.Group>
+        </Row>
+        <Form.Group controlId="formGridAddress" className="mb-3">
+          <Form.Label> {tCommon("personal_data.address")}</Form.Label>
+          <Form.Control
+            type="text"
+            value={editedPatient.address ?? ""}
+            name="address"
+            onChange={handleChangePatient}
+          />
+        </Form.Group>
+        <Form.Group controlId="formGridPreferentialCategory" className="mb-3">
+          <Form.Label>
+            {" "}
+            {tCommon("personal_data.preferential_category")}
+          </Form.Label>
+          <Form.Control
+            type="text"
+            value={editedPatient.preferentialCategory ?? ""}
+            name="preferentialCategory"
+            onChange={handleChangePatient}
           />
         </Form.Group>
       </fieldset>
@@ -110,4 +152,4 @@ const ReceptionistUpdateForm: React.FC<ReceptionistUpdateFormProps> = ({
   );
 };
 
-export default ReceptionistUpdateForm;
+export default PatientUpdateForm;

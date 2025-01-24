@@ -1,7 +1,7 @@
 "use client";
 import { Locale } from "@/i18n/config";
 import { setUserLocale } from "@/shared/service/locale-service";
-import { Col, Form, Row } from "react-bootstrap";
+import { Form, Row } from "react-bootstrap";
 
 type Props = {
   defaultValue: string;

@@ -69,6 +69,10 @@ export default function TimeTablePage() {
   const memoizedTimeTableData = useMemo(() => timeTable, [timeTable]);
 
   useEffect(() => {
+    console.log(currentDate);
+  }, [currentDate]);
+
+  useEffect(() => {
     if (loadingTimeTable) {
       const timer = setTimeout(() => {
         setShowSpinner(true);
@@ -579,7 +583,6 @@ export default function TimeTablePage() {
                   <Form.Label>{tCommon("patient")}</Form.Label>
                   <Form.Control
                     className="mb-3"
-                    max="9999-12-31"
                     type="text"
                     disabled
                     value={`${patient.surname} ${patient.name.charAt(
@@ -596,11 +599,23 @@ export default function TimeTablePage() {
             <Form.Label>{tCommon("date")}</Form.Label>
             <Form.Control
               className="mb-3"
+              min="1997-01-01"
               max="9999-12-31"
               type="date"
               value={formatDateToHtml5(currentDate)}
               onChange={(e) => {
-                setCurrentDate(new Date(e.target.value));
+                const inputDate = e.target.value;
+
+                const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(inputDate);
+                if (!isValidDate) {
+                  return;
+                }
+
+                const parsedDate = new Date(inputDate);
+                if (isNaN(parsedDate.getTime())) {
+                  return;
+                }
+                setCurrentDate(parsedDate);
               }}
             />
           </Form.Group>
