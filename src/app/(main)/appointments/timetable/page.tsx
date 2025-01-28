@@ -474,11 +474,11 @@ export default function TimeTablePage() {
             <Button variant="primary" type="submit">
               {appointment
                 ? tTimetablePage(
-                    "new_appointment_modal.submit_button.reschedule_appointment_label"
-                  )
+                  "new_appointment_modal.submit_button.reschedule_appointment_label"
+                )
                 : tTimetablePage(
-                    "new_appointment_modal.submit_button.new_appointment_label"
-                  )}
+                  "new_appointment_modal.submit_button.new_appointment_label"
+                )}
             </Button>
           </Modal.Footer>
         </Form>
@@ -629,11 +629,11 @@ export default function TimeTablePage() {
           >
             {appointment
               ? tTimetablePage(
-                  "control_bar.appointment_action_button.reschedule_appointment_label"
-                )
+                "control_bar.appointment_action_button.reschedule_appointment_label"
+              )
               : tTimetablePage(
-                  "control_bar.appointment_action_button.new_appointment_label"
-                )}
+                "control_bar.appointment_action_button.new_appointment_label"
+              )}
           </Button>
         </Col>
       </Row>

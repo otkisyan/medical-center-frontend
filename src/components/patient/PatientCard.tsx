@@ -1,6 +1,5 @@
 import { useTranslations } from "next-intl";
-import { Card, Button, Form, Col, Row } from "react-bootstrap";
-import { PatientRequest } from "@/shared/interface/patient/patient-interface";
+import { Card } from "react-bootstrap";
 
 interface PatientCardProps {
   patientForm: React.ReactNode;
