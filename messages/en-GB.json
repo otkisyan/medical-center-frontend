@@ -50,6 +50,7 @@
         "medical_specialty": "Medical Specialty",
         "medical_specialty_short": "Specialty",
         "qualification_category": "Qualification category",
+        "education": "Education",
         "no_office": "Without an office"
       }
     },

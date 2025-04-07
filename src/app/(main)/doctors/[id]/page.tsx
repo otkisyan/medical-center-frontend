@@ -128,6 +128,7 @@ export default function DoctorPage({ params }: { params: { id: number } }) {
     event.preventDefault();
     try {
       const data = await DoctorService.updateDoctor(params.id, editedDoctor);
+      console.log(editedDoctor);
       setDoctor(data);
       setEditedDoctor(convertDoctorResponseToDoctorRequest(data));
       notifySuccess(tSpecificDoctorPage("toasts.doctor.edit_success"));

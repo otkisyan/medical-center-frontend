@@ -292,6 +292,17 @@ export default function NewDoctorPage() {
                 />
               </Form.Group>
             </Row>
+            <Form.Group controlId="formGridEducation" className="mb-3">
+              <Form.Label>
+                {tCommon("personal_data.doctor.education")}
+              </Form.Label>
+              <Form.Control
+                type="text"
+                value={doctor.education ?? ""}
+                name="education"
+                onChange={handleInputDoctor}
+              />
+            </Form.Group>
             <Form.Group as={Col} controlId="formGridOffice">
               <Form.Label>{tCommon("office.label")}</Form.Label>
               <Select
@@ -304,6 +315,7 @@ export default function NewDoctorPage() {
                     ? tCommon("loading")
                     : tCommon("office_select.placeholder_label")
                 }
+                value={findOfficeOptionByValue(doctor.officeId) || null}
                 name="officeId"
                 onChange={(e) => {
                   setDoctor((prevDoctor) => ({

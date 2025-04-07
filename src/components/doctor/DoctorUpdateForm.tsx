@@ -144,6 +144,15 @@ const DoctorUpdateForm: React.FC<DoctorUpdateFormProps> = ({
             />
           </Form.Group>
         </Row>
+        <Form.Group controlId="formGridEducation" className="mb-3">
+          <Form.Label>{tCommon("personal_data.doctor.education")}</Form.Label>
+          <Form.Control
+            type="text"
+            value={editedDoctor.education ?? ""}
+            name="education"
+            onChange={handleChangeDoctor}
+          />
+        </Form.Group>
         <Form.Group as={Col} controlId="formGridOffice">
           <Form.Label>{tCommon("office.label")}</Form.Label>
           <Select
