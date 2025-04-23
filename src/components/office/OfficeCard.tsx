@@ -10,9 +10,7 @@ const OfficeCard: React.FC<OfficeCardProps> = ({ officeForm }) => {
 
   return (
     <Card>
-      <Card.Header>
-        {tSpecificOfficePage("office_card_header")}
-      </Card.Header>
+      <Card.Header>{tSpecificOfficePage("office_card_header")}</Card.Header>
       <Card.Body>{officeForm}</Card.Body>
     </Card>
   );
