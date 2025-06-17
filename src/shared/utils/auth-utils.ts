@@ -11,16 +11,18 @@ export const hasSufficientRole = (
   pathname: string,
   userRoles: Role[] | null
 ): boolean => {
-  if (userRoles != null) {
-    return Object.entries(protectedRoutes).some(([route, roles]) => {
-      if (pathname.startsWith(route)) {
-        return userRoles.some((role) => roles.includes(role));
-      }
-      return false;
-    });
-  } else {
-    return false;
+  if (!userRoles) return false;
+
+  const sortedRoutes = Object.entries(protectedRoutes).sort(
+    ([a], [b]) => b.length - a.length
+  );
+  for (const [route, roles] of sortedRoutes) {
+    if (pathname.startsWith(route)) {
+      return userRoles.some((role) => roles.includes(role));
+    }
   }
+
+  return false;
 };
 
 export const convertStringRolesToEnumRole = (roles: string[]): Role[] => {

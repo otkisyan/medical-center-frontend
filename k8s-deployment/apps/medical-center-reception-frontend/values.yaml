@@ -1,0 +1,32 @@
+image:
+  repository: medical-center-reception-frontend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+next:
+  public: 
+    baseUrlServer: http://api.medical-center-reception.local/ 
+    # baseUrlClient: http://api.medical-center-reception.local/ 
+  containerPorts: 
+    http: 3001
+
+fullnameOverride: "medical-center-reception-frontend"
+nameOverride: ""
+
+resources:
+  requests:
+    memory: "400Mi"
+    cpu: "200m"
+  limits:
+    memory: "800Mi"
+    cpu: "500m"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

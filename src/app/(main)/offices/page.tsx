@@ -2,6 +2,8 @@
 
 import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import PaginationBar from "@/components/pagination/PaginationBar";
+import { useAuth } from "@/shared/context/UserContextProvider";
+import { Role } from "@/shared/enum/role";
 import useFetchOffices from "@/shared/hooks/office/useFetchOffices";
 import useFetchOfficesCount from "@/shared/hooks/office/useFetchOfficesCount";
 import { OfficeResponse } from "@/shared/interface/office/office-interface";
@@ -22,6 +24,7 @@ import {
 } from "react-bootstrap";
 
 export default function OfficesPage() {
+  const { hasAnyRole } = useAuth();
   const tCommon = useTranslations("Common");
   const tOfficesPage = useTranslations("OfficesPage");
   const initialParamsState = useMemo(
@@ -85,7 +88,11 @@ export default function OfficesPage() {
           </Col>
         </Row>
         <Stack direction="horizontal" gap={3}>
-          <Link href="/offices/new" className="link">
+          <Link
+            href="/offices/new"
+            className="link"
+            hidden={!hasAnyRole([Role.ADMIN])}
+          >
             {tOfficesPage("new_office_link_label")}
           </Link>
           <Button

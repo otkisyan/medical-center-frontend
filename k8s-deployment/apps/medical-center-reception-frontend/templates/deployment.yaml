@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "medical-center-reception-frontend.fullname" . }}
+  labels: 
+    app.kubernetes.io/name: {{ include "medical-center-reception-frontend.name" . }}
+spec:
+  replicas: 1
+  selector: 
+     matchLabels:
+        app.kubernetes.io/name: {{ include "medical-center-reception-frontend.name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "medical-center-reception-frontend.name" . }}
+    spec:
+      containers:
+        - name: medical-center-reception-frontend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.next.containerPorts.http }}
+          # env:
+          #   - name: NEXT_PUBLIC_API_BASE_URL_SERVER
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: {{ include "medical-center-reception-frontend.fullname" . }}-config
+          #         key: NEXT_PUBLIC_API_BASE_URL_SERVER
+          #   - name: NEXT_PUBLIC_API_BASE_URL_CLIENT
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: {{ include "medical-center-reception-frontend.fullname" . }}-config
+          #         key: NEXT_PUBLIC_API_BASE_URL_CLIENT
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}

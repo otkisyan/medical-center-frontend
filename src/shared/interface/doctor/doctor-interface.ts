@@ -9,6 +9,7 @@ export interface DoctorResponse {
   address: string;
   phone: string;
   messengerContact: string;
+  education: string;
   birthDate: Date | null;
   medicalSpecialty: string;
   qualificationCategory: string;
@@ -22,6 +23,7 @@ export interface DoctorRequest {
   address: string;
   phone: string;
   messengerContact: string;
+  education: string;
   birthDate: Date | null;
   medicalSpecialty: string;
   qualificationCategory: string;
@@ -41,6 +43,7 @@ export const initialDoctorResponseState: DoctorResponse = {
   address: "",
   phone: "",
   messengerContact: "",
+  education: "",
   birthDate: null,
   qualificationCategory: "",
   medicalSpecialty: "",
@@ -54,6 +57,7 @@ export const initialDoctorRequestState: DoctorRequest = {
   address: "",
   phone: "",
   messengerContact: "",
+  education: "",
   birthDate: null,
   qualificationCategory: "",
   medicalSpecialty: "",
@@ -70,6 +74,7 @@ export const convertDoctorResponseToDoctorRequest = (
     address: doctorResponse.address,
     phone: doctorResponse.phone,
     messengerContact: doctorResponse.messengerContact,
+    education: doctorResponse.education,
     birthDate: doctorResponse.birthDate,
     medicalSpecialty: doctorResponse.medicalSpecialty,
     qualificationCategory: doctorResponse.qualificationCategory,
