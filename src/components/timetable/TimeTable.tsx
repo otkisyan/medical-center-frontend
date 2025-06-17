@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Calendar, momentLocalizer, SlotInfo } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import "moment/locale/en-GB";
+import "moment/locale/en-gb";
 import "moment/locale/uk";
 import { useState } from "react";
 import { useLocale } from "next-intl";
@@ -66,7 +66,7 @@ const TimeTable: React.FC<TimeTableProps> = ({
             };
           })
       )
-    : []; // Return an empty array if timeTable is null
+    : [];
 
   const checkForConflicts = (slotInfo: { start: Date; end: Date }) => {
     const conflicts = events.filter((event) => {
