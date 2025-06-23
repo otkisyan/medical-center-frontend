@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: medical-center-reception-frontend
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/otkisyan/medical-center-frontend.git' 
+    path: k8s-deployment/charts/medical-center-reception-frontend
+    targetRevision: main 
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    name: "in-cluster"
+    namespace: default
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

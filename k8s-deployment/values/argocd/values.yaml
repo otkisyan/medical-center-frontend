@@ -1,0 +1,9 @@
+server:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+global:
+  domain: argocd.local
+configs:
+  secret:
+    argocdServerAdminPassword: $2y$10$11q2H305tsW/aNSBohcUo.4CUTEDkrlQEh7ymIe7R.YS0Uc8g12xC # 123

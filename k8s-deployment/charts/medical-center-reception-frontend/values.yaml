@@ -1,5 +1,5 @@
 image:
-  repository: medical-center-reception-frontend
+  repository: vadyanapp/medical-center-reception-frontend
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -8,9 +8,9 @@ service:
   port: 8080
 
 next:
-  public: 
-    baseUrlServer: http://api.medical-center-reception.local/ 
-    # baseUrlClient: http://api.medical-center-reception.local/ 
+  public: {} 
+    # baseUrlServer: http://medical-center-api:8080
+    # baseUrlClient: http://api.medical-center-reception.local 
   containerPorts: 
     http: 3001
 

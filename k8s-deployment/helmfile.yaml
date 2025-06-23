@@ -1,6 +1,5 @@
 releases: 
   - name: medical-center-reception-frontend
-    chart: apps/medical-center-reception-frontend
+    chart: charts/medical-center-reception-frontend
     values: 
-      - "apps/medical-center-reception-frontend/values.yaml"
-
+      - "charts/medical-center-reception-frontend/values.yaml"
