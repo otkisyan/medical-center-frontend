@@ -2,6 +2,12 @@
 Medical Center Reception Management Frontend
 </h1>
 
+<div align="center">
+
+[![CI](https://github.com/otkisyan/medical-center-frontend/actions/workflows/ci.yaml/badge.svg)](https://github.com/otkisyan/medical-center-frontend/actions/workflows/ci.yaml)
+
+</div>
+
 <p align="center">
 A fast and responsive user experience tailored to the needs of medical center staff. It streamlines workflows for managing patients, doctors, work schedules, doctor's offices, and appointments. Built with TypeScript, React, and Next.js, it utilizes React Bootstrap for a modern UI and next-intl for Ukrainian and English language support.
 </p>
