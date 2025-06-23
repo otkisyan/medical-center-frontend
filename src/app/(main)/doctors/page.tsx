@@ -17,8 +17,11 @@ import SpinnerCenter from "@/components/loading/spinner/SpinnerCenter";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import PaginationBar from "@/components/pagination/PaginationBar";
+import { useAuth } from "@/shared/context/UserContextProvider";
+import { Role } from "@/shared/enum/role";
 
 export default function DoctorsPage() {
+  const { hasAnyRole } = useAuth();
   const tCommon = useTranslations("Common");
   const tDoctorsPage = useTranslations("DoctorsPage");
   const initialParamsState = useMemo(
@@ -143,7 +146,11 @@ export default function DoctorsPage() {
           </Col>
         </Row>
         <Stack direction="horizontal" gap={3}>
-          <Link href="/doctors/new" className="link">
+          <Link
+            href="/doctors/new"
+            className="link"
+            hidden={!hasAnyRole([Role.ADMIN])}
+          >
             {tDoctorsPage("new_doctor_link_label")}
           </Link>
           <Button

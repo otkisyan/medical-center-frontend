@@ -13,6 +13,8 @@ export const hasSufficientRole = (
 ): boolean => {
   if (!userRoles) return false;
 
+  // sorts routes by descending key length (string paths).
+  // routes with longer paths come first, followed by those with shorter paths.
   const sortedRoutes = Object.entries(protectedRoutes).sort(
     ([a], [b]) => b.length - a.length
   );
