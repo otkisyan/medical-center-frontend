@@ -1,22 +1,30 @@
 import protectedRoutes from "@/shared/constants/protected-routes";
+import publicRoutes from "@/shared/constants/public-routes";
 import { Role } from "../enum/role";
+import { jwtVerify, createRemoteJWKSet } from "jose";
+
+const JWKS_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL_SERVER}/.well-known/jwks`;
 
 export const isProtectedRoute = (pathname: string): boolean => {
+  if (publicRoutes.some((route) => pathname.startsWith(route))) {
+    return false;
+  }
+
   return Object.keys(protectedRoutes).some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
 };
 
 export const hasSufficientRole = (
   pathname: string,
-  userRoles: Role[] | null
+  userRoles: Role[] | null,
 ): boolean => {
   if (!userRoles) return false;
 
   // sorts routes by descending key length (string paths).
   // routes with longer paths come first, followed by those with shorter paths.
   const sortedRoutes = Object.entries(protectedRoutes).sort(
-    ([a], [b]) => b.length - a.length
+    ([a], [b]) => b.length - a.length,
   );
   for (const [route, roles] of sortedRoutes) {
     if (pathname.startsWith(route)) {
@@ -37,3 +45,17 @@ export const convertStringRolesToEnumRole = (roles: string[]): Role[] => {
     }
   });
 };
+
+const JWKS = createRemoteJWKSet(new URL(JWKS_URL));
+
+export async function verifyToken(token: string) {
+  try {
+    const { payload } = await jwtVerify(token, JWKS, {
+      algorithms: ["RS256"],
+    });
+
+    return payload;
+  } catch (err) {
+    return null;
+  }
+}

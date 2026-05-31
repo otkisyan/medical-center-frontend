@@ -5,102 +5,99 @@ import {
   isProtectedRoute,
 } from "@/shared/utils/auth-utils";
 import { hasSufficientRole } from "@/shared/utils/auth-utils";
+import { verifyToken } from "@/shared/utils/auth-utils";
 import { Role } from "./shared/enum/role";
 
-const API_BASE_URL_SERVER = process.env.NEXT_PUBLIC_API_BASE_URL_SERVER;
+// const API_BASE_URL_SERVER = process.env.NEXT_PUBLIC_API_BASE_URL_SERVER;
 
-const isAuthenticated = async (request: NextRequest) => {
-  const refreshToken = request.cookies.get("refreshToken");
-  if (!refreshToken) {
-    return false;
-  }
-  try {
-    const response = await fetch(`${API_BASE_URL_SERVER}/user/validate`, {
-      method: "GET",
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Cookie: `refreshToken=${refreshToken?.value}`,
-      },
-    });
-    if (response.ok) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    return false;
-  }
-};
+// const isAuthenticated = async (request: NextRequest) => {
+//   const refreshToken = request.cookies.get("refreshToken");
+//   if (!refreshToken) {
+//     return false;
+//   }
+//   try {
+//     const response = await fetch(`${API_BASE_URL_SERVER}/user/validate`, {
+//       method: "GET",
+//       cache: "no-store",
+//       headers: {
+//         Accept: "application/json",
+//         "Content-Type": "application/json",
+//         Cookie: `refreshToken=${refreshToken?.value}`,
+//       },
+//     });
+//     if (response.ok) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   } catch (error) {
+//     return false;
+//   }
+// };
 
-const getUserRoles = async (request: NextRequest) => {
-  const refreshToken = request.cookies.get("refreshToken");
-  if (!refreshToken) {
-    return null;
-  }
-  try {
-    const response = await fetch(`${API_BASE_URL_SERVER}/user/details`, {
-      method: "GET",
-      cache: "no-store",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Cookie: `refreshToken=${refreshToken?.value}`,
-      },
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      let roles: Role[];
-      try {
-        roles = convertStringRolesToEnumRole(responseData.roles);
-        return roles;
-      } catch (error) {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  } catch (error) {
-    return null;
-  }
-};
+// const getUserRoles = async (request: NextRequest) => {
+//   const refreshToken = request.cookies.get("refreshToken");
+//   if (!refreshToken) {
+//     return null;
+//   }
+//   try {
+//     const response = await fetch(`${API_BASE_URL_SERVER}/user/details`, {
+//       method: "GET",
+//       cache: "no-store",
+//       headers: {
+//         Accept: "application/json",
+//         "Content-Type": "application/json",
+//         Cookie: `refreshToken=${refreshToken?.value}`,
+//       },
+//     });
+//     if (response.ok) {
+//       const responseData = await response.json();
+//       let roles: Role[];
+//       try {
+//         roles = convertStringRolesToEnumRole(responseData.roles);
+//         return roles;
+//       } catch (error) {
+//         return null;
+//       }
+//     } else {
+//       return null;
+//     }
+//   } catch (error) {
+//     return null;
+//   }
+// };
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const token = request.cookies.get("refreshToken")?.value;
+  const isProtected = isProtectedRoute(pathname);
 
-  if (isProtectedRoute(pathname)) {
-    const isAuth = await isAuthenticated(request);
-    const userRoles = await getUserRoles(request);
-    if (!userRoles) {
+  if (!token) {
+    if (isProtected) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-    if (!isAuth) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    } else if (!hasSufficientRole(request.nextUrl.pathname, userRoles)) {
-      return new Response("Access Denied", { status: 403 });
-    }
+    return NextResponse.next();
   }
 
-  if (!(await isAuthenticated(request)) && pathname !== "/login") {
-    return NextResponse.redirect(new URL("/login", request.url));
+  const payload = await verifyToken(token);
+
+  if (!payload) {
+    const res = NextResponse.redirect(new URL("/login", request.url));
+    res.cookies.delete("refreshToken");
+    return res;
   }
 
   if (pathname === "/login") {
-    const isAuth = await isAuthenticated(request);
-    if (isAuth) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (pathname === "/") {
-    const isAuth = await isAuthenticated(request);
-    const userRoles = await getUserRoles(request);
-    if (!isAuth) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-    if (!userRoles) {
-      return NextResponse.redirect(new URL("/login", request.url));
+  if (isProtected) {
+    const roles = convertStringRolesToEnumRole(
+      (payload.roles as string[]) || [],
+    );
+
+    if (!hasSufficientRole(pathname, roles)) {
+      return new Response("Access Denied", { status: 403 });
     }
   }
 
